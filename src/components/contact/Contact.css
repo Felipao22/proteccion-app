@@ -1,0 +1,97 @@
+.container-text{
+  margin-top: 6.25rem;
+}
+@media only screen and (min-width: 1101px) {
+  .container-contact {
+    width: 31.25rem;
+    height: 31.25rem;
+    margin: 0 auto;
+    margin-bottom: 12.5rem;
+    margin-top: 4rem;
+    background-color: rgb(233, 238, 244);
+    border-radius:0.313rem;
+    border: none;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.404),
+      0 6px 20px 0 rgba(0, 0, 0, 0.382);
+    padding: 0.938rem;
+  }
+}
+@media only screen and (max-width: 1100px) {
+  .container-contact {
+    width: auto;
+    margin: 0 auto;
+    margin-bottom: 12.5rem;
+    margin-top: 4rem;
+    background-color: rgb(233, 238, 244);
+    border-radius: 0.313rem;
+    border: none;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.404),
+      0 6px 20px 0 rgba(0, 0, 0, 0.382);
+    padding: 0.938rem;
+  }
+}
+
+.boton-contact {
+  text-transform: uppercase;
+  vertical-align: bottom;
+  border: 0;
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 20%), 0 2px 10px 0 rgb(0 0 0 / 10%);
+  font-weight: 500;
+  padding: 0.625rem 1.5rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  background-color: #0f41a2;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: white;
+  font-family: YuGothL, sans-serif;
+  margin-top: 4rem;
+}
+
+.boton-contact:hover {
+  background-color: #3178C8;
+  box-shadow: 0px 15px 20px #3178C8;
+  color: #fff;
+  transform: translateY(-7px);
+}
+
+.datos-contact {
+  color: #02003d;
+  text-transform: uppercase;
+  font-family: YuGothL, sans-serif;
+}
+
+.input-container label {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(0, 23px) scale(1);
+  transform-origin: top left;
+  transition: 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
+  color: #6f81a5;
+  font-size: 1rem;
+  line-height: 1;
+  left: 1rem;
+}
+
+.input-container:focus-within label {
+  transform: translate(0, 12px) scale(0.8);
+  color: #0a53e4;
+}
+
+
+#contact-section {
+  padding-top: 2rem;
+  background: url('../../assets/soluciones-background2.webp') fixed no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  appearance: none;
+  -webkit-appearance: none;
+  /* background-repeat: no-repeat; */
+  /* background-attachment: fixed; */
+  /* -o-background-repeat: no-repeat; */
+  /* -webkit-background-attachment: fixed; */
+  width: 100%;
+  height: 100%;
+}

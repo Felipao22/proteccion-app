@@ -1,0 +1,30 @@
+
+
+@media only screen and (min-width: 1101px) {
+   .containerLoading{
+    margin-top:20vw;
+   }
+}
+@media only screen and (max-width: 1100px) and (max-width: 767px){
+   .containerLoading{
+    margin-top:20vw;
+   }
+   
+}
+@media only screen and (min-width: 767px){
+  .containerLoading{
+    margin-top:20vw;
+  }
+
+@media only screen and (max-width: 575px){
+.containerLoading{
+    margin-top:20vw;
+}
+
+}
+@media only screen and (max-width: 312px){
+.containerLoading{
+    margin-top:20vw;
+}
+}
+}
