@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { setFilesData } from '../../redux/filesSlice';
 import { useAppDispatch } from '../../redux/hooks';
-import { NotificationFailure } from '../notifications/Notifications';
+import { NotificationFailure, NotificationSuccess } from '../notifications/Notifications';
 import apiClient from '../../utils/client';
-import { DownloadIcon } from '../icons/Icons';
+import { DeleteIcon, DownloadIcon } from '../icons/Icons';
+import Swal from 'sweetalert2'
 
 export const Usuario = () => {
 
@@ -48,17 +49,46 @@ const handleDownload = async (id, name) => {
     }
   };
 
+  const deleteFile = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: '¿Está seguro que desea eliminar el archivo?',
+        text: '¡No podrá revertir esto!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      });
+  
+      if (result.isConfirmed) {
+        await apiClient.delete(`file/${id}`);
+        const updatedFiles = files.filter((file) => file.id !== id);
+        setFiles(updatedFiles);
+        NotificationSuccess('Archivo eliminado');
+      }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        NotificationFailure(error.response.data.message);
+      } else {
+        NotificationFailure('Error al eliminar el archivo');
+      }
+    }
+  };
 
   return (
     <div>
     {files.map((file) => (
       <div key={file.id}>
-        <span style={{cursor:"pointer"}} onClick={() => handleDownload(file.id, file.name)}>
-        <a href={`http://localhost:3001/file/${file.id}`} download>
+        <a href="" style={{cursor:"default"}} onClick={(e) => e.preventDefault()}>
           {file.name}
         </a>
+        <span style={{cursor:"pointer",  marginLeft:"10px"}} onClick={() => handleDownload(file.id, file.name)}>
             <DownloadIcon />
         </span>
+        <DeleteIcon style={{cursor:"pointer", marginLeft:"10px"}}  onClick={() => deleteFile(file.id)}/>
+        {/* <button onClick={() => deleteFile(file.id)}>Eliminar</button> */}
         {/* <button onClick={() => handleDownload(file.id)}>Descargar</button> */}
         {/* <button style={{all: "unset", cursor:"pointer"}} onClick={() => handleDownload(file.id, file.name)}>
           </button> */}

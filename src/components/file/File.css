@@ -1,0 +1,10 @@
+#file{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 200px;
+    height: 500px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: auto;
+}

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import FormData from "form-data";
 import {
   NotificationFailure,
@@ -6,6 +6,7 @@ import {
 } from "../notifications/Notifications";
 import apiClient from "../../utils/client";
 import { useNavigate } from "react-router-dom";
+import './File.css'
 
 export const File = () => {
   const initialValues = {
@@ -15,6 +16,7 @@ export const File = () => {
 
   const [formData, setFormData] = useState(initialValues);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedKind, setSelectedKind] = useState()
   const hiddenFileInput = useRef(null)
 
   const data = new FormData();
@@ -58,14 +60,52 @@ export const File = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchKindData = async () => {
+      try {
+        const res = await apiClient.get('/kind');
+        // dispatch(setFilesData(res.data));
+        setSelectedKind(res.data);
+      } catch (error) {
+        NotificationFailure(error.response.data.message);
+      }
+    };
+
+    fetchKindData();
+  },[])
+
+  const KindofFile = () => {
+    return(
+
+    <select type="text" name="kindId" onChange={handleInputChange}>
+
+    <option value="">{ } </option>
+{
+selectedKind?.map((e) => (        
+    <option key={e.id} value={e.id}>{e.name}</option>
+))
+}
+</select>
+    )
+  }
+
   return (
     <div
-      id="register"
-      className="right-side d-flex flex-column justify-content-start w-50 bg-chatter-green h-100 py-4 fs-1 fw-bold scroll-y"
+      id="file"
     >
-      <input type="number"
+      {/* <input type="number"
         name="kindId" onChange={handleInputChange} placeholder="Ingresa el tipo de archivo"
-        />
+        /> */}
+        {/* <KindofFile /> */}
+        <select type="text" name="kindId" onChange={handleInputChange}>
+
+          <option value="">{ } </option>
+    {
+      selectedKind?.map((e) => (        
+          <option key={e.id} value={e.id}>{e.name}</option>
+      ))
+    }
+    </select>
       <input type="email"
         name="email"
         placeholder="Ingresa el email"
