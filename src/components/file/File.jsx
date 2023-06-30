@@ -10,13 +10,14 @@ import './File.css'
 
 export const File = () => {
   const initialValues = {
-    kindId: 0,
+    kindId: "",
     email: "",
   };
 
   const [formData, setFormData] = useState(initialValues);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [selectedKind, setSelectedKind] = useState()
+  const [selectedKind, setSelectedKind] = useState();
+  const [selectedUser, setSelectedUser] = useState()
   const hiddenFileInput = useRef(null)
 
   const data = new FormData();
@@ -41,8 +42,8 @@ export const File = () => {
   };
 
   const resetForm = () => {
-    setFormData({ ...formData, kindId: initialValues.kindId, email: initialValues.email });
-      setSelectedFile(null); 
+    setFormData(initialValues);
+    setSelectedFile(null);
   };
 
 
@@ -64,7 +65,6 @@ export const File = () => {
     const fetchKindData = async () => {
       try {
         const res = await apiClient.get('/kind');
-        // dispatch(setFilesData(res.data));
         setSelectedKind(res.data);
       } catch (error) {
         NotificationFailure(error.response.data.message);
@@ -74,43 +74,51 @@ export const File = () => {
     fetchKindData();
   },[])
 
-  const KindofFile = () => {
-    return(
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const res = await apiClient.get('/user');
+        setSelectedUser(res.data);
+      } catch (error) {
+        NotificationFailure(error.response.data.message);
+      }
+    };
 
-    <select type="text" name="kindId" onChange={handleInputChange}>
+    fetchUserData();
+  },[])
 
-    <option value="">{ } </option>
-{
-selectedKind?.map((e) => (        
-    <option key={e.id} value={e.id}>{e.name}</option>
-))
-}
-</select>
-    )
-  }
+  const KindOfFile = () => {
+      return (
+        <>
+          <option disabled value="">Seleccione una opción</option>
+          {selectedKind?.map((e) => (
+            <option key={e.id} value={e.id}>{e.name}</option>
+          ))}
+        </>
+      );
+    };
+
+    const BusinnessNameOfUser = () => {
+      return (
+        <>
+      <option disabled value="">Seleccione una opción</option>
+      {selectedUser?.map((e) => (
+        <option key={e.email} value={e.email}>{e.nombreEmpresa}</option>
+      ))}
+    </>
+      );
+    };
 
   return (
     <div
       id="file"
     >
-      {/* <input type="number"
-        name="kindId" onChange={handleInputChange} placeholder="Ingresa el tipo de archivo"
-        /> */}
-        {/* <KindofFile /> */}
-        <select type="text" name="kindId" onChange={handleInputChange}>
-
-          <option value="">{ } </option>
-    {
-      selectedKind?.map((e) => (        
-          <option key={e.id} value={e.id}>{e.name}</option>
-      ))
-    }
+    <select  name="kindId"  value={formData.kindId} onChange={handleInputChange}>
+    {KindOfFile()}
     </select>
-      <input type="email"
-        name="email"
-        placeholder="Ingresa el email"
-        onChange={handleInputChange} />
-
+    <select  name="email"  value={formData.email} onChange={handleInputChange}>
+      {BusinnessNameOfUser()}
+    </select>
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo</span>
         <label className="file">

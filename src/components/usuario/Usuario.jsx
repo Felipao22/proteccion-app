@@ -88,10 +88,6 @@ const handleDownload = async (id, name) => {
             <DownloadIcon />
         </span>
         <DeleteIcon style={{cursor:"pointer", marginLeft:"10px"}}  onClick={() => deleteFile(file.id)}/>
-        {/* <button onClick={() => deleteFile(file.id)}>Eliminar</button> */}
-        {/* <button onClick={() => handleDownload(file.id)}>Descargar</button> */}
-        {/* <button style={{all: "unset", cursor:"pointer"}} onClick={() => handleDownload(file.id, file.name)}>
-          </button> */}
       </div>
     ))}
   </div>

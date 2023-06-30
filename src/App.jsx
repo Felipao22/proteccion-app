@@ -11,6 +11,7 @@ import { File } from "./components/file/File";
 import { Usuario } from "./components/usuario/Usuario"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Dashboard from "./components/dashboard/Dashboard";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
@@ -41,8 +42,9 @@ function App() {
           <Route exact path="/nosotros" element={<Nosotros />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/services" element={<Soluciones />} />
-          <Route exact path="/file" element={<File />} />
+          {/* <Route exact path="/file" element={<File />} /> */}
           <Route exact path="/usuario" element={<Usuario />} />
+          <Route exact path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={NotFound} />
         </Routes>
         <Helmet>
