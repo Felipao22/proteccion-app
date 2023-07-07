@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   files: [],
 };
-
 export const filesSlice = createSlice({
   name: 'files',
   initialState,
@@ -11,10 +10,13 @@ export const filesSlice = createSlice({
     setFilesData: (state, action) => {
       state.files = action.payload;
     },
+    setFilesDataLogOut:(state) => {
+      state.files= ''
+    }
   },
 });
 
-export const { setFilesData } = filesSlice.actions;
+export const { setFilesData, setFilesDataLogOut } = filesSlice.actions;
 
 export const getFiles = (state) => state.files;
 

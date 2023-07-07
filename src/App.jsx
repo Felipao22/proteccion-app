@@ -7,7 +7,6 @@ import Loading from "./components/loading/Loading";
 import NavBar from "./components/navbar/NavBar.jsx";
 import ScrollToTop from "./components/scrolltotop/ScrollToTop.jsx";
 import NotFound from "./components/notfound/NotFound.jsx";
-import { File } from "./components/file/File";
 import { Usuario } from "./components/usuario/Usuario"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +16,8 @@ const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
 const Contact = lazy(() => import("./components/contact/Contact.jsx"));
 const Soluciones = lazy(() => import("./components/soluciones/Soluciones.jsx"));
-// const File = lazy(() => import("./components/file/File.jsx"));
+const Login = lazy(() => import("./components/login/Login"));
+const Register = lazy(() => import("./components/register/Register"));
 
 function App() {
   return (
@@ -28,8 +28,8 @@ function App() {
         <ScrollToTop />
         <ToastContainer
           position="top-center"
-          autoClose={5000}
-          hideProgressBar
+          autoClose={1000}
+          hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
           rtl={false}
@@ -42,8 +42,9 @@ function App() {
           <Route exact path="/nosotros" element={<Nosotros />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/services" element={<Soluciones />} />
-          {/* <Route exact path="/file" element={<File />} /> */}
-          <Route exact path="/usuario" element={<Usuario />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/register" element={<Register />} />
+          <Route path="/usuario" element={<Usuario />} />
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={NotFound} />
         </Routes>

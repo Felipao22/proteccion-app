@@ -1,0 +1,70 @@
+
+.success{
+  color:rgb(49, 206, 1)
+}
+
+.boton-register {
+  width: 140px;
+  height: 45px;
+  font-family: Quicksand;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-weight: 500;
+  background-color: rgba(15,65,162,1);
+  color:white;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  }
+
+.boton-register:hover {
+  background-color:rgb(49,120,200);
+    box-shadow: 0px 15px 20px rgb(49,120,200);
+  color: #fff;
+  transform: translateY(-7px);
+}
+/* .input-text {
+  position: relative;
+  margin-top: 30px;
+}  */
+
+/* @media (min-width > 992px) {
+  .eye-icon{
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-right: 10px;
+  }
+} */
+/* .eye {
+  position: absolute;
+  left: 250px;
+  top: 6px;
+  font-size: 15px;
+  cursor: pointer;
+} */
+
+/* @media only screen and (width <= 412px){
+  .eye{
+   left:220px;
+  }
+  
+}
+@media only screen and (width < 389px){
+  .eye{
+   left:200px;
+  }
+  
+}
+
+@media only screen and (width < 370px){
+  .eye{
+   left:185px;
+  }
+  
+} */

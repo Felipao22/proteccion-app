@@ -10,18 +10,33 @@ import apiClient from '../../utils/client';
 import { ActiveIcon, DeleteIcon } from '../icons/Icons';
 import Swal from 'sweetalert2';
 import { File } from '../file/File';
+import useFormatDate from '../hooks/useFormattedDate'
+import { setLogoutData } from '../../redux/userSlice';
+import { setFilesDataLogOut } from '../../redux/filesSlice';
+import { useAppDispatch } from '../../redux/hooks';
+import { clearToken } from '../../utils/token';
+import { NotificationFailure, NotificationSuccess } from '../notifications/Notifications';
+import { useNavigate } from 'react-router-dom';
+import Loading from '../loading/Loading';
 
 
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true)
+
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const res = await apiClient.get('/user');
         setSelectedUser(res.data);
+        setLoading(false)
       } catch (error) {
         console.error(error);
       }
@@ -47,6 +62,19 @@ export default function Dashboard() {
     );
   };
 
+  const signOff = async() => {
+    try {
+      const res = await apiClient.post('/user/logout')
+      dispatch(setLogoutData());
+      dispatch(setFilesDataLogOut());
+    clearToken();
+    navigate("/");
+    NotificationSuccess(res.data.message)
+    } catch (error) {
+      NotificationFailure(response.data.error)
+    }
+      
+  };
 
   const deleteUser = async (email) => {
     try {
@@ -117,77 +145,86 @@ export default function Dashboard() {
     setShowFile(false);
   };
 
+  const formatDate = useFormatDate();
+
 
   return (
-
+    <>
+    {loading ? (
+      <div><Loading /></div>
+    ) : (
+      <div>
+        {!showFile ? (
+          <TableContainer component={Paper}>
+            <div>
+              <button className='btn btn-primary"' onClick={handleLoadFile}>Cargar archivos</button>
+            </div>
+            <div>
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
+            </div>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="justify">Empresa</TableCell>
+                  <TableCell align="justify">Email</TableCell>
+                  <TableCell align="justify">Establecimiento</TableCell>
+                  <TableCell align="justify">Cuit</TableCell>
+                  <TableCell align="justify">Provincia</TableCell>
+                  <TableCell align="justify">Ciudad</TableCell>
+                  <TableCell align="justify">Direccion</TableCell>
+                  <TableCell align="justify">Teléfono</TableCell>
+                  <TableCell align="justify">Registrado</TableCell>
+                  <TableCell align="justify">Eliminar</TableCell>
+                  <TableCell align="justify">Activar</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {searchUsers(selectedUser).map((row) => (
+                  <TableRow
+                    key={row.email}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    style={row.active === false ? { backgroundColor: '#FB4100', color: 'white' } : {}}
+                  >
+                    <TableCell component="th" scope="row">
+                      {row.nombreEmpresa}
+                    </TableCell>
+                    {/* <TableCell align="justify">{row.active}</TableCell> */}
+                    <TableCell align="justify">{row.email}</TableCell>
+                    <TableCell align="justify">{row.nombreEstablecimiento || '-'}</TableCell>
+                    <TableCell align="justify">{row.cuit || '-'}</TableCell>
+                    <TableCell align="justify">{row.provincia || '-'}</TableCell>
+                    <TableCell align="justify">{row.ciudad || '-'}</TableCell>
+                    <TableCell align="justify">{row.direccion || '-'}</TableCell>
+                    <TableCell align="justify">{row.telefono || '-'}</TableCell>
+                    <TableCell align="justify">{formatDate(row.createdAt) || '-'}</TableCell>
+                    <TableCell align="justify">
+                      <DeleteIcon style={{ cursor: 'pointer' }}
+                        onClick={() => deleteUser(row.email)} />
+                    </TableCell>
+                    <TableCell align="justify">
+                      <ActiveIcon style={{ cursor: 'pointer' }}
+                        onClick={() => activeUser(row.email)} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <>
+            <File />
+            <button className='btn' onClick={handleBack}>Volver</button>
+          </>
+        )}
+      </div>
+    )}
     <div>
-      {!showFile ? (
-        <TableContainer component={Paper}>
-          <div>
-            <button className='btn btn-primary"' onClick={handleLoadFile}>Cargar archivos</button>
-          </div>
-          <div>
-            <input
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-          </div>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-         <TableHead>
-           <TableRow>
-             <TableCell align="justify">Empresa</TableCell>
-             <TableCell align="justify">Email</TableCell>
-             <TableCell align="justify">Establecimiento</TableCell>
-             <TableCell align="justify">Cuit</TableCell>
-             <TableCell align="justify">Provincia</TableCell>
-             <TableCell align="justify">Ciudad</TableCell>
-             <TableCell align="justify">Direccion</TableCell>
-             <TableCell align="justify">Teléfono</TableCell>
-             <TableCell align="justify">Eliminar</TableCell>
-             <TableCell align="justify">Activar</TableCell>
-           </TableRow>
-         </TableHead>
-         <TableBody>
-           {searchUsers(selectedUser).map((row) => (
-            <TableRow
-              key={row.email}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              style={row.active === false ? { backgroundColor: 'red', color: 'white' } : {}}
-            >
-              <TableCell component="th" scope="row">
-                {row.nombreEmpresa}
-              </TableCell>
-              {/* <TableCell align="justify">{row.active}</TableCell> */}
-              <TableCell align="justify">{row.email}</TableCell>
-              <TableCell align="justify">{row.nombreEstablecimiento || '-'}</TableCell>
-              <TableCell align="justify">{row.cuit || '-'}</TableCell>
-              <TableCell align="justify">{row.provincia || '-'}</TableCell>
-              <TableCell align="justify">{row.ciudad || '-'}</TableCell>
-              <TableCell align="justify">{row.direccion || '-'}</TableCell>
-              <TableCell align="justify">{row.telefono || '-'}</TableCell>
-              <TableCell align="justify">
-                  <DeleteIcon style={{ cursor: 'pointer' }}
-                  onClick={() => deleteUser(row.email)}/>
-              </TableCell>
-              <TableCell align="justify">
-                  <ActiveIcon style={{ cursor: 'pointer' }}
-                  onClick={() => activeUser(row.email)}/>
-              </TableCell>
-            </TableRow>
-            
-          ))}
-        </TableBody>
-      </Table>
-        </TableContainer>
-      ) : (
-        <>
-        <File />
-        <button className='btn' onClick={handleBack}>Volver
-
-        </button>
-        </>
-      )}
+      <button onClick={signOff}>Cerrar sesión</button>
     </div>
+  </>
   );
 }
