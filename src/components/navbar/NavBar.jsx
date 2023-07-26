@@ -373,9 +373,9 @@ export default function ButtonAppBar() {
 
       <Drawer style={{ height: "60vh", width: "100vw" }} open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <List style={{ fontSize: "30px", fontWeight: "600", height: "250px", width: "50vw" }}>
-        {user && user.email ? (
+        {user && user.email !== '' && user.userId !== '' && user.isAdmin !== '' ? (
             <>
-              {user.email === import.meta.env.VITE_APP_EMAIL_ADMIN ? (
+              {user.isAdmin && user.isAdmin !== '' ? (
                 <Avatar
                   onClick={() => {
                     setIsDrawerOpen(false);
@@ -409,12 +409,7 @@ export default function ButtonAppBar() {
             <>
               <ListItem button component="a">
                 <Link style={{ color: "black", textDecoration: "none" }} to="/login" onClick={() => setIsDrawerOpen(false)}>
-                  <ListItemText primary="Login" />
-                </Link>
-              </ListItem>
-              <ListItem button component="a">
-                <Link style={{ color: "black", textDecoration: "none" }} to="/register" onClick={() => setIsDrawerOpen(false)}>
-                  <ListItemText primary="Registrarse" />
+                  <ListItemText primary="Iniciar Sesión" />
                 </Link>
               </ListItem>
             </>
@@ -466,9 +461,9 @@ export default function ButtonAppBar() {
           </Link>
         </div>
 
-        {user && user.email ? (
+        {user && user.email !== '' && user.userId !== '' ? (
             <>
-              {user.email === import.meta.env.VITE_APP_EMAIL_ADMIN ? (
+              {user.isAdmin && user.isAdmin !== '' && user.userId !== '' ? (
                 <Avatar
                   onClick={() => {
                     setIsDrawerOpen(false);
@@ -493,10 +488,7 @@ export default function ButtonAppBar() {
           ) : (
           <div className="log">
             <Link style={{ color: "black", textDecoration: "none" }} to="/login">
-              <Button color="inherit" onClick={() => setIsDrawerOpen(false)}>Login</Button>
-            </Link>
-            <Link style={{ color: "black", textDecoration: "none" }} to="/register">
-              <Button color="inherit" onClick={() => setIsDrawerOpen(false)}>Registrarse</Button>
+              <Button color="inherit" onClick={() => setIsDrawerOpen(false)}>Iniciar Sesión</Button>
             </Link>
           </div>
         )}

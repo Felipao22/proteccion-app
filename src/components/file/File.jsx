@@ -12,7 +12,7 @@ import { useAppDispatch } from "../../redux/hooks";
 export const File = () => {
   const initialValues = {
     kindId: "",
-    email: "",
+    branchBranchId: "",
   };
 
   const [formData, setFormData] = useState(initialValues);
@@ -48,17 +48,16 @@ export const File = () => {
 
   const resetForm = () => {
     setFormData(initialValues);
-    setSelectedFile(null);
+    setSelectedFile('');
   };
 
 
   const handleLoadFile = async () => {
     data.append("file", selectedFile);
+    data.append("branchBranchId", formData.branchBranchId);
     data.append("kindId", formData.kindId);
-    data.append("email", formData.email);
     try {
       const res = await apiClient.post("/file", data);
-    //    navigate('/');
       NotificationSuccess(res.data.message);
       resetForm();
     } catch (error) {
@@ -80,16 +79,16 @@ export const File = () => {
   },[])
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchBranchData = async () => {
       try {
-        const res = await apiClient.get('/user');
+        const res = await apiClient.get('/branch');
         setSelectedUser(res.data);
       } catch (error) {
         NotificationFailure(error.response.data.message);
       }
     };
 
-    fetchUserData();
+    fetchBranchData();
   },[])
 
   const KindOfFile = () => {
@@ -103,12 +102,13 @@ export const File = () => {
       );
     };
 
-    const BusinnessNameOfUser = () => {
+
+    const BranchNameOfUser = () => {
       return (
         <>
       <option disabled value="">Seleccione una opción</option>
       {selectedUser?.map((e) => (
-        <option key={e.email} value={e.email}>{e.nombreEmpresa}</option>
+        <option key={e.branchId} value={e.branchId}>{e.nombreSede}</option>
       ))}
     </>
       );
@@ -127,9 +127,9 @@ export const File = () => {
     <select  name="kindId"  value={formData.kindId} onChange={handleInputChange}>
     {KindOfFile()}
     </select>
-    <label htmlFor={id}>Seleccione la empresa:</label>
-    <select  name="email"  value={formData.email} onChange={handleInputChange}>
-      {BusinnessNameOfUser()}
+    <label htmlFor={id}>Seleccione el establecimiento/obra:</label>
+    <select  name="branchBranchId"  value={formData.branchBranchId} onChange={handleInputChange}>
+      {BranchNameOfUser()}
     </select>
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo</span>
@@ -139,7 +139,7 @@ export const File = () => {
           </button>
           <input
         type="file"
-        accept=".pdf,.xls,.xlsx"
+        accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg"
         ref={hiddenFileInput}
         style={{ display: "none" }}
         onChange={handleFileChange}

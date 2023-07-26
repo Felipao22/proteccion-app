@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Register.css";
+// import "./Register.css";
 import {
   NotificationFailure,
   NotificationSuccess,
@@ -17,39 +17,34 @@ import {
   MDBInput,
   MDBIcon,
 } from "mdb-react-ui-kit";
-import { useNavigate } from "react-router-dom";
-import UsePasswordToggle from "../hooks/UsePasswordToggle";
+import { useFetchCities } from "../hooks/useFetchCities";
+import { useFetchUsers } from "../hooks/useFetchUsers";
 
 export default function Register() {
   const initialValues = {
-    nombreEmpresa: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    nombreSede: "",
+    userEmail: "",
+    ciudad: "",
+    direccion: "",
+    telefono: "",
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
-  const [passwordRequirements, setPasswordRequirements] = useState({
-    minLength: false,
-    hasUppercase: false,
-    hasNumber: false,
-  });
 
-  const [PasswordInputType, ToggleIcon] = UsePasswordToggle();
+  const selectedCities = useFetchCities();
+  const selectedUser = useFetchUsers();
 
   const data = new FormData();
-
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (userEmail) => {
     // Utiliza una expresión regular para verificar si el email es válido
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+    return regex.test(userEmail);
   };
 
   const resetForm = () => {
@@ -58,9 +53,11 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    data.append("nombreEmpresa", values.nombreEmpresa);
-    data.append("email", values.email);
-    data.append("password", values.password);
+    data.append("nombreSede", values.nombreSede);
+    data.append("userEmail", values.userEmail);
+    data.append("ciudad", values.ciudad);
+    data.append("direccion", values.direccion);
+    data.append("telefono", values.telefono);
 
     // Reinicia los errores
     setErrors({});
@@ -68,25 +65,22 @@ export default function Register() {
     // Valida los campos
     let newErrors = {};
 
-    if (!values.nombreEmpresa) {
-      newErrors.nombreEmpresa = "Nombre de Empresa requerido";
+    if (!values.nombreSede) {
+      newErrors.nombreSede = "Nombre de Establecimiento/Obra requerido";
     }
 
-    if (!values.email) {
-      newErrors.email = "Email requerido";
+    if (!values.userEmail) {
+      newErrors.userEmail = "Empresa requerida";
     }
-    if (!validateEmail(values.email)) {
-      newErrors.email = "Email inválido";
-    }
-    if (!values.password) {
-      newErrors.password = "Contraseña requerida";
+    if (!values.ciudad) {
+      newErrors.ciudad = "Ciudad requerida";
     }
 
-    if (!values.confirmPassword) {
-      newErrors.confirmPassword = "Confirmar contraseña";
+    if (!values.direccion) {
+      newErrors.direccion = "Direccion requerida";
     }
-    if (values.password !== values.confirmPassword) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden";
+    if (!values.telefono) {
+      newErrors.telefono = "Teléfono requerido";
     }
 
     // Si hay errores, los muestra
@@ -96,9 +90,10 @@ export default function Register() {
     }
 
     try {
-      const res = await apiClient.post("/user", values);
+      const res = await apiClient.post("/branch", values);
+      console.log(res);
       NotificationWarning(res.data.warning);
-      if (res.data.created) {
+      if (res.data.newUserBranch) {
         NotificationSuccess(res.data.message);
       }
       resetForm();
@@ -107,15 +102,35 @@ export default function Register() {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    const password = e.target.value;
-    const requirements = {
-      minLength: password.length >= 6,
-      hasUppercase: /[A-Z]/.test(password),
-      hasNumber: /\d/.test(password),
-    };
-    setPasswordRequirements(requirements);
-    handleInputChange(e);
+  const CitySelect = () => {
+    return (
+      <>
+        <select disabled value="">
+          Seleccione una ciudad
+        </select>
+        {selectedCities?.map((city) => (
+          <option key={city.id} value={city.nombre}>
+            {city.nombre}
+          </option>
+        ))}
+      </>
+    );
+  };
+
+  const UserSelect = () => {
+    return (
+      <>
+        <select disabled value="">
+          {" "}
+          Selecciona la empresa
+        </select>
+        {selectedUser?.map((user) => (
+          <option key={user.userId} value={user.email}>
+            {user.nombreEmpresa}
+          </option>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -129,7 +144,7 @@ export default function Register() {
               className="order-2 order-lg-1 d-flex flex-column align-items-center"
             >
               <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                Registrar
+                Registrar Establecimiento/Obra
               </p>
               <form onSubmit={handleSubmit}>
                 <div className="d-flex flex-row align-items-center mb-4">
@@ -137,16 +152,16 @@ export default function Register() {
                     <MDBIcon fas icon="user" size="lg" />
                   </div>
                   <MDBInput
-                    name="nombreEmpresa"
-                    value={values.nombreEmpresa}
-                    label="Empresa"
+                    name="nombreSede"
+                    value={values.nombreSede}
+                    label="Establecimiento/Obra"
                     id="form1"
                     type="text"
                     className="w-100"
                     onChange={handleInputChange}
                   />
                 </div>
-                {errors.nombreEmpresa && (
+                {errors.nombreSede && (
                   <span
                     style={{
                       color: "red",
@@ -154,7 +169,7 @@ export default function Register() {
                       justifyContent: "center",
                     }}
                   >
-                    {errors.nombreEmpresa}
+                    {errors.nombreSede}
                   </span>
                 )}
                 <div className="d-flex flex-row align-items-center mb-4">
@@ -166,17 +181,24 @@ export default function Register() {
                       style={{ marginTop: "5px" }}
                     />
                   </div>
-                  <MDBInput
+                  <select
+                    name="userEmail"
+                    value={values.userEmail}
+                    onChange={handleInputChange}
+                  >
+                    {UserSelect()}
+                  </select>
+                  {/* <MDBInput
                     type="email"
-                    name="email"
-                    value={values.email}
+                    name="userEmail"
+                    value={values.userEmail}
                     placeholder="mail@example.com"
                     onChange={handleInputChange}
                     label="Email"
                     id="form2"
-                  />
+                  /> */}
                 </div>
-                {errors.email && (
+                {errors.userEmail && (
                   <span
                     style={{
                       color: "red",
@@ -184,7 +206,7 @@ export default function Register() {
                       justifyContent: "center",
                     }}
                   >
-                    {errors.email}
+                    {errors.userEmail}
                   </span>
                 )}
 
@@ -192,65 +214,42 @@ export default function Register() {
                   <div style={{ width: "40px", marginRight: "10px" }}>
                     <MDBIcon fas icon="lock" size="lg" />
                   </div>
-                  <MDBInput
-                    label="Contraseña"
-                    id="form3"
-                    type={PasswordInputType}
-                    name="password"
-                    placeholder="Contraseña"
-                    autoComplete="off"
-                    value={values.password}
-                    onChange={handlePasswordChange}
-                  />
+                  <select
+                    id="ciudad"
+                    name="ciudad"
+                    value={values.ciudad}
+                    onChange={handleInputChange}
+                  >
+                    {CitySelect()}
+                  </select>
+                  {errors.ciudad && (
+                    <span
+                      style={{
+                        color: "red",
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {errors.ciudad}
+                    </span>
+                  )}
                   {/* <i className="eye-icon">{ToggleIcon}</i> */}
                 </div>
-                <ul>
-                  <li
-                    className={passwordRequirements.minLength ? "success" : ""}
-                  >
-                    Mínimo de 6 caracteres
-                  </li>
-                  <li
-                    className={
-                      passwordRequirements.hasUppercase ? "success" : ""
-                    }
-                  >
-                    Al menos 1 mayúscula
-                  </li>
-                  <li
-                    className={passwordRequirements.hasNumber ? "success" : ""}
-                  >
-                    Al menos 1 número
-                  </li>
-                </ul>
-                {errors.password && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.password}
-                  </span>
-                )}
-
                 <div className="d-flex flex-row align-items-center mb-4">
                   <div style={{ width: "40px", marginRight: "10px" }}>
                     <MDBIcon fas icon="key" size="lg" />
                   </div>
                   <MDBInput
-                    label="Confirmar contraseña"
+                    label="Teléfono"
                     id="form4"
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirmar contraseña"
-                    autoComplete="off"
-                    value={values.confirmPassword}
+                    type="number"
+                    name="telefono"
+                    placeholder="2664897896"
+                    value={values.telefono}
                     onChange={handleInputChange}
                   />
                 </div>
-                {errors.confirmPassword && (
+                {errors.telefono && (
                   <span
                     style={{
                       color: "red",
@@ -259,9 +258,24 @@ export default function Register() {
                       marginBottom: "20px",
                     }}
                   >
-                    {errors.confirmPassword}
+                    {errors.telefono}
                   </span>
                 )}
+
+                <div className="d-flex flex-row align-items-center mb-4">
+                  <div style={{ width: "40px", marginRight: "10px" }}>
+                    <MDBIcon fas icon="key" size="lg" />
+                  </div>
+                  <MDBInput
+                    label="Dirección"
+                    id="form4"
+                    type="text"
+                    name="direccion"
+                    placeholder="2664897896"
+                    value={values.direccion}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
                 <button type="submit" className="boton-register" size="lg">
                   Registrar

@@ -16,9 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { getUser, setUserData, setLogoutData } from "../../redux/userSlice";
 import { clearToken, getToken } from "../../utils/token";
 import FormData from 'form-data';
-import { useFetchProvinces } from "../hooks/useFetchProvinces";
 import { useFetchCities } from "../hooks/useFetchCities";
-import { useFetchUsers } from "../hooks/useFetchUser";
+// import { useFetchUsers } from "../hooks/useFetchUser";
 import Loading from '../loading/Loading'
 import { FileOutlined, UserOutlined, LogoutOutlined, FolderOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
@@ -54,12 +53,8 @@ export const Usuario = () => {
   const [errors, setErrors] = useState({});
   const [collapsed, setCollapsed] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState('1');
+  const [loading, setLoading] = useState(true)
 
-
-  const selectedProvince = useFetchProvinces();
-  const selectedCities = useFetchCities();
-  const loading = useFetchUsers();
-  const kinds = useFetchKinds();
 
   const dispatch = useAppDispatch();
 
@@ -72,11 +67,46 @@ export const Usuario = () => {
   const files = useAppSelector(getFiles);
 
 
+
 const { Content, Sider } = Layout;
 
 
   const VALIDATE_CUIT = /^[0-9]{11}$/;
 
+
+
+      useEffect(() => {
+        const fetchUserData = async () => {
+          try {
+            if (token && user) {
+              const { email } = user;
+              const { data } = await apiClient.get(`/user/${email}`);
+              // const res = await apiClient.get(`user/${email}/branch`);
+              if (data) {
+                const user = {
+                  email: data.email,
+                  nombreEmpresa: data.nombreEmpresa,
+                  nombreEstablecimiento: data.nombreEstablecimiento,
+                  cuit: data.cuit,
+                  telefono: data.telefono,
+                  provincia: data.provincia,
+                  ciudad: data.ciudad,
+                  userId: data.userId,
+                  authToken: data.authToken,
+                  direccion: data.direccion,
+                  isAdmin: data.isAdmin
+                };
+                // dispatch(setFilesData(res.data.branches));
+                dispatch(setUserData(user));
+                setLoading(false)
+              }
+            }
+          } catch (error) {
+            NotificationFailure(error.response.data.message);
+          }
+        };
+        fetchUserData();
+      }, [token, user, dispatch]);
 
 
   
@@ -211,16 +241,7 @@ const handleUserData = async (e) => {
 
  
 
-  // const ProvinceSelect = () => {
-  //   return (
-  //     <>
-  //       <Select.Option disabled value="">Seleccione una provincia</Select.Option>
-  //       {selectedProvince?.map((province) => (
-  //         <Select.Option key={province.id} value={province.nombre}>{province.nombre}</Select.Option>
-  //       ))}
-  //     </>
-  //   );
-  // };
+
 
 
   //prueba
@@ -242,10 +263,10 @@ const handleUserData = async (e) => {
   
   //   return (
   //     <>
-  //       <Select.Option disabled value="">Seleccione una ciudad</Select.Option>
+  //       <select disabled value="">Seleccione una ciudad</select>
   //       {
   //       filteredCities?.map(city => (
-  //         <Select.Option key={city.id} value={city.nombre}>{city.nombre}</Select.Option>
+  //         <option key={city.id} value={city.nombre}>{city.nombre}</option>
   //       ))}
   //     </>
   //   );
@@ -401,7 +422,7 @@ const handleUserData = async (e) => {
     {ProvinceSelect()}
   </Select>
 </Form.Item> */}
-                  <label htmlFor="ciudad">Modificar ciudad</label>
+                  {/* <label htmlFor="ciudad">Modificar ciudad</label>
                   <select
                     id="ciudad"
                     name="ciudad"
@@ -409,7 +430,7 @@ const handleUserData = async (e) => {
                     onChange={handleInputChange}
                   >
                     {CitySelect()}
-                  </select>
+                  </select> */}
                   {/* <select
   id="ciudad"
   name="ciudad"
@@ -418,34 +439,39 @@ const handleUserData = async (e) => {
 >
   <CitySelect selectedCity={selectedCity} />
 </select>
-                  <label htmlFor="telefono">Modificar teléfono</label> */}
-                  <input
+*/}
+                  <Form.Item label="Modificar teléfono" htmlFor="telefono">
+                  <Input
                     type="number"
                     id="telefono"
                     name="telefono"
                     value={values.telefono !== "" ? values.telefono : user.telefono}
                     onChange={handleInputChange}
                   />
+                  </Form.Item>
+                  
                   {errors.telefono && (
                     <span style={{ color: "red", display: "flex", justifyContent: "center" }}>
                       {errors.telefono}
                     </span>
                   )}
-                  <label htmlFor="cuit">Modificar CUIT</label>
-                  <input
+                  <Form.Item label="Modificar CUIT" htmlFor="cuit">
+
+                  <Input
                     type="number"
                     id="cuit"
                     name="cuit"
                     value={values.cuit !== "" ? values.cuit : user.cuit}
                     onChange={handleInputChange}
                   />
+                  </Form.Item>
                   {errors.cuit && (
                     <span style={{ color: "red", display: "flex", justifyContent: "center" }}>
                       {errors.cuit}
                     </span>
                   )}
                 </div>
-               <button type="submit">Modificar</button>
+               <button type="submit">Guardar cambios</button>
               </Form>
             </div>
           ) : (
@@ -453,7 +479,9 @@ const handleUserData = async (e) => {
               <p>Tienes que cargar la información de la empresa.</p>
               <form onSubmit={handleUserData}>
                 <div>
-                  <label htmlFor="nombreEmpresa">Nombre de empresa</label>
+                  <label label="Empresa" htmlFor="nombreEmpresa">Empresa
+                    </label>
+                  
                   <input
                     type="text"
                     id="nombreEmpresa"
@@ -461,7 +489,7 @@ const handleUserData = async (e) => {
                     value={values.nombreEmpresa}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="nombreEstablecimiento">Nombre del establecimiento</label>
+                  <label htmlFor="nombreEstablecimiento"> Nombre del establecimiento</label>
                   <input
                     type="text"
                     id="nombreEstablecimiento"
@@ -478,23 +506,23 @@ const handleUserData = async (e) => {
                     onChange={handleInputChange}
                   />
                   <label htmlFor="provincia">Provincia</label>
-                  <select
+                  {/* <select
                     id="provincia"
                     name="provincia"
                     value={values.provincia}
                     onChange={handleInputChange}
                   >
                     {ProvinceSelect()}
-                  </select>
+                  </select> */}
                   <label htmlFor="ciudad">Ciudad</label>
-                  <select
+                  {/* <select
                     id="ciudad"
                     name="ciudad"
                     value={values.ciudad}
                     onChange={handleInputChange}
                   >
                     {CitySelect()}
-                  </select>
+                  </select> */}
                   <label htmlFor="telefono">Teléfono</label>
                   <input
                     type="number"
@@ -557,6 +585,49 @@ const handleUserData = async (e) => {
     )}
   </div>
 )}
+
+
+{/* prueba */}
+{/* {selectedMenuItem === '2' && (
+  <div>
+    <h3>Archivos:</h3>
+    {(!files.branches || files.branches.length === 0) ? (
+      <h4>No tiene archivos cargados actualmente.</h4>
+      
+    ) : (
+      files.branches.map((branch) => (
+        <div key={branch.branchId}>
+          <h4>{branch.nombreSede}</h4>
+          {(!branch.files || branch.files.length === 0) ? (
+            <h4>No tiene archivos cargados actualmente en esta sucursal.</h4>
+          ) : (
+            branch.files.map((file) => (
+              <div key={file.id}>
+                <a
+                  href={`http://localhost:3001/file/${file.id}`}
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDownload(file.id, file.name);
+                  }}
+                >
+                  {file.name}
+                </a>
+                <span
+                  style={{ cursor: "pointer", marginLeft: "10px" }}
+                  onClick={() => handleDownload(file.id, file.name)}
+                >
+                  <DownloadIcon />
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      ))
+    )}
+  </div>
+)} */}
+
     </Content>
     <div>
     </div>

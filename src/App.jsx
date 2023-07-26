@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Provider } from 'react-redux'
+import { BrowserRouter as Router, Route  } from "react-router-dom";
+import React from 'react'
+import { Provider, useSelector } from 'react-redux'
 import { store } from './redux/store'
 import { lazy, Suspense } from "react";
 import { Helmet } from "react-helmet";
@@ -11,18 +12,26 @@ import { Usuario } from "./components/usuario/Usuario"
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./components/dashboard/Dashboard";
+import { Routes } from "react-router-dom";
+import { useAppSelector } from "./redux/hooks";
+import { getUser } from "./redux/userSlice";
+import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
 const Contact = lazy(() => import("./components/contact/Contact.jsx"));
 const Soluciones = lazy(() => import("./components/soluciones/Soluciones.jsx"));
 const Login = lazy(() => import("./components/login/Login"));
-const Register = lazy(() => import("./components/register/Register"));
+const RegisterBranch = lazy(() => import("./components/registerBranch/RegisterBranch"));
 
 function App() {
+  const user = useSelector((state) => state.user);
+
+  const navigate = useNavigate();
+
   return (
-    <Provider store={store}>
-    <Router basename={import.meta.env.BASE_URL}>
+    <>
       <NavBar />
       <Suspense fallback={<Loading />}>
         <ScrollToTop />
@@ -37,24 +46,40 @@ function App() {
           draggable
           pauseOnHover
         />
+
+
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/nosotros" element={<Nosotros />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/services" element={<Soluciones />} />
           <Route exact path="/login" element={<Login />} />
-          <Route exact path="/register" element={<Register />} />
-          <Route path="/usuario" element={<Usuario />} />
-          <Route exact path="/dashboard" element={<Dashboard />} />
+          <Route exact path="/register" element={<RegisterBranch />} />
+           {/* Rutas protegidas */}
+           <Route
+              path="/usuario"
+              element={user && user.userId && user.isAdmin === false  ? <Usuario /> : <Navigate to="/login" />}
+            />
+            <Route
+              exact
+              path="/dashboard"
+              element={
+                user && user.isAdmin ? <Dashboard /> : <Navigate to="/" />
+              }
+            />
           <Route path="*" element={NotFound} />
         </Routes>
         <Helmet>
           <link rel="canonical" href={window.location.href} />
         </Helmet>
       </Suspense>
-    </Router>
-    </Provider>
+    </>
   );
 }
 
 export default App;
+
+
+
+
+

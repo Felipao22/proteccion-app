@@ -28,7 +28,6 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
@@ -70,13 +69,14 @@ export default function Login() {
     }
     try {
       const res = await apiClient.post('/user/login', data);
-
+      console.log(res.data.userLogin.isAdmin)
 
         dispatch(
           setLoginData({
             userId: res.data.userLogin.userId,
             authToken: res.data.token,
-            email:res.data.userLogin.email
+            email:res.data.userLogin.email,
+            isAdmin: res.data.userLogin.isAdmin
           })
         );
         setToken(res.data.token);
@@ -90,7 +90,6 @@ export default function Login() {
       NotificationFailure(error.response.data.message);
     }
   };
-
 
   return (
     <div>
@@ -157,3 +156,4 @@ export default function Login() {
     </div>
   );
 }
+
