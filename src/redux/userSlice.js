@@ -6,16 +6,24 @@ const initialState = {
   userId: "",
   authToken: "",
   nombreEmpresa: "",
-  files: [],
-  cuit: "",
-  nombreEstablecimiento: "",
-  ciudad: "",
-  provincia: "",
-  telefono: "",
-  direccion: "",
-  createdAt: "",  
+  createdAt: "",
   isAdmin: false,
+  isSuperAdmin: false,
+  selectedBranch: [],
 };
+
+// export const getUserDataFromLocalStorage = () => {
+//   const userData = localStorage.getItem("user");
+//   const userClosed = localStorage.getItem("userClosed");
+
+//   // Verificar si el usuario se cerró intencionalmente, si es así, retornar initialState
+//   if (userClosed === "true") {
+//     localStorage.removeItem("userClosed"); // Limpiar la marca del Local Storage
+//     return initialState;
+//   }
+
+//   return userData ? JSON.parse(userData) : initialState;
+// };
 
 export const getUserDataFromLocalStorage = () => {
   const userData = localStorage.getItem("user");
@@ -27,35 +35,24 @@ export const userSlice = createSlice({
   initialState: getUserDataFromLocalStorage(),
   reducers: {
     setUserData: (state, action) => {
-      const {
-        email,
-        nombreEmpresa,
-        cuit,
-        ciudad,
-        provincia,
-        nombreEstablecimiento,
-        telefono,
-        isAdmin,
-        direccion,
-      } = action.payload;
+      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin } =
+        action.payload;
       state.email = email;
       state.nombreEmpresa = nombreEmpresa;
       state.cuit = cuit;
-      state.ciudad = ciudad;
-      state.provincia = provincia;
-      state.nombreEstablecimiento = nombreEstablecimiento;
-      state.telefono = telefono;
       state.isAdmin = isAdmin;
-      state.direccion = direccion;
+      state.isSuperAdmin = isSuperAdmin;
       // Guardar en Local Storage
       localStorage.setItem("user", JSON.stringify(state));
     },
     setLoginData: (state, action) => {
-      const { userId, authToken, email, isAdmin } = action.payload;
+      const { userId, authToken, email, isAdmin, isSuperAdmin } =
+        action.payload;
       state.userId = userId;
       state.authToken = authToken;
       state.email = email;
       state.isAdmin = isAdmin;
+      state.isSuperAdmin = isSuperAdmin;
       // Guardar en Local Storage
       localStorage.setItem("user", JSON.stringify(state));
     },
@@ -65,10 +62,14 @@ export const userSlice = createSlice({
       // Eliminar del Local Storage
       localStorage.removeItem("user");
     },
+    setSelectedBranch: (state, action) => {
+      state.selectedBranch = action.payload;
+    },
   },
 });
 
-export const { setUserData, setLoginData, setLogoutData, setSelectedBranch } = userSlice.actions;
+export const { setUserData, setLoginData, setLogoutData, setSelectedBranch } =
+  userSlice.actions;
 
 export const getUser = (state) => state.user;
 

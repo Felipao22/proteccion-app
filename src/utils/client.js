@@ -1,8 +1,10 @@
 import axios from "axios";
 import { getToken } from "./token";
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
+
 const apiClient = axios.create({
-  baseURL: "http://localhost:3001"
+  baseURL: apiBaseUrl
 });
 
 apiClient.interceptors.request.use((config) => {

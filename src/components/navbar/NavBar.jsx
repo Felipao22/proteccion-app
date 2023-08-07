@@ -22,9 +22,10 @@ export default function ButtonAppBar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const user = useAppSelector(getUser)
+  const branch = user?.selectedBranch
   const navigate = useNavigate();
 
-  // let nombre = user?.nombreEmpresa?.toString();
+  let nombre = branch?.nombreSede?.toString();
 
   function stringToColor(string) {
     let hash = 0;
@@ -46,315 +47,25 @@ export default function ButtonAppBar() {
     return color;
   }
 
+
   function stringAvatar(name) {
+    let firstName = name.split(" ")[0];
+    let initials = firstName[0];
+  
+    if (name.split(" ").length > 1) {
+      let lastName = name.split(" ")[1];
+      initials += lastName[0];
+    }
+  
     return {
       sx: {
-        bgcolor: stringToColor(name),
+        bgcolor: stringToColor(firstName),
       },
-      // children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-      
+      children: initials.replace('-', ''),
     };
-  }
+  };
 
   return (
-    // <Box className="box" sx={{ flexGrow: 1 }}>
-    //   <AppBar
-    //     className="appbar"
-    //     style={{ backgroundColor: "#E9EEF4", color: "black" }}
-    //     position="static"
-    //   >
-    //     <Toolbar className="toolbar">
-    //       <IconButton
-    //         className="menu"
-    //         size="large"
-    //         edge="start"
-    //         color="inherit"
-    //         aria-label="menu"
-    //         sx={{ mr: 0.5 }}
-    //         onClick={() => setIsDrawerOpen(true)}
-    //       >
-    //         <MenuIcon className="menu" />
-    //       </IconButton>
-    //       <Drawer
-    //         style={{ height: "60vh", width: "100vw" }}
-    //         open={isDrawerOpen}
-    //         onClose={() => setIsDrawerOpen(false)}
-    //       >
-    //         <List
-    //           style={{
-    //             fontSize: "30px",
-    //             fontWeight: "600",
-    //             height: "250px",
-    //             width: "50vw",
-    //           }}
-    //         >
-    //           <ListItem button component="a">
-    //             <Link
-    //               style={{ color: "black", textDecoration: "none" }}
-    //               to="/"
-    //               onClick={() => setIsDrawerOpen(false)}
-    //             >
-    //               <ListItemText primary="Home" />
-    //             </Link>
-    //           </ListItem>
-    //           <ListItem button component="a">
-    //             <Link
-    //               to="/nosotros"
-    //               style={{ color: "black", textDecoration: "none" }}
-    //               onClick={() => setIsDrawerOpen(false)}
-    //             >
-    //               <ListItemText primary="Nosotros" />
-    //             </Link>
-    //           </ListItem>
-    //           <ListItem button component="a">
-    //             <Link
-    //               to="/services"
-    //               style={{ color: "black", textDecoration: "none" }}
-    //               onClick={() => setIsDrawerOpen(false)}
-    //             >
-    //               <ListItemText primary="Servicios" />
-    //             </Link>
-    //           </ListItem>
-    //           <ListItem button component="a">
-    //             <Link
-    //               to="/contact"
-    //               style={{ color: "black", textDecoration: "none" }}
-    //               onClick={() => setIsDrawerOpen(false)}
-    //             >
-    //               <ListItemText primary="Contacto" />
-    //             </Link>
-    //           </ListItem>
-    //         </List>
-    //       </Drawer>
-    //       <Link to="/">
-    //         <img
-    //           className="logo"
-    //           style={{ maxHeight: "6rem", paddingRight: "2rem" }}
-    //           src={IMAGE}
-    //           alt="logo"
-    //         />
-    //       </Link>
-    //       <Link to="/">
-    //         <img
-    //           className="logo-largo"
-    //           style={{ height: "40px" }}
-    //           src={IMAGE2}
-    //           alt="logo largo"
-    //         />
-    //       </Link>
-    //       <div className="container-botones">
-    //         <div>
-    //           <Link style={{ color: "black", textDecoration: "none" }} to="/">
-    //             <Button color="inherit">Home</Button>
-    //           </Link>
-    //           <Link
-    //             style={{ color: "black", textDecoration: "none" }}
-    //             to="/nosotros"
-    //           >
-    //             <Button color="inherit">Nosotros</Button>
-    //           </Link>
-
-    //           <Link
-    //             style={{ color: "black", textDecoration: "none" }}
-    //             to="/services"
-    //           >
-    //             <Button color="inherit">Servicios</Button>
-    //           </Link>
-    //           <Link
-    //             style={{ color: "black", textDecoration: "none" }}
-    //             to="/contact"
-    //           >
-    //             <Button color="inherit">Contacto</Button>
-    //           </Link>
-              
-    //         </div>
-    //         <div>
-    //         <Link
-    //             style={{ color: "black", textDecoration: "none" }}
-    //             to="/login"
-    //           >
-    //             <Button color="inherit">Iniciar sesión</Button>
-    //           </Link>
-    //           <Link
-    //             style={{ color: "black", textDecoration: "none" }}
-    //             to="/register"
-    //           >
-    //             <Button color="inherit">Registrarse</Button>
-    //           </Link>
-    //         </div>
-    //       </div>
-    //     </Toolbar>
-    //   </AppBar>
-    // </Box>
-    // posta 
-//     <Box className="box" sx={{ flexGrow: 1 }}>
-// <AppBar
-//   className="appbar"
-//   style={{ backgroundColor: "#E9EEF4", color: "black" }}
-//   position="static"
-// >
-// <Toolbar className="toolbar">
-//           <IconButton
-//             className="menu"
-//             size="large"
-//             edge="start"
-//             color="inherit"
-//             aria-label="menu"
-//             sx={{ mr: 0.5 }}
-//             onClick={() => setIsDrawerOpen(true)}
-//           >
-//       <MenuIcon className="menu" />
-//     </IconButton>
-//     <Drawer
-//       style={{ height: "60vh", width: "100vw" }}
-//       open={isDrawerOpen}
-//       onClose={() => setIsDrawerOpen(false)}
-//     >
-//       <List
-//         style={{
-//           fontSize: "30px",
-//           fontWeight: "600",
-//           height: "250px",
-//           width: "50vw",
-//         }}
-//       >
-//         {user && user.email ? (
-//           <Avatar
-//           onClick={() => {
-//             setIsDrawerOpen(false);
-//             navigate("/usuario");
-//           }}
-//             style={{
-//               display: "flex",
-//               justifyContent: "center",
-//               marginLeft: "40%",
-//               marginBottom: "10px",
-//               cursor:'pointer'
-//             }}
-//             // {...stringAvatar(nombre)}
-//           />
-//         ) : (
-//           <>
-//             <ListItem button component="a" >
-//               <Link style={{ color: "black", textDecoration: "none" }} to="/login" onClick={() => setIsDrawerOpen(false)}>
-//               <ListItemText primary="Login" />
-
-//               </Link>
-//             </ListItem>
-//             <ListItem button component="a" >
-//               <Link style={{ color: "black", textDecoration: "none" }} to="/register" onClick={() => setIsDrawerOpen(false)}>
-              
-//               <ListItemText primary="Registrase" />
-//               </Link>
-//             </ListItem>
-//           </>
-//         )}
-
-//         <ListItem button component="a">
-//           <Link style={{ color: "black", textDecoration: "none" }} to="/" onClick={() => setIsDrawerOpen(false)}>
-//             <ListItemText primary="Home" />
-//           </Link>
-//         </ListItem>
-//         <ListItem button component="a">
-//           <Link
-//           onClick={() => setIsDrawerOpen(false)}
-//             to="/nosotros"
-//             style={{ color: "black", textDecoration: "none" }}
-//           >
-//             <ListItemText primary="Nosotros" />
-//           </Link>
-//         </ListItem>
-
-//         <ListItem button component="a">
-//           <Link
-//           onClick={() => setIsDrawerOpen(false)}
-//             to="/services"
-//             style={{ color: "black", textDecoration: "none" }}
-//           >
-//             <ListItemText primary="Servicios" />
-//           </Link>
-//         </ListItem>
-//         <ListItem button component="a">
-//           <Link
-//           onClick={() => setIsDrawerOpen(false)}
-//             to="/contact"
-//             style={{ color: "black", textDecoration: "none" }}
-//           >
-//             <ListItemText primary="Contacto" />
-//           </Link>
-//         </ListItem>
-//       </List>
-//     </Drawer>
-
-//     <Link to="/">
-//     <img
-//               className="logo"
-//               style={{ maxHeight: "6rem", paddingRight: "2rem" }}
-//               src={IMAGE}
-//               alt="logo"
-//             />
-//     </Link>
-//     <Link to="/">
-//             <img
-//               className="logo-largo"
-//               style={{ height: "40px" }}
-//               src={IMAGE2}
-//               alt="logo largo"
-//             />
-//           </Link>
-//     <div className="container-botones">
-//       <div>
-//         <Link style={{ color: "black", textDecoration: "none" }} to="/">
-//           <Button color="inherit">Home</Button>
-//         </Link>
-//         <Link
-//           style={{ color: "black", textDecoration: "none" }}
-//           to="/nosotros"
-//         >
-//           <Button color="inherit">Nosotros</Button>
-//         </Link>
-
-//         <Link
-//           style={{ color: "black", textDecoration: "none" }}
-//           to="/services"
-//         >
-//           <Button color="inherit">Servicios</Button>
-//         </Link>
-//         <Link
-//           style={{ color: "black", textDecoration: "none" }}
-//           to="/contact"
-//         >
-//           <Button color="inherit">Contacto</Button>
-//         </Link>
-//       </div>
-//       {user && user.email ? (
-//         <div className="log">
-//           <Avatar
-//             onClick={() => navigate("/usuario")}
-//             style={{cursor:"pointer"}}
-//             // {...stringAvatar(nombre)}
-//           />
-//         </div>
-//       ) : (
-//         <div className="log">
-//           <Link
-//             style={{ color: "black", textDecoration: "none" }}
-//             to="/login"
-//           >
-//             <Button color="inherit">Login</Button>
-//           </Link>
-//           <Link
-//             style={{ color: "black", textDecoration: "none" }}
-//             to="/register"
-//           >
-//             <Button color="inherit">Registrarse</Button>
-//           </Link>
-//         </div>
-//       )}
-//     </div>
-//   </Toolbar>
-// </AppBar>
-// </Box>
 
 <Box className="box" sx={{ flexGrow: 1 }}>
   <AppBar className="appbar" style={{ backgroundColor: "#E9EEF4", color: "black" }} position="static">
@@ -402,6 +113,7 @@ export default function ButtonAppBar() {
                     marginBottom: "10px",
                     cursor: "pointer"
                   }}
+                  {...stringAvatar(nombre)}
                 />
               )}
             </>
@@ -482,6 +194,7 @@ export default function ButtonAppBar() {
                   style={{
                     cursor: "pointer"
                   }}
+                  {...stringAvatar(nombre)}
                 />
               )}
             </>
@@ -500,175 +213,3 @@ export default function ButtonAppBar() {
   );
 }
 
-{/* <Box sx={{ flexGrow: 1 }}>
-<AppBar
-  className="appbar"
-  style={{ backgroundColor: "#E9EEF4", color: "black" }}
-  position="static"
->
-<Toolbar className="toolbar">
-          <IconButton
-            className="menu"
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 0.5 }}
-            onClick={() => setIsDrawerOpen(true)}
-          >
-      <MenuIcon className="menu" />
-    </IconButton>
-    <Drawer
-      style={{ height: "60vh", width: "100vw" }}
-      open={isDrawerOpen}
-      onClose={() => setIsDrawerOpen(false)}
-    >
-      <List
-        style={{
-          fontSize: "30px",
-          fontWeight: "600",
-          height: "250px",
-          width: "50vw",
-        }}
-      >
-        {user && user.active ? (
-          <Avatar
-            onClick={() => navigate("/usuario")}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginLeft: "40%",
-              marginBottom: "10px",
-            }}
-            {...stringAvatar(nombre)}
-          />
-        ) : (
-          <>
-            <ListItem button component="a" >
-              <Link style={{ color: "black", textDecoration: "none" }} to="/login" onClick={() => setIsDrawerOpen(false)}>
-              <ListItemText primary="Login" />
-
-              </Link>
-            </ListItem>
-            <ListItem button component="a" >
-              <Link style={{ color: "black", textDecoration: "none" }} to="/register" onClick={() => setIsDrawerOpen(false)}>
-              
-              <ListItemText primary="Registrase" />
-              </Link>
-            </ListItem>
-          </>
-        )}
-
-        <ListItem button component="a">
-          <Link style={{ color: "black", textDecoration: "none" }} to="/" onClick={() => setIsDrawerOpen(false)}>
-            <ListItemText primary="Home" />
-          </Link>
-        </ListItem>
-        <ListItem button component="a">
-          <Link
-          onClick={() => setIsDrawerOpen(false)}
-            to="/nosotros"
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            <ListItemText primary="Nosotros" />
-          </Link>
-        </ListItem>
-
-        <ListItem button component="a">
-          <Link
-          onClick={() => setIsDrawerOpen(false)}
-            to="/clientes"
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            <ListItemText primary="Clientes" />
-          </Link>
-        </ListItem>
-        <ListItem button component="a">
-          <Link
-          onClick={() => setIsDrawerOpen(false)}
-            to="/servicios"
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            <ListItemText primary="Servicios" />
-          </Link>
-        </ListItem>
-        <ListItem button component="a">
-          <Link
-          onClick={() => setIsDrawerOpen(false)}
-            to="/contact"
-            style={{ color: "black", textDecoration: "none" }}
-          >
-            <ListItemText primary="Contacto" />
-          </Link>
-        </ListItem>
-      </List>
-    </Drawer>
-
-    <Link to="/">
-    <img
-              className="logo"
-              style={{ maxHeight: "6rem", paddingRight: "2rem" }}
-              src={IMAGE}
-              alt="logo"
-            />
-    </Link>
-    <Link to="/">
-            <img
-              className="logo-largo"
-              style={{ height: "40px" }}
-              src={IMAGE2}
-              alt="logo largo"
-            />
-          </Link>
-    <div className="container-botones">
-      <div>
-        <Link style={{ color: "black", textDecoration: "none" }} to="/">
-          <Button color="inherit">Home</Button>
-        </Link>
-        <Link
-          style={{ color: "black", textDecoration: "none" }}
-          to="/nosotros"
-        >
-          <Button color="inherit">Nosotros</Button>
-        </Link>
-
-        <Link
-          style={{ color: "black", textDecoration: "none" }}
-          to="/services"
-        >
-          <Button color="inherit">Servicios</Button>
-        </Link>
-        <Link
-          style={{ color: "black", textDecoration: "none" }}
-          to="/contact"
-        >
-          <Button color="inherit">Contacto</Button>
-        </Link>
-      </div>
-      {user && user.active ? (
-        <div className="log">
-          <Avatar
-            onClick={() => history.push("/user")}
-            {...stringAvatar(nombre)}
-          />
-        </div>
-      ) : (
-        <div className="log">
-          <Link
-            style={{ color: "black", textDecoration: "none" }}
-            to="/login"
-          >
-            <Button color="inherit">Login</Button>
-          </Link>
-          <Link
-            style={{ color: "black", textDecoration: "none" }}
-            to="/register"
-          >
-            <Button color="inherit">Registrarse</Button>
-          </Link>
-        </div>
-      )}
-    </div>
-  </Toolbar>
-</AppBar>
-</Box> */}

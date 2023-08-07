@@ -25,6 +25,7 @@ specifiers:
   eslint-plugin-react-refresh: ^0.3.4
   form-data: ^4.0.0
   formik: ^2.4.2
+  jwt-decode: ^3.1.2
   mdb-react-ui-kit: ^6.1.0
   react: ^18.2.0
   react-bootstrap: ^2.8.0
@@ -56,6 +57,7 @@ dependencies:
   bootstrap: 5.3.0_@popperjs+core@2.11.8
   form-data: 4.0.0
   formik: 2.4.2_react@18.2.0
+  jwt-decode: 3.1.2
   mdb-react-ui-kit: 6.1.0_hrrtw4it2dqo6rzcqzvl36ff7i
   react: 18.2.0
   react-bootstrap: 2.8.0_qzycrpzqvmvb7wd2jdibmpq2cy
@@ -2202,6 +2204,10 @@ packages:
       array-includes: 3.1.6
       object.assign: 4.1.4
     dev: true
+
+  /jwt-decode/3.1.2:
+    resolution: {integrity: sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==}
+    dev: false
 
   /levn/0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}

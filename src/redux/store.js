@@ -1,15 +1,3 @@
-// import { configureStore } from '@reduxjs/toolkit';
-// import filesReducer from './filesSlice';
-// import userReducer from './userSlice';
-
-// export const store = configureStore({
-//   reducer: {
-//     files: filesReducer,
-//     user: userReducer
-//   },
-// });
-
-
 import { configureStore } from '@reduxjs/toolkit';
 import filesReducer from './filesSlice';
 import userReducer, { getUserDataFromLocalStorage } from './userSlice';

@@ -8,11 +8,12 @@ import apiClient from "../../utils/client";
 import './File.css'
 import { useId } from "react";
 import { useAppDispatch } from "../../redux/hooks";
+import { Form, Select } from 'antd';
 
 export const File = () => {
   const initialValues = {
-    kindId: "",
-    branchBranchId: "",
+    kindId: null,
+    branchBranchId: null,
   };
 
   const [formData, setFormData] = useState(initialValues);
@@ -91,24 +92,43 @@ export const File = () => {
     fetchBranchData();
   },[])
 
+  // const KindOfFile = () => {
+  //     return (
+  //       <>
+  //         <option disabled value="">Seleccione una opción</option>
+  //         {selectedKind?.map((e) => (
+  //           <option key={e.id} value={e.id}>{e.name}</option>
+  //         ))}
+  //       </>
+  //     );
+  //   };
+
   const KindOfFile = () => {
-      return (
-        <>
-          <option disabled value="">Seleccione una opción</option>
-          {selectedKind?.map((e) => (
-            <option key={e.id} value={e.id}>{e.name}</option>
+    return (
+      <>
+        {/* {selectedKind?.map((e) => (
+          <MDBSelect.Option key={e.id} value={e.id}>
+            {e.name}
+          </MDBSelect.Option>
+        ))} */}
+         {selectedKind?.map((e) => (
+            <Select.Option key={e.id} value={e.id}>
+              {e.name}
+            </Select.Option>
           ))}
-        </>
-      );
-    };
+      </>
+    );
+  };
 
 
     const BranchNameOfUser = () => {
       return (
         <>
-      <option disabled value="">Seleccione una opción</option>
+        {/* <Select.Option disabled key="" value="">
+        Establecimientos
+      </Select.Option> */}
       {selectedUser?.map((e) => (
-        <option key={e.branchId} value={e.branchId}>{e.nombreSede}</option>
+        <Select.Option key={e.branchId} value={e.branchId}>{e.nombreSede}</Select.Option>
       ))}
     </>
       );
@@ -124,13 +144,53 @@ export const File = () => {
     >
       <label htmlFor={id}>Seleccione el tipo de archivo:
     </label>
-    <select  name="kindId"  value={formData.kindId} onChange={handleInputChange}>
+    {/* <select  name="kindId"  value={formData.kindId} onChange={handleInputChange}>
     {KindOfFile()}
-    </select>
+    </select> */}
+                        <Form.Item  htmlFor={id}>
+        <Select
+         onChange={(value) =>
+          handleInputChange({
+            target: { name: "kindId", value },
+          })
+        }
+          value={formData.kindId}
+          style={{ maxWidth: "400px" }}
+          placeholder="Tipo de archivos"
+        >
+          {/* <Select.Option disabled value="">Tipo de archivos</Select.Option> */}
+          {/* {selectedKind?.map((e) => (
+            <Select.Option key={e.id} value={e.id}>
+              {e.name}
+            </Select.Option>
+          ))} */}
+          {KindOfFile()}
+        </Select>
+      </Form.Item>
     <label htmlFor={id}>Seleccione el establecimiento/obra:</label>
-    <select  name="branchBranchId"  value={formData.branchBranchId} onChange={handleInputChange}>
+    <Form.Item  htmlFor={id}>
+        <Select
+         onChange={(value) =>
+          handleInputChange({
+            target: { name: "branchBranchId", value },
+          })
+        }
+          value={formData.branchBranchId}
+          style={{ maxWidth: "400px" }}
+          placeholder="Establecimientos"
+        >
+          {/* <Select.Option disabled value="">Tipo de archivos</Select.Option> */}
+          {/* {selectedKind?.map((e) => (
+            <Select.Option key={e.id} value={e.id}>
+              {e.name}
+            </Select.Option>
+          ))} */}
+          {BranchNameOfUser()}
+        </Select>
+      </Form.Item>
+    {/* <select  name="branchBranchId"  value={formData.branchBranchId} onChange={handleInputChange}>
       {BranchNameOfUser()}
-    </select>
+    </select> */}
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo</span>
         <label className="file">
@@ -139,7 +199,7 @@ export const File = () => {
           </button>
           <input
         type="file"
-        accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg"
+        accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg,.docx"
         ref={hiddenFileInput}
         style={{ display: "none" }}
         onChange={handleFileChange}

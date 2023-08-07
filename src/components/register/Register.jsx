@@ -26,6 +26,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+    cuit: "",
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -52,6 +53,8 @@ export default function Register() {
     return regex.test(email);
   };
 
+  const VALIDATE_CUIT = /^[0-9]{11}$/;
+
   const resetForm = () => {
     setValues(initialValues);
   };
@@ -61,6 +64,7 @@ export default function Register() {
     data.append("nombreEmpresa", values.nombreEmpresa);
     data.append("email", values.email);
     data.append("password", values.password);
+    data.append("cuit", values.cuit);
 
     // Reinicia los errores
     setErrors({});
@@ -70,6 +74,13 @@ export default function Register() {
 
     if (!values.nombreEmpresa) {
       newErrors.nombreEmpresa = "Nombre de Empresa requerido";
+    }
+
+    if (!values.cuit) {
+      newErrors.cuit = "Cuit requerido";
+    }
+    if (values.cuit && !VALIDATE_CUIT.test(values.cuit)) {
+      newErrors.cuit = "Deben ser 11 números";
     }
 
     if (!values.email) {
@@ -129,7 +140,7 @@ export default function Register() {
               className="order-2 order-lg-1 d-flex flex-column align-items-center"
             >
               <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                Registrar
+                Registrar Empresa
               </p>
               <form onSubmit={handleSubmit}>
                 <div className="d-flex flex-row align-items-center mb-4">
@@ -159,12 +170,38 @@ export default function Register() {
                 )}
                 <div className="d-flex flex-row align-items-center mb-4">
                   <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon
+                    <MDBIcon fas icon="user" size="lg" />
+                  </div>
+                  <MDBInput
+                    name="cuit"
+                    value={values.cuit}
+                    label="Cuit"
+                    id="form2"
+                    type="number"
+                    className="w-100"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                {errors.cuit && (
+                  <span
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {errors.cuit}
+                  </span>
+                )}
+                <div className="d-flex flex-row align-items-center mb-4">
+                  <div style={{ width: "40px", marginRight: "10px" }}>
+                    {/* <MDBIcon
                       fas
                       icon="envelope"
                       size="lg"
                       style={{ marginTop: "5px" }}
-                    />
+                    /> */}
+                    <MDBIcon fas icon="user" size="lg" />
                   </div>
                   <MDBInput
                     type="email"
@@ -173,7 +210,7 @@ export default function Register() {
                     placeholder="mail@example.com"
                     onChange={handleInputChange}
                     label="Email"
-                    id="form2"
+                    id="form3"
                   />
                 </div>
                 {errors.email && (
@@ -194,7 +231,7 @@ export default function Register() {
                   </div>
                   <MDBInput
                     label="Contraseña"
-                    id="form3"
+                    id="form4"
                     type={PasswordInputType}
                     name="password"
                     placeholder="Contraseña"
@@ -241,7 +278,7 @@ export default function Register() {
                   </div>
                   <MDBInput
                     label="Confirmar contraseña"
-                    id="form4"
+                    id="form5"
                     type="password"
                     name="confirmPassword"
                     placeholder="Confirmar contraseña"
