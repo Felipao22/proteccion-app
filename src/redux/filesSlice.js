@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   files: [],
+  selectedKind: null,
+  selectedDate: null,
 };
 export const filesSlice = createSlice({
   name: 'files',
@@ -12,11 +14,17 @@ export const filesSlice = createSlice({
     },
     setFilesDataLogOut:(state) => {
       state.files= ''
+    },
+    setSelectedKind: (state, action) => {
+      state.selectedKind = action.payload
+    },
+    setSelectedDate: (state, action) => {
+      state.selectedDate = action.payload
     }
   },
 });
 
-export const { setFilesData, setFilesDataLogOut } = filesSlice.actions;
+export const { setFilesData, setFilesDataLogOut, setSelectedKind, setSelectedDate } = filesSlice.actions;
 
 export const getFiles = (state) => state.files;
 

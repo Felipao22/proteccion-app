@@ -4,6 +4,8 @@ import {
   getFiles,
   setFilesData,
   setFilesDataLogOut,
+  setSelectedDate,
+  setSelectedKind,
 } from "../../redux/filesSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
@@ -22,8 +24,13 @@ import { Form } from "antd";
 import { Input } from "antd";
 import { Select } from "antd";
 const { Option } = Select;
+import { DatePicker } from "antd";
 import { useFetchKinds } from "../hooks/useFetchKinds";
 import { getExtensionIcon } from "../../utils/getExtensionIcon";
+import { ConfigProvider } from "antd";
+import esES from "antd/lib/locale/es_ES";
+import moment from "moment";
+import "moment/locale/es";
 
 function getItem(label, key, icon, children, onClick) {
   return {
@@ -35,16 +42,9 @@ function getItem(label, key, icon, children, onClick) {
   };
 }
 
-// Función de utilidad para implementar el debounce
-// function debounce(func, delay) {
-//   let timeoutId;
-//   return function (...args) {
-//     clearTimeout(timeoutId);
-//     timeoutId = setTimeout(() => func.apply(this, args), delay);
-//   };
-// }
-
 export const Usuario = () => {
+  moment.locale("es");
+
   const initialValues = {
     nombreEmpresa: "",
     nombreEstablecimiento: "",
@@ -64,9 +64,6 @@ export const Usuario = () => {
   const [branchData, setBranchData] = useState(null);
   const [sessionActive, setSessionActive] = useState(true);
 
-  // Estado local para almacenar el tipo seleccionado para el filtro
-  const [selectedKind, setSelectedKind] = useState(null);
-
   const kinds = useFetchKinds();
 
   const dispatch = useAppDispatch();
@@ -74,201 +71,19 @@ export const Usuario = () => {
   const navigate = useNavigate();
 
   const user = useAppSelector(getUser);
+
   const selectedBranchId = useAppSelector((state) => state.user.selectedBranch);
 
   const token = getToken();
 
   const files = useAppSelector(getFiles);
 
+  const selectedKind = useAppSelector((state) => state.files.selectedKind);
+  const selectedDate = useAppSelector((state) => state.files.selectedDate);
+
   const { Content, Sider } = Layout;
 
-  // let inactivityTimer;
-
-  // // Referencia para controlar si el mensaje de inactividad ya se ha mostrado
-  // const inactivityMessageShownRef = useRef(false);
-
-  // // Función para desloguear al usuario
-  // const handleLogout = () => {
-  //   dispatch(setLogoutData());
-  //   dispatch(setFilesDataLogOut());
-  //   clearToken();
-  //   setSessionActive(false);
-  //   if (!inactivityMessageShownRef.current) {
-  //     inactivityMessageShownRef.current = true;
-  //     NotificationSuccess("Sesión cerrada por inactividad.");
-  //   }
-  // };
-
-  // // Función para reiniciar el temporizador de inactividad
-  // const resetInactivityTimer = () => {
-  //   clearTimeout(inactivityTimer);
-  //   inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-  // };
-
-  // // Agregar el listener para el evento beforeunload y el temporizador de inactividad
-  // useEffect(() => {
-  //   let inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-
-  //   const handleActivity = () => {
-  //     resetInactivityTimer();
-  //   };
-
-  //   // Agregar los eventos para el temporizador de inactividad
-  //   ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //     document.addEventListener(eventName, handleActivity);
-  //   });
-
-  //   // Agregar el listener para el evento beforeunload
-  //   window.addEventListener("beforeunload", handleLogout);
-
-  //   // Limpiar los eventos al desmontar el componente
-  //   return () => {
-  //     clearTimeout(inactivityTimer);
-  //     // Remover los eventos para el temporizador de inactividad
-  //     ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //       document.removeEventListener(eventName, handleActivity);
-  //     });
-  //     // Reiniciar la referencia para que el mensaje pueda mostrarse nuevamente
-  //     inactivityMessageShownRef.current = false;
-  //     // Remover el listener al desmontar el componente
-  //     window.removeEventListener("beforeunload", handleLogout);
-  //   };
-  // }, []);
-
-    // Referencia para controlar si el mensaje de inactividad ya se ha mostrado
-    const inactivityMessageShownRef = useRef(false);
-
-    // const isRefreshing = useRef(false)
-    
-
-    // // Función para desloguear al usuario
-    // const handleLogout = () => {
-    //   dispatch(setLogoutData());
-    //   dispatch(setFilesDataLogOut());
-    //   clearToken();
-    //   setSessionActive(false);
-    //   if (!inactivityMessageShownRef.current) {
-    //     inactivityMessageShownRef.current = true;
-    //     NotificationSuccess("Sesión cerrada por inactividad.");
-    //   }
-    // };
-  
-    // // Función para reiniciar el temporizador de inactividad con debounce
-    // const resetInactivityTimer = () => {
-    //   clearTimeout(inactivityTimer);
-    //   inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-    // };
-  
-    // // Agregar el listener para el evento beforeunload y el temporizador de inactividad
-    // useEffect(() => {
-    //   let inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-  
-    //   const handleActivity = () => {
-    //     resetInactivityTimer();
-    //   };
-  
-    //   // Agregar los eventos para el temporizador de inactividad
-    //   const debouncedActivityHandler = debounce(handleActivity, 1000); // Tiempo de debounce en milisegundos
-    //   ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-    //     document.addEventListener(eventName, debouncedActivityHandler);
-    //   });
-  
-    //   // Agregar el listener para el evento beforeunload
-    //   window.addEventListener("beforeunload", handleLogout);
-  
-    //   // Limpiar los eventos al desmontar el componente
-    //   return () => {
-    //     clearTimeout(inactivityTimer);
-    //     // Remover los eventos para el temporizador de inactividad
-    //     ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-    //       document.removeEventListener(eventName, debouncedActivityHandler);
-    //     });
-    //     // Reiniciar la referencia para que el mensaje pueda mostrarse nuevamente
-    //     inactivityMessageShownRef.current = false;
-    //     // Remover el listener al desmontar el componente
-    //     window.removeEventListener("beforeunload", handleLogout);
-    //   };
-    // }, []);
-
- 
-
- 
-  // // Función para desloguear al usuario
-  // const handleLogout = () => {
-  //   dispatch(setLogoutData());
-  //   dispatch(setFilesDataLogOut());
-  //   clearToken();
-  //   setSessionActive(false);
-  //   if (!inactivityMessageShownRef.current) {
-  //     inactivityMessageShownRef.current = true;
-  //     NotificationSuccess("Sesión cerrada por inactividad.");
-  //   }
-  // };
-
-  // // Función para reiniciar el temporizador de inactividad con debounce
-  // const resetInactivityTimer = () => {
-  //   clearTimeout(inactivityTimer);
-  //   inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-  // };
-
-  // // Función para manejar el evento beforeunload y unload
-  // const handleUnload = () => {
-  //   // Cerrar sesión solo si el usuario no cerró intencionalmente la sesión
-  //   if (!localStorage.getItem("userClosed")) {
-  //     handleLogout();
-  //   }
-  //   // Guardar los datos relevantes en el Local Storage para mantener la sesión
-  //   const userData = JSON.stringify(user);
-  //   localStorage.setItem("user", userData);
-  // };
-
-  // // Agregar el listener para el evento beforeunload y el temporizador de inactividad
-  // useEffect(() => {
-  //   let inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-
-  //   const handleActivity = () => {
-  //     resetInactivityTimer();
-  //   };
-
-  //   // Agregar los eventos para el temporizador de inactividad con debounce
-  //   const debouncedActivityHandler = debounce(handleActivity, 1000); // Tiempo de debounce en milisegundos
-  //   ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //     document.addEventListener(eventName, debouncedActivityHandler);
-  //   });
-
-  //   // Agregar los eventos para unload y beforeunload
-  //   window.addEventListener("unload", handleUnload);
-  //   window.addEventListener("beforeunload", handleUnload);
-
-  //   // Limpiar los eventos al desmontar el componente
-  //   return () => {
-  //     clearTimeout(inactivityTimer);
-  //     // Remover los eventos para el temporizador de inactividad
-  //     ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //       document.removeEventListener(eventName, debouncedActivityHandler);
-  //     });
-  //     // Remover los eventos para unload y beforeunload
-  //     window.removeEventListener("unload", handleUnload);
-  //     window.removeEventListener("beforeunload", handleUnload);
-  //     // Reiniciar la referencia para que el mensaje pueda mostrarse nuevamente
-  //     inactivityMessageShownRef.current = false;
-  //   };
-  // }, []);
-
-  // // Utilizar useEffect para manejar la recarga de la página
-  // useEffect(() => {
-  //   // Recuperar los datos almacenados en el Local Storage al cargar la página
-  //   const userData = localStorage.getItem("user");
-  //   if (userData) {
-  //     const userObj = JSON.parse(userData);
-  //     dispatch(setUserData(userObj));
-  //   }
-  //   // Eliminar la marca de que el usuario se cerró intencionalmente al recargar la página
-  //   localStorage.removeItem("userClosed");
-  // }, []);
-
-
-
+  const allFiles = files?.files || [];
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -296,7 +111,6 @@ export const Usuario = () => {
     fetchUserData();
   }, [token, user, dispatch]);
 
-  // prueba
   useEffect(() => {
     const fetchBranchData = async () => {
       try {
@@ -325,37 +139,19 @@ export const Usuario = () => {
     }));
   };
 
-  // const handleDownload = async (id, name) => {
-  //   try {
-  //     const downloadUrl = `http://localhost:3001/file/${id}`;
-  //     const response = await fetch(downloadUrl);
-  //     const blob = await response.blob();
-
-  //     // Crear un enlace temporal para descargar el archivo
-  //     const url = window.URL.createObjectURL(blob);
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.download = name;
-  //     link.click();
-
-  //     // Liberar los recursos del enlace temporal
-  //     window.URL.revokeObjectURL(url);
-  //   } catch (error) {
-  //     NotificationFailure(error.message);
-  //   }
-  // };
-
   const handleDownload = async (id, name) => {
     try {
-      const response = await apiClient.get(`/file/${id}`, { responseType: 'blob' });
-  
+      const response = await apiClient.get(`/file/${id}`, {
+        responseType: "blob",
+      });
+
       // Crear un enlace temporal para descargar el archivo
       const url = window.URL.createObjectURL(response.data);
       const link = document.createElement("a");
       link.href = url;
       link.download = name;
       link.click();
-  
+
       // Liberar los recursos del enlace temporal
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -378,7 +174,6 @@ export const Usuario = () => {
   };
 
   const items = [
-    // ...otros ítems existentes...
     getItem("Perfil", "1", <UserOutlined />),
     getItem("Archivos", "2", <FileOutlined />),
     getItem("Salir", "3", <LogoutOutlined />, undefined, signOff),
@@ -393,9 +188,27 @@ export const Usuario = () => {
   } = theme.useToken();
 
   const handleKindFilterChange = (value) => {
-    // Establecer el tipo seleccionado para el filtro
-    setSelectedKind(value);
+    dispatch(setSelectedKind(value)); // Actualiza el estado global en Redux
   };
+
+  const handleDateFilterChange = (date) => {
+    const formattedDate = date ? date.format("YYYY-MM") : null; // Almacenar la fecha como cadena "YYYY-MM" o null si no hay fecha
+    dispatch(setSelectedDate(formattedDate)); // Actualiza el estado global en Redux
+  };
+
+  const filteredFiles = allFiles.filter((file) => {
+    const fileCreatedAtMoment = moment(file?.createdAt);
+    const selectedDateMoment = selectedDate
+      ? moment(selectedDate, "YYYY-MM")
+      : null;
+
+    return (
+      (!selectedKind || file?.kindId === parseInt(selectedKind)) &&
+      (!selectedDateMoment ||
+        fileCreatedAtMoment.format("MM/YY") ===
+          selectedDateMoment.format("MM/YY"))
+    );
+  });
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -503,65 +316,77 @@ export const Usuario = () => {
             {selectedMenuItem === "2" && (
               <div>
                 <h3>Archivos:</h3>
+                <Form.Item label="Filtrar por tipo" htmlFor="kind">
+                  <Select
+                    onChange={handleKindFilterChange}
+                    value={selectedKind}
+                    style={{ maxWidth: "400px" }}
+                    placeholder="Tipo de archivos"
+                  >
+                    <Option value="">Todos</Option>
+                    {kinds.map((kind) => (
+                      <Option key={kind.id} value={kind.id}>
+                        {kind.name}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
                 <div>
-                  <Form.Item label="Filtrar por tipo" htmlFor="kind">
-                    <Select
-                      onChange={(value) => handleKindFilterChange(value)}
-                      value={selectedKind}
-                      style={{ maxWidth: "400px" }}
-                      placeholder="Tipo de archivos"
-                    >
-                      <Option value="">Todos</Option>
-                      {kinds.map((kind) => (
-                        <Option key={kind.id} value={kind.id}>
-                          {kind.name}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                  {/* <label>Filtrar por tipo:</label> */}
+                  <label>Filtrar por fecha:</label>
+                  <DatePicker
+                    picker="month"
+                    onChange={handleDateFilterChange}
+                    value={
+                      selectedDate ? moment(selectedDate, "YYYY-MM") : null
+                    }
+                    format="MM/YYYY"
+                    locale="es_ES"
+                  />
                 </div>
-                {Array.isArray(files.files) && files.files.length === 0 ? (
+
+                {files.length === 0 ? (
                   <h4>No tiene archivos cargados actualmente.</h4>
                 ) : (
-                  files?.files
-                    ?.filter(
-                      (file) =>
-                        !selectedKind || file.kindId === parseInt(selectedKind)
-                    )
-                    .map((file) => (
-                      <div key={file.id}>
-                        {getExtensionIcon(file.name)}
-                        <a
-                          href="#"
-                          style={{
-                            cursor: "pointer",
-                            textDecoration: "none",
-                            color: "#51666C",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDownload(file.id, file.name);
-                          }}
-                        >
-                          {file.name}
-                        </a>
-                        <span
-                          style={{ cursor: "pointer", marginLeft: "10px" }}
-                          onClick={() => handleDownload(file.id, file.name)}
-                        >
-                          <DownloadIcon />
-                        </span>
-                      </div>
-                    ))
+                  filteredFiles.map((file) => (
+                    <div key={file.id}>
+                      {getExtensionIcon(file.name)}
+                      <a
+                        href="#"
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "none",
+                          color: "#51666C",
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDownload(file.id, file.name);
+                        }}
+                      >
+                        {file.name}
+                      </a>
+                      <span
+                        style={{ cursor: "pointer", marginLeft: "10px" }}
+                        onClick={() => handleDownload(file.id, file.name)}
+                      >
+                        <DownloadIcon />
+                      </span>
+                    </div>
+                  ))
                 )}
-                {selectedKind &&
-                  Array.isArray(files.files) &&
-                  files.files.filter(
-                    (file) => file.kindId === parseInt(selectedKind)
-                  ).length === 0 && (
-                    <span>No hay archivos para este tipo.</span>
-                  )}
+                {(selectedKind || selectedDate) &&
+                  filteredFiles.length === 0 &&
+                  (selectedKind && selectedDate ? (
+                    <span>No hay archivos para este tipo y mes.</span>
+                  ) : (
+                    <>
+                      {selectedKind && (
+                        <span>No hay archivos para este tipo.</span>
+                      )}
+                      {selectedDate && (
+                        <span>No hay archivos para este mes.</span>
+                      )}
+                    </>
+                  ))}
               </div>
             )}
           </div>

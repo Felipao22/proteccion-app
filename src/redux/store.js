@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import filesReducer from './filesSlice';
-import userReducer, { getUserDataFromLocalStorage } from './userSlice';
+import userReducer, { getUserDataFromCookies } from './userSlice';
 
 const preloadedState = {
-  user: getUserDataFromLocalStorage(),
+  // user: getUserDataFromLocalStorage(),
+  user: getUserDataFromCookies(),
 };
 
 export const store = configureStore({
