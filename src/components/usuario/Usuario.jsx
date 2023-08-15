@@ -31,6 +31,7 @@ import { ConfigProvider } from "antd";
 import esES from "antd/lib/locale/es_ES";
 import moment from "moment";
 import "moment/locale/es";
+import AntdCustomPagination from "../Pagination/Pagination";
 
 function getItem(label, key, icon, children, onClick) {
   return {
@@ -57,7 +58,6 @@ export const Usuario = () => {
   };
 
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
   const [collapsed, setCollapsed] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [loading, setLoading] = useState(true);
@@ -80,6 +80,12 @@ export const Usuario = () => {
 
   const selectedKind = useAppSelector((state) => state.files.selectedKind);
   const selectedDate = useAppSelector((state) => state.files.selectedDate);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 5;
+
+  const indexOfLastFile = currentPage * filesPerPage;
+  const indexOfFirstFile = indexOfLastFile - filesPerPage;
 
   const { Content, Sider } = Layout;
 
@@ -210,6 +216,17 @@ export const Usuario = () => {
     );
   });
 
+  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
@@ -332,7 +349,7 @@ export const Usuario = () => {
                   </Select>
                 </Form.Item>
                 <div>
-                  <label>Filtrar por fecha:</label>
+                <Form.Item label="Filtrar por mes" htmlFor="month">
                   <DatePicker
                     picker="month"
                     onChange={handleDateFilterChange}
@@ -342,12 +359,13 @@ export const Usuario = () => {
                     format="MM/YYYY"
                     locale="es_ES"
                   />
+                  </Form.Item>  
                 </div>
 
-                {files.length === 0 ? (
+                {files?.length === 0 ? (
                   <h4>No tiene archivos cargados actualmente.</h4>
                 ) : (
-                  filteredFiles.map((file) => (
+                  currentFiles?.map((file) => (
                     <div key={file.id}>
                       {getExtensionIcon(file.name)}
                       <a
@@ -387,6 +405,12 @@ export const Usuario = () => {
                       )}
                     </>
                   ))}
+                <AntdCustomPagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(filteredFiles.length / filesPerPage)}
+                onNextPage={handleNextPage}
+                onPrevPage={handlePrevPage}
+                />
               </div>
             )}
           </div>
