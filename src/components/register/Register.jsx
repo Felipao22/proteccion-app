@@ -36,6 +36,8 @@ export default function Register() {
     hasNumber: false,
   });
 
+  const [loading, setLoading] = useState(false);
+
   const [PasswordInputType, ToggleIcon] = UsePasswordToggle();
 
   const data = new FormData();
@@ -53,14 +55,26 @@ export default function Register() {
     return regex.test(email);
   };
 
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    return regex.test(password)
+
+  }
+
   const VALIDATE_CUIT = /^[0-9]{11}$/;
 
   const resetForm = () => {
     setValues(initialValues);
+    setPasswordRequirements({
+      minLength: false,
+      hasUppercase: false,
+      hasNumber: false,
+    })
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     data.append("nombreEmpresa", values.nombreEmpresa);
     data.append("email", values.email);
     data.append("password", values.password);
@@ -93,6 +107,10 @@ export default function Register() {
       newErrors.password = "Contraseña requerida";
     }
 
+    if(!validatePassword(values.password)) {
+      newErrors.password = "Contraseña inválida"
+    }
+
     if (!values.confirmPassword) {
       newErrors.confirmPassword = "Confirmar contraseña";
     }
@@ -115,6 +133,8 @@ export default function Register() {
       resetForm();
     } catch (error) {
       NotificationFailure(error.response.data.message);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -299,6 +319,12 @@ export default function Register() {
                     {errors.confirmPassword}
                   </span>
                 )}
+                {loading && (
+              <div className="text-center my-4">
+                <MDBIcon icon="spinner" spin size="3x" />
+                <div>Registrando empresa...</div>
+              </div>
+            )}
 
                 <button type="submit" className="boton-register" size="lg">
                   Registrar

@@ -168,3 +168,51 @@ export const PdfIcon = (props) => {
   </svg>
   )
 }
+
+export const FileIcon = (props) => {
+  return(
+    <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    width={20}
+    height={20}
+    {...props}
+  >
+    <path
+      stroke="#000"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 3H8.2c-1.12 0-1.68 0-2.108.218a2 2 0 0 0-.874.874C5 4.52 5 5.08 5 6.2v11.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874C6.52 21 7.08 21 8.2 21H12m1-18 6 6m-6-6v4.4c0 .56 0 .84.109 1.054a1 1 0 0 0 .437.437C13.76 9 14.04 9 14.6 9H19m0 0v2m.269 8.269L21 21m-1-3.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+    />
+  </svg>
+  )
+}
+
+export const BlockIcon = (props) => {
+  return(
+    <svg
+    xmlns="http://www.w3.org/2000/svg"
+    id="Layer_1"
+    fill="#000"
+    data-name="Layer 1"
+    viewBox="0 0 24 24"
+    width={20}
+    height={20}
+    {...props}
+  >
+    <g id="SVGRepo_iconCarrier">
+      <defs>
+        <style>
+          {
+            ".cls-1{fill:none;stroke:#020202;stroke-miterlimit:10;stroke-width:1.91px}"
+          }
+        </style>
+      </defs>
+      <circle cx={12} cy={12} r={10.5} className="cls-1" />
+      <path d="M19.64 4.36 4.36 19.64" className="cls-1" />
+    </g>
+  </svg>
+  )
+}

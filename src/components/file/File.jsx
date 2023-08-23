@@ -5,10 +5,11 @@ import {
   NotificationSuccess,
 } from "../notifications/Notifications";
 import apiClient from "../../utils/client";
-import './File.css'
+import "./File.css";
 import { useId } from "react";
-import { useAppDispatch } from "../../redux/hooks";
-import { Form, Select } from 'antd';
+import { Form, Select } from "antd";
+import { MDBIcon } from "mdb-react-ui-kit";
+import { formatFileSize } from "../../utils/formatFilesize";
 
 export const File = () => {
   const initialValues = {
@@ -19,15 +20,13 @@ export const File = () => {
   const [formData, setFormData] = useState(initialValues);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedKind, setSelectedKind] = useState();
-  const [selectedUser, setSelectedUser] = useState()
+  const [selectedUser, setSelectedUser] = useState();
   const hiddenFileInput = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const id = useId();
 
   const data = new FormData();
-
-  const dispatch = useAppDispatch()
-
 
 
   const handleFileChange = (e) => {
@@ -49,11 +48,11 @@ export const File = () => {
 
   const resetForm = () => {
     setFormData(initialValues);
-    setSelectedFile('');
+    setSelectedFile("");
   };
 
-
   const handleLoadFile = async () => {
+    setLoading(true);
     data.append("file", selectedFile);
     data.append("branchBranchId", formData.branchBranchId);
     data.append("kindId", formData.kindId);
@@ -63,13 +62,15 @@ export const File = () => {
       resetForm();
     } catch (error) {
       NotificationFailure(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchKindData = async () => {
       try {
-        const res = await apiClient.get('/kind');
+        const res = await apiClient.get("/kind");
         setSelectedKind(res.data);
       } catch (error) {
         NotificationFailure(error.response.data.message);
@@ -77,12 +78,12 @@ export const File = () => {
     };
 
     fetchKindData();
-  },[])
+  }, []);
 
   useEffect(() => {
     const fetchBranchData = async () => {
       try {
-        const res = await apiClient.get('/branch');
+        const res = await apiClient.get("/branch");
         setSelectedUser(res.data);
       } catch (error) {
         NotificationFailure(error.response.data.message);
@@ -90,122 +91,94 @@ export const File = () => {
     };
 
     fetchBranchData();
-  },[])
+  }, []);
 
-  // const KindOfFile = () => {
-  //     return (
-  //       <>
-  //         <option disabled value="">Seleccione una opción</option>
-  //         {selectedKind?.map((e) => (
-  //           <option key={e.id} value={e.id}>{e.name}</option>
-  //         ))}
-  //       </>
-  //     );
-  //   };
 
   const KindOfFile = () => {
     return (
       <>
-        {/* {selectedKind?.map((e) => (
-          <MDBSelect.Option key={e.id} value={e.id}>
+        {selectedKind?.map((e) => (
+          <Select.Option key={e.id} value={e.id}>
             {e.name}
-          </MDBSelect.Option>
-        ))} */}
-         {selectedKind?.map((e) => (
-            <Select.Option key={e.id} value={e.id}>
-              {e.name}
-            </Select.Option>
-          ))}
+          </Select.Option>
+        ))}
       </>
     );
   };
 
-
-    const BranchNameOfUser = () => {
-      return (
-        <>
-        {/* <Select.Option disabled key="" value="">
-        Establecimientos
-      </Select.Option> */}
-      {selectedUser?.map((e) => (
-        <Select.Option key={e.branchId} value={e.branchId}>{e.nombreSede}</Select.Option>
-      ))}
-    </>
-      );
-    };
+  const BranchNameOfUser = () => {
+    return (
+      <>
+        {selectedUser?.map((e) => (
+          <Select.Option key={e.branchId} value={e.branchId}>
+            {e.nombreSede}
+          </Select.Option>
+        ))}
+      </>
+    );
+  };
 
   const handleClearFile = () => {
     resetForm();
-  }
+  };
+
 
   return (
-    <div
-      id="file"
-    >
-      <label htmlFor={id}>Seleccione el tipo de archivo:
-    </label>
-    {/* <select  name="kindId"  value={formData.kindId} onChange={handleInputChange}>
-    {KindOfFile()}
-    </select> */}
-                        <Form.Item  htmlFor={id}>
+    <div id="file">
+      <label htmlFor={id}>Seleccione el tipo de archivo:</label>
+      <Form.Item htmlFor={id}>
         <Select
-         onChange={(value) =>
-          handleInputChange({
-            target: { name: "kindId", value },
-          })
-        }
+          onChange={(value) =>
+            handleInputChange({
+              target: { name: "kindId", value },
+            })
+          }
           value={formData.kindId}
           style={{ maxWidth: "400px" }}
           placeholder="Tipo de archivos"
         >
-          {/* <Select.Option disabled value="">Tipo de archivos</Select.Option> */}
-          {/* {selectedKind?.map((e) => (
-            <Select.Option key={e.id} value={e.id}>
-              {e.name}
-            </Select.Option>
-          ))} */}
           {KindOfFile()}
         </Select>
       </Form.Item>
-    <label htmlFor={id}>Seleccione el establecimiento/obra:</label>
-    <Form.Item  htmlFor={id}>
+      <label htmlFor={id}>Seleccione el establecimiento/obra:</label>
+      <Form.Item htmlFor={id}>
         <Select
-         onChange={(value) =>
-          handleInputChange({
-            target: { name: "branchBranchId", value },
-          })
-        }
+          onChange={(value) =>
+            handleInputChange({
+              target: { name: "branchBranchId", value },
+            })
+          }
           value={formData.branchBranchId}
           style={{ maxWidth: "400px" }}
           placeholder="Establecimientos"
         >
-          {/* <Select.Option disabled value="">Tipo de archivos</Select.Option> */}
-          {/* {selectedKind?.map((e) => (
-            <Select.Option key={e.id} value={e.id}>
-              {e.name}
-            </Select.Option>
-          ))} */}
           {BranchNameOfUser()}
         </Select>
       </Form.Item>
-    {/* <select  name="branchBranchId"  value={formData.branchBranchId} onChange={handleInputChange}>
-      {BranchNameOfUser()}
-    </select> */}
       <div className="content d-flex flex-column mb-4" data-aos="fade">
-        <span>Archivo</span>
+        <span>Archivo:</span>
         <label className="file">
           <button className="btn btn-input-file" onClick={handleFileClick}>
             Seleccionar Archivo
           </button>
           <input
-        type="file"
-        accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg,.docx"
-        ref={hiddenFileInput}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
+            type="file"
+            accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg,.docx"
+            ref={hiddenFileInput}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
         </label>
-        <span>{selectedFile && selectedFile.name}</span>
+        <span>
+          {selectedFile && selectedFile.name}{" "}
+          {selectedFile && formatFileSize(selectedFile.size)}
+        </span>
+        {loading && (
+          <div className="text-center my-4">
+            <MDBIcon icon="spinner" spin size="3x" />
+            <div>Cargando archivo...</div>
+          </div>
+        )}
       </div>
 
       <div

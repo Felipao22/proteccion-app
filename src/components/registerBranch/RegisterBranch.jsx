@@ -32,6 +32,7 @@ export default function Register() {
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const selectedCities = useFetchCities();
   const selectedUser = useFetchUsers();
@@ -57,6 +58,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     data.append("nombreSede", values.nombreSede);
     data.append("userEmail", values.userEmail);
     data.append("ciudad", values.ciudad);
@@ -103,6 +105,8 @@ export default function Register() {
       resetForm();
     } catch (error) {
       NotificationFailure(error.response.data.message);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -325,6 +329,12 @@ export default function Register() {
                     onChange={handleInputChange}
                   />
                 </div>
+                {loading && (
+              <div className="text-center my-4">
+                <MDBIcon icon="spinner" spin size="3x" />
+                <div>Registrando empresa...</div>
+              </div>
+            )}
 
                 <button type="submit" className="boton-register" size="lg">
                   Registrar

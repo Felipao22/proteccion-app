@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import apiClient from "../../utils/client";
-import { ActiveIcon, DeleteIcon } from "../icons/Icons";
+import { ActiveIcon, BlockIcon, DeleteIcon, FileIcon } from "../icons/Icons";
 import Swal from "sweetalert2";
 import { File } from "../file/File";
 import useFormatDate from "../hooks/useFormattedDate";
@@ -23,6 +23,8 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../loading/Loading";
 import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
+import { BranchFiles } from "../BranchFiles/BranchFiles";
+import AntdCustomPagination from "../Pagination/Pagination";
 
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
@@ -41,6 +43,16 @@ export default function Dashboard() {
   const [showRegister, setShowRegister] = useState(false);
   const [showRegisterBranch, setShowRegisterBranch] = useState(false);
   const [sessionActive, setSessionActive] = useState(true);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [branchFiles, setBranchFiles] = useState([]);
+  const [showBranchFiles, setShowBranchFiles] = useState(false);
+  const [selectedBranchName, setSelectedBranchName] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const filesPerPage = 5;
+
+  const indexOfLastFile = currentPage * filesPerPage;
+  const indexOfFirstFile = indexOfLastFile - filesPerPage;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -50,111 +62,8 @@ export default function Dashboard() {
   const user = useAppSelector(getUser);
   const branch = useAppSelector(getUser).selectedBranch;
 
-  // let inactivityTimer;
-
-  // // Referencia para controlar si el mensaje de inactividad ya se ha mostrado
-  // const inactivityMessageShownRef = useRef(false);
-
-  // // Función para desloguear al usuario
-  // const handleLogout = () => {
-  //   dispatch(setLogoutData());
-  //   dispatch(setFilesDataLogOut());
-  //   clearToken();
-  //   setSessionActive(false);
-  //   if (!inactivityMessageShownRef.current) {
-  //     inactivityMessageShownRef.current = true;
-  //     NotificationSuccess("Sesión cerrada por inactividad.");
-  //   }
-  // };
-
-  // // Función para reiniciar el temporizador de inactividad
-  // const resetInactivityTimer = () => {
-  //   clearTimeout(inactivityTimer);
-  //   inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-  // };
-
-  // // Agregar el listener para el evento beforeunload y el temporizador de inactividad
-  // useEffect(() => {
-  //   let inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-
-  //   const handleActivity = () => {
-  //     resetInactivityTimer();
-  //   };
-
-  //   // Agregar los eventos para el temporizador de inactividad
-  //   ['load', 'click', 'keydown', 'mousemove'].forEach((eventName) => {
-  //     document.addEventListener(eventName, handleActivity);
-  //   });
-
-  //   // Agregar el listener para el evento beforeunload
-  //   window.addEventListener("beforeunload", handleLogout);
-
-  //   // Limpiar los eventos al desmontar el componente
-  //   return () => {
-  //     clearTimeout(inactivityTimer);
-  //     // Remover los eventos para el temporizador de inactividad
-  //     ['load', 'click', 'keydown', 'mousemove'].forEach((eventName) => {
-  //       document.removeEventListener(eventName, handleActivity);
-  //     });
-  //     // Reiniciar la referencia para que el mensaje pueda mostrarse nuevamente
-  //     inactivityMessageShownRef.current = false;
-  //     // Remover el listener al desmontar el componente
-  //     window.removeEventListener("beforeunload", handleLogout);
-  //   };
-  // }, []);
-
-  // const inactivityMessageShownRef = useRef(false);
-  //   // Función para desloguear al usuario
-  //   const handleLogout = () => {
-  //     dispatch(setLogoutData());
-  //     dispatch(setFilesDataLogOut());
-  //     clearToken();
-  //     setSessionActive(false);
-  //     if (!inactivityMessageShownRef.current) {
-  //       inactivityMessageShownRef.current = true;
-  //       NotificationSuccess("Sesión cerrada por inactividad.");
-  //     }
-  //   };
-
-  //   // Función para reiniciar el temporizador de inactividad con debounce
-  //   const resetInactivityTimer = () => {
-  //     clearTimeout(inactivityTimer);
-  //     inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-  //   };
-
-  //   // Agregar el listener para el evento beforeunload y el temporizador de inactividad
-  //   useEffect(() => {
-  //     let inactivityTimer = setTimeout(handleLogout, 3600000); // 1 hora en milisegundos
-
-  //     const handleActivity = () => {
-  //       resetInactivityTimer();
-  //     };
-
-  //     // Agregar los eventos para el temporizador de inactividad
-  //     const debouncedActivityHandler = debounce(handleActivity, 1000); // Tiempo de debounce en milisegundos
-  //     ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //       document.addEventListener(eventName, debouncedActivityHandler);
-  //     });
-
-  //     // Agregar el listener para el evento beforeunload
-  //     window.addEventListener("beforeunload", handleLogout);
-
-  //     // Limpiar los eventos al desmontar el componente
-  //     return () => {
-  //       clearTimeout(inactivityTimer);
-  //       // Remover los eventos para el temporizador de inactividad
-  //       ["load", "click", "keydown", "mousemove"].forEach((eventName) => {
-  //         document.removeEventListener(eventName, debouncedActivityHandler);
-  //       });
-  //       // Reiniciar la referencia para que el mensaje pueda mostrarse nuevamente
-  //       inactivityMessageShownRef.current = false;
-  //       // Remover el listener al desmontar el componente
-  //       window.removeEventListener("beforeunload", handleLogout);
-  //     };
-  //   }, []);
-
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchBusinessData = async () => {
       try {
         const res = await apiClient.get("/user");
         setSelectedUser(res.data);
@@ -164,7 +73,7 @@ export default function Dashboard() {
       }
     };
 
-    fetchUserData();
+    fetchBusinessData();
   }, [branch]);
 
   useEffect(() => {
@@ -225,13 +134,13 @@ export default function Dashboard() {
   const deleteUser = async (email) => {
     try {
       const result = await Swal.fire({
-        title: "¿Está seguro que desea eliminar el usuario?",
-        text: "¡No podrá revertir esto!",
+        title: "¿Está seguro que desea bloquear al usuario?",
+        text: "¡El usuario no tendrá acceso!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Sí, eliminar",
+        confirmButtonText: "Sí, bloquear",
         cancelButtonText: "Cancelar",
       });
 
@@ -239,9 +148,8 @@ export default function Dashboard() {
         await apiClient.put(`user/baneo/${email}`);
         const response = await apiClient.get("/user");
         const updatedUsers = response.data;
-        // const updatedUsers = res.data
         setSelectedUser(updatedUsers);
-        Swal.fire(`Usuario: ${updatedUsers[0].nombreEmpresa} eliminado`);
+        Swal.fire(`Usuario bloqueado`);
       }
     } catch (error) {
       if (
@@ -251,7 +159,7 @@ export default function Dashboard() {
       ) {
         console.log(error.response.data.message);
       } else {
-        console.error("Error al eliminar el usuario");
+        console.error("Error al bloquear el usuario");
       }
     }
   };
@@ -274,7 +182,7 @@ export default function Dashboard() {
         const response = await apiClient.get("/user");
         const updatedUsers = response.data;
         setSelectedUser(updatedUsers);
-        Swal.fire(`Usuario: ${updatedUsers[0].nombreEmpresa} activado `);
+        Swal.fire(`Usuario activado`);
       }
     } catch (error) {
       if (
@@ -287,6 +195,21 @@ export default function Dashboard() {
         console.error("Error al activar el usuario");
       }
     }
+  };
+
+  const loadBranchFiles = async (branchId) => {
+    try {
+      const response = await apiClient.get(`/branch/${branchId}/files`);
+      setBranchFiles(response.data);
+      setShowBranchFiles(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteFile = (fileId) => {
+    // Actualizar la lista de archivos eliminando el archivo con fileId
+    setBranchFiles(branchFiles.filter((file) => file.id !== fileId));
   };
 
   const handleLoadFile = () => {
@@ -310,10 +233,43 @@ export default function Dashboard() {
     setShowRegisterBranch(false);
   };
 
+  const handleBranchClick = async (branchId) => {
+    setSelectedBranch(branchId);
+    await loadBranchFiles(branchId);
+    setShowBranchFiles(true);
+    try {
+      const response = await apiClient.get(`/branch/${branchId}`);
+      setSelectedBranchName(response.data.nombreSede);
+    } catch (error) {
+      console.error(error);
+      setSelectedBranchName("");
+    }
+
+    handleBranchFiles();
+  };
+
+  const handleBranchFiles = () => {
+    setShowBranchFiles(true);
+  };
+
+  const handleBackToTable = () => {
+    setShowBranchFiles(false);
+  };
+
   const formatDate = useFormatDate();
 
   const isSuperAdminUser = () => {
     return user?.isSuperAdmin === true;
+  };
+
+  const currentFiles = branchFiles.slice(indexOfFirstFile, indexOfLastFile);
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(currentPage - 1);
   };
 
   return (
@@ -324,7 +280,10 @@ export default function Dashboard() {
         </div>
       ) : (
         <div>
-          {!showFile && !showRegister && !showRegisterBranch ? (
+          {!showFile &&
+          !showRegister &&
+          !showRegisterBranch &&
+          !showBranchFiles ? (
             <TableContainer component={Paper}>
               <div>
                 <button className='btn btn-primary"' onClick={handleLoadFile}>
@@ -359,10 +318,13 @@ export default function Dashboard() {
                     <TableCell align="justify">Teléfono</TableCell>
                     <TableCell align="justify">Registrado</TableCell>
                     {isSuperAdminUser() && (
-                      <TableCell align="justify">Eliminar</TableCell>
+                      <TableCell align="justify">Bloquear</TableCell>
                     )}
                     {isSuperAdminUser() && (
                       <TableCell align="justify">Activar</TableCell>
+                    )}
+                    {isSuperAdminUser() && (
+                      <TableCell align="justify">Archivos</TableCell>
                     )}
                   </TableRow>
                 </TableHead>
@@ -403,7 +365,7 @@ export default function Dashboard() {
                           </TableCell>
                           <TableCell align="justify">
                             {isSuperAdminUser() && (
-                              <DeleteIcon
+                              <BlockIcon
                                 style={{ cursor: "pointer" }}
                                 onClick={() => deleteUser(row.email)}
                               />
@@ -414,6 +376,16 @@ export default function Dashboard() {
                               <ActiveIcon
                                 style={{ cursor: "pointer" }}
                                 onClick={() => activeUser(row.email)}
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell align="justify">
+                            {isSuperAdminUser() && (
+                              <FileIcon
+                                style={{ cursor: "pointer" }}
+                                onClick={() => {
+                                  handleBranchClick(branch.branchId);
+                                }}
                               />
                             )}
                           </TableCell>
@@ -446,11 +418,30 @@ export default function Dashboard() {
               </button>
             </>
           ) : null}
+          {showBranchFiles && selectedBranch && (
+            <>
+              <h2>Archivos de: {selectedBranchName}</h2>
+              <BranchFiles
+                branchFiles={currentFiles}
+                onDeleteFile={handleDeleteFile}
+              />
+              {currentFiles.length > 0 && (
+                <AntdCustomPagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(branchFiles.length / filesPerPage)}
+                  onNextPage={handleNextPage}
+                  onPrevPage={handlePrevPage}
+                />
+              )}
+
+              <button onClick={handleBackToTable}>Volver</button>
+            </>
+          )}
+          <div>
+            <button onClick={signOff}>Cerrar sesión</button>
+          </div>
         </div>
       )}
-      <div>
-        <button onClick={signOff}>Cerrar sesión</button>
-      </div>
     </>
   );
 }

@@ -362,7 +362,7 @@ export const Usuario = () => {
                   </Form.Item>  
                 </div>
 
-                {files?.length === 0 ? (
+                {files.length === 0 ? (
                   <h4>No tiene archivos cargados actualmente.</h4>
                 ) : (
                   currentFiles?.map((file) => (
