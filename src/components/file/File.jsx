@@ -15,6 +15,7 @@ export const File = () => {
   const initialValues = {
     kindId: null,
     branchBranchId: null,
+    emails: null
   };
 
   const [formData, setFormData] = useState(initialValues);
@@ -23,6 +24,8 @@ export const File = () => {
   const [selectedUser, setSelectedUser] = useState();
   const hiddenFileInput = useRef(null);
   const [loading, setLoading] = useState(false);
+  const [selectedEmails, setSelectedEmails] = useState([])
+  const [selectedBusinessEmail, setSelectedBusinessEmail] = useState(null)
 
   const id = useId();
 
@@ -49,6 +52,8 @@ export const File = () => {
   const resetForm = () => {
     setFormData(initialValues);
     setSelectedFile("");
+    setSelectedEmails([]);
+    setSelectedBusinessEmail("");
   };
 
   const handleLoadFile = async () => {
@@ -56,6 +61,7 @@ export const File = () => {
     data.append("file", selectedFile);
     data.append("branchBranchId", formData.branchBranchId);
     data.append("kindId", formData.kindId);
+    data.append("emails", formData.emails)
     try {
       const res = await apiClient.post("/file", data);
       NotificationSuccess(res.data.message);
@@ -85,13 +91,22 @@ export const File = () => {
       try {
         const res = await apiClient.get("/branch");
         setSelectedUser(res.data);
+
+        if(formData.branchBranchId){
+          const emailResponse = await apiClient.get(`/branch/${formData.branchBranchId}/emails`)
+          setSelectedEmails(emailResponse.data)
+          const business = await apiClient.get(`/branch/${formData.branchBranchId}`)
+          const dataBusiness = business?.data
+          const emailBusiness = dataBusiness?.userEmail
+          setSelectedBusinessEmail(emailBusiness)
+        }
       } catch (error) {
         NotificationFailure(error.response.data.message);
       }
     };
 
     fetchBranchData();
-  }, []);
+  }, [formData.branchBranchId]);
 
 
   const KindOfFile = () => {
@@ -120,6 +135,24 @@ export const File = () => {
 
   const handleClearFile = () => {
     resetForm();
+  };
+
+
+  const EmailsOfBranch = () => {
+    return (
+      <>
+        {selectedEmails?.map((email) => (
+          <Select.Option key={email} value={email}>
+            {email}
+          </Select.Option>
+        ))}
+        {selectedBusinessEmail && ( 
+        <Select.Option key={selectedBusinessEmail} value={selectedBusinessEmail}>
+          {selectedBusinessEmail}
+        </Select.Option>
+      )}
+      </>
+    );
   };
 
 
@@ -153,6 +186,22 @@ export const File = () => {
           placeholder="Establecimientos"
         >
           {BranchNameOfUser()}
+        </Select>
+      </Form.Item>
+      <label htmlFor={id}>Seleccionar emails:</label>
+      <Form.Item htmlFor={id}>
+        <Select
+        mode="multiple"
+          onChange={(values) => {
+            handleInputChange({
+              target: { name: "emails", value: values },
+            });
+          }}
+          value={formData.emails}
+          style={{ maxWidth: "400px" }}
+          placeholder="Seleccionar correos electrónicos"
+        >
+          {EmailsOfBranch()}
         </Select>
       </Form.Item>
       <div className="content d-flex flex-column mb-4" data-aos="fade">

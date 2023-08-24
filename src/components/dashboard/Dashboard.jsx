@@ -25,6 +25,7 @@ import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
 import { BranchFiles } from "../BranchFiles/BranchFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
+import "./Dashboard.css"
 
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
@@ -49,7 +50,7 @@ export default function Dashboard() {
   const [selectedBranchName, setSelectedBranchName] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 5;
+  const filesPerPage = 10;
 
   const indexOfLastFile = currentPage * filesPerPage;
   const indexOfFirstFile = indexOfLastFile - filesPerPage;
@@ -285,7 +286,7 @@ export default function Dashboard() {
           !showRegisterBranch &&
           !showBranchFiles ? (
             <TableContainer component={Paper}>
-              <div>
+              <div style={{marginTop:"20px"}}>
                 <button className='btn btn-primary"' onClick={handleLoadFile}>
                   Cargar archivos
                 </button>
@@ -301,17 +302,19 @@ export default function Dashboard() {
               </div>
               <div>
                 <input
+                style={{marginTop:"20px"}}
                   type="text"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                 />
               </div>
-              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <Table style={{marginTop:"20px"}} sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
-                  <TableRow>
+                  <TableRow style={{textTransform:"uppercase"}}>
                     <TableCell align="justify">Empresa</TableCell>
-                    <TableCell align="justify">Email</TableCell>
+                    <TableCell align="justify">Email Empresa</TableCell>
                     <TableCell align="justify">Establecimiento/Obra</TableCell>
+                    <TableCell align="justify">Emails</TableCell>
                     <TableCell align="justify">Cuit</TableCell>
                     <TableCell align="justify">Ciudad</TableCell>
                     <TableCell align="justify">Dirección</TableCell>
@@ -346,15 +349,25 @@ export default function Dashboard() {
                           <TableCell component="th" scope="row">
                             {row.nombreEmpresa}
                           </TableCell>
-                          <TableCell align="justify">{row.email}</TableCell>
+                          <TableCell align="justify">
+                            <a href={`mailto:${row.email}`}>{row.email}</a>
+                          </TableCell>
                           <TableCell align="justify">
                             {branch.nombreSede}
                           </TableCell>
                           <TableCell align="justify">
+                            {branch?.emails?.map((email, index) => (
+                              <a key={index} href={`mailto:${email}`}>
+                                {email}
+                                {index !== branch.emails.length - 1 && ", "}
+                              </a>
+                            ))}
+                          </TableCell>
+                          <TableCell align="justify">
                             {row.cuit || "-"}
                           </TableCell>
-                          <TableCell align="justify">{branch.ciudad}</TableCell>
-                          <TableCell align="justify">
+                          <TableCell align="center">{branch.ciudad}</TableCell>
+                          <TableCell align="center">
                             {branch.direccion}
                           </TableCell>
                           <TableCell align="justify">
@@ -363,7 +376,7 @@ export default function Dashboard() {
                           <TableCell align="justify">
                             {formatDate(branch.createdAt) || "-"}
                           </TableCell>
-                          <TableCell align="justify">
+                          <TableCell align="center">
                             {isSuperAdminUser() && (
                               <BlockIcon
                                 style={{ cursor: "pointer" }}
@@ -371,7 +384,7 @@ export default function Dashboard() {
                               />
                             )}
                           </TableCell>
-                          <TableCell align="justify">
+                          <TableCell align="center">
                             {isSuperAdminUser() && (
                               <ActiveIcon
                                 style={{ cursor: "pointer" }}
@@ -379,7 +392,7 @@ export default function Dashboard() {
                               />
                             )}
                           </TableCell>
-                          <TableCell align="justify">
+                          <TableCell align="center">
                             {isSuperAdminUser() && (
                               <FileIcon
                                 style={{ cursor: "pointer" }}
@@ -399,21 +412,21 @@ export default function Dashboard() {
           ) : showFile ? (
             <>
               <File />
-              <button className="btn" onClick={handleBack}>
+              <button style={{marginTop:"50px"}} className="btn" onClick={handleBack}>
                 Volver
               </button>
             </>
           ) : showRegister ? (
             <>
               <Register />
-              <button className="btn" onClick={handleBackTable}>
+              <button style={{marginTop:"50px"}} className="btn" onClick={handleBackTable}>
                 Volver
               </button>
             </>
           ) : showRegisterBranch ? (
             <>
               <RegisterBranch />
-              <button className="btn" onClick={handleBackDashboard}>
+              <button style={{marginTop:"50px"}} className="btn" onClick={handleBackDashboard}>
                 Volver
               </button>
             </>
@@ -434,11 +447,11 @@ export default function Dashboard() {
                 />
               )}
 
-              <button onClick={handleBackToTable}>Volver</button>
+              <button style={{marginTop:"50px"}} onClick={handleBackToTable}>Volver</button>
             </>
           )}
           <div>
-            <button onClick={signOff}>Cerrar sesión</button>
+            <button className="boton-logout" onClick={signOff}>Cerrar sesión</button>
           </div>
         </div>
       )}

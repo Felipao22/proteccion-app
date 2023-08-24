@@ -82,7 +82,7 @@ export const Usuario = () => {
   const selectedDate = useAppSelector((state) => state.files.selectedDate);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 5;
+  const filesPerPage = 10;
 
   const indexOfLastFile = currentPage * filesPerPage;
   const indexOfFirstFile = indexOfLastFile - filesPerPage;
@@ -405,12 +405,14 @@ export const Usuario = () => {
                       )}
                     </>
                   ))}
+                 {filteredFiles.length > 0 && (
                 <AntdCustomPagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(filteredFiles.length / filesPerPage)}
-                onNextPage={handleNextPage}
-                onPrevPage={handlePrevPage}
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredFiles.length / filesPerPage)}
+                  onNextPage={handleNextPage}
+                  onPrevPage={handlePrevPage}
                 />
+              )}
               </div>
             )}
           </div>
