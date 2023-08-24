@@ -21,6 +21,8 @@ import { useFetchUsers } from "../hooks/useFetchUsers";
 import { Form, Select } from "antd";
 import { useAppDispatch } from "../../redux/hooks";
 import { setSelectedBranch } from "../../redux/userSlice";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 export default function Register() {
   const initialValues = {
@@ -29,10 +31,12 @@ export default function Register() {
     ciudad: "",
     direccion: "",
     telefono: "",
+    emails: "",
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [emailFields, setEmailFields] = useState([""]);
 
   const selectedCities = useFetchCities();
   const selectedUser = useFetchUsers();
@@ -64,6 +68,7 @@ export default function Register() {
     data.append("ciudad", values.ciudad);
     data.append("direccion", values.direccion);
     data.append("telefono", values.telefono);
+    data.append("emails", values.emails);
 
     // Reinicia los errores
     setErrors({});
@@ -88,6 +93,12 @@ export default function Register() {
     if (!values.telefono) {
       newErrors.telefono = "Teléfono requerido";
     }
+    if (!emailFields) {
+      newErrors.emails = "Mails requeridos";
+    }
+    // if (!validateEmail(values.emails)) {
+    //   newErrors.emails = "Formato de mail incorrecto";
+    // }
 
     // Si hay errores, los muestra
     if (Object.keys(newErrors).length > 0) {
@@ -95,8 +106,14 @@ export default function Register() {
       return;
     }
 
+    // Filtrar campos de correo electrónico vacíos
+    const nonEmptyEmails = emailFields.filter((email) => email.trim() !== "");
+
     try {
-      const res = await apiClient.post("/branch", values);
+      const res = await apiClient.post("/branch", {
+        ...values,
+        emails: nonEmptyEmails,
+      });
       NotificationWarning(res.data.warning);
       if (res.data.newUserBranch) {
         NotificationSuccess(res.data.message);
@@ -106,8 +123,19 @@ export default function Register() {
     } catch (error) {
       NotificationFailure(error.response.data.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
+  };
+
+  const handleAddEmailField = (e) => {
+    e.preventDefault();
+    setEmailFields([...emailFields, ""]);
+  };
+
+  const handleEmailChange = (index, value) => {
+    const updatedFields = [...emailFields];
+    updatedFields[index] = value;
+    setEmailFields(updatedFields);
   };
 
   const CitySelect = () => {
@@ -154,7 +182,7 @@ export default function Register() {
               <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
                 Registrar Establecimiento/Obra
               </p>
-              <form onSubmit={handleSubmit}>
+              <form>
                 <div className="d-flex flex-row align-items-center mb-4">
                   <div style={{ width: "40px", marginRight: "10px" }}>
                     <MDBIcon fas icon="user" size="lg" />
@@ -324,19 +352,59 @@ export default function Register() {
                     id="form4"
                     type="text"
                     name="direccion"
-                    placeholder="2664897896"
+                    // placeholder="2664897896"
                     value={values.direccion}
                     onChange={handleInputChange}
                   />
                 </div>
+                <div className="d-flex flex-row align-items-center mb-4">
+                  <div style={{ width: "40px", marginRight: "10px" }}>
+                    <MDBIcon fas icon="key" size="lg" />
+                  </div>
+                  <div>
+                    {emailFields.map((email, index) => (
+                      <MDBInput
+                        key={index}
+                        type="email"
+                        placeholder="example@mail.com"
+                        value={email}
+                        onChange={(e) =>
+                          handleEmailChange(index, e.target.value)
+                        }
+                      />
+                    ))}
+                    <Button
+                      icon={<PlusOutlined />}
+                      onClick={handleAddEmailField}
+                      size="20px"
+                    />
+                  </div>
+                </div>
+                {errors.emails && (
+                  <span
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    {errors.emails}
+                  </span>
+                )}
                 {loading && (
-              <div className="text-center my-4">
-                <MDBIcon icon="spinner" spin size="3x" />
-                <div>Registrando empresa...</div>
-              </div>
-            )}
+                  <div className="text-center my-4">
+                    <MDBIcon icon="spinner" spin size="3x" />
+                    <div>Registrando empresa...</div>
+                  </div>
+                )}
 
-                <button type="submit" className="boton-register" size="lg">
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="boton-register"
+                  size="lg"
+                >
                   Registrar
                 </button>
               </form>
