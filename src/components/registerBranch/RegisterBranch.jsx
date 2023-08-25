@@ -23,6 +23,7 @@ import { useAppDispatch } from "../../redux/hooks";
 import { setSelectedBranch } from "../../redux/userSlice";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import "./RegisterBranch.css"
 
 export default function Register() {
   const initialValues = {
@@ -58,6 +59,7 @@ export default function Register() {
 
   const resetForm = () => {
     setValues(initialValues);
+    setEmailFields([""])
   };
 
   const handleSubmit = async (e) => {
@@ -167,6 +169,11 @@ export default function Register() {
         ))}
       </>
     );
+  };
+
+   const handleRemoveEmailField = (index) => {
+    const updatedFields = emailFields.filter((_, i) => i !== index);
+    setEmailFields(updatedFields);
   };
 
   return (
@@ -363,7 +370,10 @@ export default function Register() {
                   </div>
                   <div>
                     {emailFields.map((email, index) => (
+                      <>
+                      
                       <MDBInput
+                      label="Email"
                         key={index}
                         type="email"
                         placeholder="example@mail.com"
@@ -372,6 +382,8 @@ export default function Register() {
                           handleEmailChange(index, e.target.value)
                         }
                       />
+                      <button className="close-button" onClick={() => handleRemoveEmailField(index)}>X</button>
+                      </>
                     ))}
                     <Button
                       icon={<PlusOutlined />}

@@ -7,7 +7,8 @@ import {
 import apiClient from "../../utils/client";
 import "./File.css";
 import { useId } from "react";
-import { Form, Select } from "antd";
+import { Form, Select, Input } from "antd";
+const { TextArea } = Input;
 import { MDBIcon } from "mdb-react-ui-kit";
 import { formatFileSize } from "../../utils/formatFilesize";
 
@@ -15,7 +16,8 @@ export const File = () => {
   const initialValues = {
     kindId: null,
     branchBranchId: null,
-    emails: null
+    emails: null,
+    emailText: ""
   };
 
   const [formData, setFormData] = useState(initialValues);
@@ -61,7 +63,8 @@ export const File = () => {
     data.append("file", selectedFile);
     data.append("branchBranchId", formData.branchBranchId);
     data.append("kindId", formData.kindId);
-    data.append("emails", formData.emails)
+    data.append("emails", formData.emails);
+    data.append("emailText", formData.emailText)
     try {
       const res = await apiClient.post("/file", data);
       NotificationSuccess(res.data.message);
@@ -203,6 +206,22 @@ export const File = () => {
         >
           {EmailsOfBranch()}
         </Select>
+      </Form.Item>
+       <label htmlFor={id}>Texto para el mail:</label>
+      <Form.Item htmlFor={id}>
+        <TextArea
+          rows={4}
+          onChange={(event) => {
+            handleInputChange({
+              target: { name: "emailText", value: event.target.value },
+            });
+          }}
+          value={formData.emailText}
+          style={{ maxWidth: "400px" }}
+          name="emailText"
+          placeholder="Información del mail"
+        >
+        </TextArea>
       </Form.Item>
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo:</span>

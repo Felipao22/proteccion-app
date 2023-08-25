@@ -265,19 +265,19 @@ export default function Register() {
                   <li
                     className={passwordRequirements.minLength ? "success" : ""}
                   >
-                    Mínimo de 6 caracteres
+                    Mínimo de 6 caracteres.
                   </li>
                   <li
                     className={
                       passwordRequirements.hasUppercase ? "success" : ""
                     }
                   >
-                    Al menos 1 mayúscula
+                    Al menos 1 mayúscula.
                   </li>
                   <li
                     className={passwordRequirements.hasNumber ? "success" : ""}
                   >
-                    Al menos 1 número
+                    Al menos 1 número.
                   </li>
                 </ul>
                 {errors.password && (
