@@ -27,10 +27,10 @@ const { Option } = Select;
 import { DatePicker } from "antd";
 import { useFetchKinds } from "../hooks/useFetchKinds";
 import { getExtensionIcon } from "../../utils/getExtensionIcon";
-import { ConfigProvider } from "antd";
-import esES from "antd/lib/locale/es_ES";
+// import { ConfigProvider } from "antd";
+// import esES from "antd/lib/locale/es_ES";
 import moment from "moment";
-import "moment/locale/es";
+// import "moment/locale/es";
 import AntdCustomPagination from "../Pagination/Pagination";
 
 function getItem(label, key, icon, children, onClick) {
@@ -44,7 +44,7 @@ function getItem(label, key, icon, children, onClick) {
 }
 
 export const Usuario = () => {
-  moment.locale("es");
+  // moment.locale("es");
 
   const initialValues = {
     nombreEmpresa: "",
@@ -357,7 +357,7 @@ export const Usuario = () => {
                       selectedDate ? moment(selectedDate, "YYYY-MM") : null
                     }
                     format="MM/YYYY"
-                    locale="es_ES"
+                    // locale="es_ES"
                   />
                   </Form.Item>  
                 </div>
