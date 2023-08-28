@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 import React from "react";
 import { useSelector } from "react-redux";
 import { lazy, Suspense } from "react";
@@ -12,7 +12,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { Routes } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
@@ -27,7 +26,6 @@ const RegisterBranch = lazy(() =>
 function App() {
   const user = useSelector((state) => state.user);
 
-  const navigate = useNavigate();
 
   return (
     <>
@@ -51,7 +49,21 @@ function App() {
           <Route exact path="/nosotros" element={<Nosotros />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/services" element={<Soluciones />} />
-          <Route exact path="/login" element={<Login />} />
+          <Route
+            exact
+            path="/login"
+            element={
+              user && user.userId ? (
+                user.isAdmin ? (
+                  <Navigate to="/dashboard" />
+                ) : (
+                  <Navigate to="/usuario" />
+                )
+              ) : (
+                <Login />
+              )
+            }
+          />
           <Route exact path="/register" element={<RegisterBranch />} />
           <Route
             path="/usuario"
