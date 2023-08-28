@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import apiClient from "../../utils/client";
-import { ActiveIcon, BlockIcon, DeleteIcon, FileIcon } from "../icons/Icons";
+import { ActiveIcon, BlockIcon, FileIcon } from "../icons/Icons";
 import Swal from "sweetalert2";
 import { File } from "../file/File";
 import useFormatDate from "../hooks/useFormattedDate";
@@ -25,7 +25,9 @@ import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
 import { BranchFiles } from "../BranchFiles/BranchFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
-import "./Dashboard.css"
+import "./Dashboard.css";
+import { Menu, Dropdown, Button } from "antd";
+import { CaretDownOutlined } from "@ant-design/icons";
 
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
@@ -76,6 +78,7 @@ export default function Dashboard() {
 
     fetchBusinessData();
   }, [branch]);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -273,6 +276,20 @@ export default function Dashboard() {
     setCurrentPage(currentPage - 1);
   };
 
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" onClick={handleLoadFile}>
+        Cargar archivos
+      </Menu.Item>
+      <Menu.Item key="2" onClick={handleRegister}>
+        Registrar empresa
+      </Menu.Item>
+      <Menu.Item key="3" onClick={handleRegisterBranch}>
+        Registrar establecimiento/obra
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
       {loading ? (
@@ -286,31 +303,31 @@ export default function Dashboard() {
           !showRegisterBranch &&
           !showBranchFiles ? (
             <TableContainer component={Paper}>
-              <div style={{marginTop:"20px"}}>
-                <button className='btn btn-primary"' onClick={handleLoadFile}>
-                  Cargar archivos
-                </button>
-                <button className="btn btn-primary" onClick={handleRegister}>
-                  Registrar empresa
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleRegisterBranch}
-                >
-                  Registrar establecimiento/obra
-                </button>
+              <div style={{ marginTop: "20px", marginLeft: "20px" }}>
+                <Dropdown overlay={menu}>
+                  <Button
+                    className="ant-dropdown-link"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    Acciones <CaretDownOutlined />
+                  </Button>
+                </Dropdown>
               </div>
               <div>
                 <input
-                style={{marginTop:"20px"}}
+                  style={{ marginTop: "20px" }}
                   type="text"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                 />
               </div>
-              <Table style={{marginTop:"20px"}} sx={{ minWidth: 650 }} aria-label="simple table">
+              <Table
+                style={{ marginTop: "20px" }}
+                sx={{ minWidth: 650 }}
+                aria-label="simple table"
+              >
                 <TableHead>
-                  <TableRow style={{textTransform:"uppercase"}}>
+                  <TableRow style={{ textTransform: "uppercase" }}>
                     <TableCell align="justify">Empresa</TableCell>
                     <TableCell align="justify">Email Empresa</TableCell>
                     <TableCell align="justify">Establecimiento/Obra</TableCell>
@@ -412,21 +429,33 @@ export default function Dashboard() {
           ) : showFile ? (
             <>
               <File />
-              <button style={{marginTop:"50px"}} className="btn" onClick={handleBack}>
+              <button
+                style={{ marginTop: "50px" }}
+                className="btn"
+                onClick={handleBack}
+              >
                 Volver
               </button>
             </>
           ) : showRegister ? (
             <>
               <Register />
-              <button style={{marginTop:"50px"}} className="btn" onClick={handleBackTable}>
+              <button
+                style={{ marginTop: "50px" }}
+                className="btn"
+                onClick={handleBackTable}
+              >
                 Volver
               </button>
             </>
           ) : showRegisterBranch ? (
             <>
               <RegisterBranch />
-              <button style={{marginTop:"50px"}} className="btn" onClick={handleBackDashboard}>
+              <button
+                style={{ marginTop: "50px" }}
+                className="btn"
+                onClick={handleBackDashboard}
+              >
                 Volver
               </button>
             </>
@@ -447,11 +476,20 @@ export default function Dashboard() {
                 />
               )}
 
-              <button style={{marginTop:"50px"}} onClick={handleBackToTable}>Volver</button>
+              <button style={{ marginTop: "50px" }} onClick={handleBackToTable}>
+                Volver
+              </button>
             </>
           )}
           <div>
-            <button className="boton-logout" onClick={signOff}>Cerrar sesión</button>
+            {!showFile &&
+            !showRegister &&
+            !showRegisterBranch &&
+            !showBranchFiles ? (
+              <button className="boton-logout" onClick={signOff}>
+                Cerrar sesión
+              </button>
+            ) : null}
           </div>
         </div>
       )}
