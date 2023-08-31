@@ -564,7 +564,7 @@ export default function Dashboard() {
           ) : null}
           {showBranchFiles && selectedBranch && (
             <>
-              <h2>Archivos de: {selectedBranchName}</h2>
+              <h4 style={{margin:"50px"}}>Archivos de: {selectedBranchName}</h4>
               <BranchFiles
                 branchFiles={currentFiles}
                 onDeleteFile={handleDeleteFile}

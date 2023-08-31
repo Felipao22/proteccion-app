@@ -3,8 +3,22 @@ import { getExtensionIcon } from "../../utils/getExtensionIcon";
 import apiClient from "../../utils/client";
 import { DeleteIcon, DownloadIcon } from "../icons/Icons";
 import { NotificationFailure } from "../notifications/Notifications";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setSelectedDate, setSelectedKind } from "../../redux/filesSlice";
+import moment from "moment";
+import { Form } from "antd";
+import { Select } from "antd";
+const { Option } = Select;
+import { DatePicker } from "antd";
+import { useFetchKinds } from "../hooks/useFetchKinds";
 
 export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
+
+  const selectedKind = useAppSelector((state) => state.files.selectedKind);
+  const selectedDate = useAppSelector((state) => state.files.selectedDate);
+  const kinds = useFetchKinds();
+
+  const dispatch = useAppDispatch()
 
   const DeleteFile = async(id) => {
     try {
@@ -57,20 +71,98 @@ export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
     }
   };
 
+  const filteredFiles = branchFiles.filter((file) => {
+    const fileCreatedAtMoment = moment(file?.createdAt);
+    const selectedDateMoment = selectedDate
+      ? moment(selectedDate, "YYYY-MM")
+      : null;
+
+    return (
+      (!selectedKind || file?.kindId === parseInt(selectedKind)) &&
+      (!selectedDateMoment ||
+        fileCreatedAtMoment.format("MM/YY") ===
+          selectedDateMoment.format("MM/YY"))
+    );
+  });
+
+  const handleKindFilterChange = (value) => {
+    dispatch(setSelectedKind(value)); // Actualiza el estado global en Redux
+  };
+
+  const handleDateFilterChange = (date) => {
+    const formattedDate = date ? date.format("YYYY-MM") : null; // Almacenar la fecha como cadena "YYYY-MM" o null si no hay fecha
+    dispatch(setSelectedDate(formattedDate)); // Actualiza el estado global en Redux
+  };
+
   return (
     <div>
-      {branchFiles && branchFiles.length > 0 ? (
-        <ul>
-          {branchFiles.map((file) => (
+    {branchFiles && branchFiles.length > 0 ? (
+      <div className="form-container">
+        <Form style={{margin:"20px"}} layout="inline">
+          <Form.Item label="Filtrar por tipo" htmlFor="kind">
+            <Select
+              onChange={handleKindFilterChange}
+              value={selectedKind}
+              style={{ width: "200px" }}
+              placeholder="Tipo de archivos"
+            >
+              <Option value="">Todos</Option>
+              {kinds?.map((kind) => (
+                <Option key={kind.id} value={kind.id}>
+                  {kind.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item label="Filtrar por mes" htmlFor="month">
+            <DatePicker
+              picker="month"
+              onChange={handleDateFilterChange}
+              value={
+                selectedDate ? moment(selectedDate, "YYYY-MM") : null
+              }
+              format="MM/YYYY"
+            />
+          </Form.Item>
+        </Form>
+  
+        <ul style={{margin: "20px"}}>
+          {filteredFiles.map((file) => (
             <li key={file.id}>
-              {getExtensionIcon(file.name)} {file.name} <DownloadIcon style={{cursor:"pointer"}} onClick={() => handleDownload(file.id, file.name)} />  <DeleteIcon style={{cursor:"pointer"}} onClick={() => DeleteFile(file.id)} />
+              {getExtensionIcon(file.name)} {file.name}{" "}
+              <DownloadIcon
+                style={{ cursor: "pointer" }}
+                onClick={() => handleDownload(file.id, file.name)}
+              />{" "}
+              <DeleteIcon
+                style={{ cursor: "pointer" }}
+                onClick={() => DeleteFile(file.id)}
+              />
             </li>
           ))}
         </ul>
-      ) : (
-        <p>No hay archivos cargados en este Establecimiento/Obra.</p>
+        {(selectedKind || selectedDate) && filteredFiles.length === 0 && (
+        <div style={{margin:"20px"}}>
+          {selectedKind && selectedDate ? (
+            <span>No hay archivos para este tipo y mes.</span>
+          ) : (
+            <>
+              {selectedKind && (
+                <span>No hay archivos para este tipo.</span>
+              )}
+              {selectedDate && (
+                <span>No hay archivos para este mes.</span>
+              )}
+            </>
+          )}
+        </div>
       )}
     </div>
+  ) : (
+    <p style={{margin:"50px"}}>No hay archivos cargados en este Establecimiento/Obra.</p>
+  )}
+      </div>
+  
   );
 };
 
