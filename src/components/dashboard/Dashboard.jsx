@@ -212,12 +212,12 @@ export default function Dashboard() {
     }
   };
 
-  const deleteUSer = async(email) => {
-    const response = await apiClient.get(`/user/${email}`);
-    const userToDelete = response.data;
+  const deleteBranch = async(branchId) => {
+    const response = await apiClient.get(`/branch/${branchId}`);
+    const branchToDelete = response.data;
     try {
       const result = await Swal.fire({
-        title: `¿Está seguro que desea eliminar a la empresa ${userToDelete.nombreEmpresa}?`,
+        title: `¿Está seguro que desea eliminar el establecimiento ${branchToDelete.nombreSede}?`,
         text: "¡Será eliminado y no podrá ver sus datos!",
         icon: "warning",
         showCancelButton: true,
@@ -228,11 +228,11 @@ export default function Dashboard() {
       });
 
       if (result.isConfirmed) {
-        await apiClient.delete(`/user/${email}`)
+        await apiClient.delete(`/branch/${branchId}`)
         const response = await apiClient.get("/user");
-        const updatedUsers = response.data;
-        setSelectedUser(updatedUsers);
-        Swal.fire(`Empresa ${userToDelete.nombreEmpresa} eliminada`);
+        const updatedBranches = response.data;
+        setSelectedUser(updatedBranches);
+        Swal.fire(`Establecimiento ${branchToDelete.nombreSede} eliminada`);
       }
     } catch (error) {
       if (
@@ -242,10 +242,11 @@ export default function Dashboard() {
       ) {
         console.log(error.response.data.message);
       } else {
-        console.error("Error al eliminar el usuario");
+        console.error("Error al eliminar el Establecimiento/Obra");
       }
     }
   }
+
 
   const handleDeleteFile = (fileId) => {
     // Actualizar la lista de archivos eliminando el archivo con fileId
@@ -503,7 +504,7 @@ export default function Dashboard() {
                                 <DeleteIcon
                                   style={{ cursor: "pointer" }}
                                   onClick={() => {
-                                    deleteUSer(row.email);
+                                    deleteBranch(branch.branchId);
                                   }}
                                 />
                               )}
