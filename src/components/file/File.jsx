@@ -7,10 +7,11 @@ import {
 import apiClient from "../../utils/client";
 import "./File.css";
 import { useId } from "react";
-import { Form, Select, Input } from "antd";
+import { Form, Select, Input, Upload, Button } from "antd";
 const { TextArea } = Input;
 import { MDBIcon } from "mdb-react-ui-kit";
 import { formatFileSize } from "../../utils/formatFilesize";
+import { UploadOutlined } from "@ant-design/icons";
 
 export const File = () => {
   const initialValues = {
@@ -226,9 +227,9 @@ export const File = () => {
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo:</span>
         <label className="file">
-          <button className="btn btn-input-file" onClick={handleFileClick}>
+          <Button icon={<UploadOutlined />} onClick={handleFileClick}>
             Seleccionar Archivo
-          </button>
+          </Button>
           <input
             type="file"
             accept=".pdf,.xls,.xlsx,.doc,.jpg,.jpeg,.docx"

@@ -26,10 +26,10 @@ import RegisterBranch from "../registerBranch/RegisterBranch";
 import { BranchFiles } from "../BranchFiles/BranchFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
-import { Menu, Dropdown, Button } from "antd";
+import { Menu, Dropdown, Button, Input } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
-
+const { Search } = Input;
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
 //   let timeoutId;
@@ -322,7 +322,7 @@ export default function Dashboard() {
           !showRegisterEmployee ? (
             <TableContainer component={Paper}>
               <div style={{ marginTop: "20px", marginLeft: "20px" }}>
-                <Dropdown overlay={menu}>
+                <Dropdown menu={menu}>
                   <Button
                     className="ant-dropdown-link"
                     onClick={(e) => e.preventDefault()}
@@ -332,8 +332,8 @@ export default function Dashboard() {
                 </Dropdown>
               </div>
               <div>
-                <input
-                  style={{ marginTop: "20px" }}
+                <Search
+                  style={{ margin: "20px", maxWidth: "200px" }}
                   type="text"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
@@ -472,7 +472,7 @@ export default function Dashboard() {
             <>
               <File />
               <button
-                style={{ marginTop: "50px" }}
+                style={{ marginTop: "50px", marginLeft: "20px" }}
                 className="btn"
                 onClick={handleBack}
               >
@@ -483,7 +483,7 @@ export default function Dashboard() {
             <>
               <Register />
               <button
-                style={{ marginTop: "50px" }}
+                style={{ margin: "50px" }}
                 className="btn"
                 onClick={handleBackTable}
               >
@@ -494,7 +494,7 @@ export default function Dashboard() {
             <>
               <RegisterBranch />
               <button
-                style={{ marginTop: "50px" }}
+                style={{ margin: "50px" }}
                 className="btn"
                 onClick={handleBackDashboard}
               >
@@ -505,7 +505,7 @@ export default function Dashboard() {
             <>
               <RegisterEmployee />
               <button
-                style={{ marginTop: "50px" }}
+                style={{ margin: "50px" }}
                 className="btn"
                 onClick={handleBackToDashboard}
               >
@@ -529,7 +529,7 @@ export default function Dashboard() {
                 />
               )}
 
-              <button style={{ marginTop: "50px" }} onClick={handleBackToTable}>
+              <button className="btn" style={{ margin: "50px" }} onClick={handleBackToTable}>
                 Volver
               </button>
             </>
@@ -538,7 +538,8 @@ export default function Dashboard() {
             {!showFile &&
             !showRegister &&
             !showRegisterBranch &&
-            !showBranchFiles ? (
+            !showBranchFiles &&
+            !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
                 Cerrar sesión
               </button>
