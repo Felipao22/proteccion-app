@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import apiClient from "../../utils/client";
-import { ActiveIcon, BlockIcon, FileIcon } from "../icons/Icons";
+import { ActiveIcon, BlockIcon, DeleteIcon, FileIcon } from "../icons/Icons";
 import Swal from "sweetalert2";
 import { File } from "../file/File";
 import useFormatDate from "../hooks/useFormattedDate";
@@ -136,7 +136,7 @@ export default function Dashboard() {
     }
   };
 
-  const deleteUser = async (email) => {
+  const blockUser = async (email) => {
     try {
       const result = await Swal.fire({
         title: "¿Está seguro que desea bloquear al usuario?",
@@ -211,6 +211,41 @@ export default function Dashboard() {
       console.error(error);
     }
   };
+
+  const deleteUSer = async(email) => {
+    const response = await apiClient.get(`/user/${email}`);
+    const userToDelete = response.data;
+    try {
+      const result = await Swal.fire({
+        title: `¿Está seguro que desea eliminar a la empresa ${userToDelete.nombreEmpresa}?`,
+        text: "¡Será eliminado y no podrá ver sus datos!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (result.isConfirmed) {
+        await apiClient.delete(`/user/${email}`)
+        const response = await apiClient.get("/user");
+        const updatedUsers = response.data;
+        setSelectedUser(updatedUsers);
+        Swal.fire(`Empresa ${userToDelete.nombreEmpresa} eliminada`);
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        console.log(error.response.data.message);
+      } else {
+        console.error("Error al eliminar el usuario");
+      }
+    }
+  }
 
   const handleDeleteFile = (fileId) => {
     // Actualizar la lista de archivos eliminando el archivo con fileId
@@ -322,7 +357,7 @@ export default function Dashboard() {
           !showRegisterEmployee ? (
             <TableContainer component={Paper}>
               <div style={{ marginTop: "20px", marginLeft: "20px" }}>
-                <Dropdown menu={menu}>
+                <Dropdown overlay={menu}>
                   <Button
                     className="ant-dropdown-link"
                     onClick={(e) => e.preventDefault()}
@@ -363,6 +398,9 @@ export default function Dashboard() {
                     )}
                     {isSuperAdminUser() && (
                       <TableCell align="justify">Archivos</TableCell>
+                    )}
+                    {isSuperAdminUser() && (
+                      <TableCell align="justify">Eliminar</TableCell>
                     )}
                   </TableRow>
                 </TableHead>
@@ -438,7 +476,7 @@ export default function Dashboard() {
                               {isSuperAdminUser() && (
                                 <BlockIcon
                                   style={{ cursor: "pointer" }}
-                                  onClick={() => deleteUser(row.email)}
+                                  onClick={() => blockUser(row.email)}
                                 />
                               )}
                             </TableCell>
@@ -456,6 +494,16 @@ export default function Dashboard() {
                                   style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     handleBranchClick(branch.branchId);
+                                  }}
+                                />
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {isSuperAdminUser() && (
+                                <DeleteIcon
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    deleteUSer(row.email);
                                   }}
                                 />
                               )}
