@@ -28,6 +28,7 @@ import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
 import { Menu, Dropdown, Button } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
+import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
@@ -50,6 +51,7 @@ export default function Dashboard() {
   const [branchFiles, setBranchFiles] = useState([]);
   const [showBranchFiles, setShowBranchFiles] = useState(false);
   const [selectedBranchName, setSelectedBranchName] = useState("");
+  const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -78,7 +80,6 @@ export default function Dashboard() {
 
     fetchBusinessData();
   }, [branch]);
-
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -237,6 +238,13 @@ export default function Dashboard() {
     setShowRegisterBranch(false);
   };
 
+  const handleRegisterEmployee = () => {
+    setShowRegisterEmployee(true);
+  };
+  const handleBackToDashboard = () => {
+    setShowRegisterEmployee(false);
+  };
+
   const handleBranchClick = async (branchId) => {
     setSelectedBranch(branchId);
     await loadBranchFiles(branchId);
@@ -281,12 +289,21 @@ export default function Dashboard() {
       <Menu.Item key="1" onClick={handleLoadFile}>
         Cargar archivos
       </Menu.Item>
-      <Menu.Item key="2" onClick={handleRegister}>
-        Registrar empresa
-      </Menu.Item>
-      <Menu.Item key="3" onClick={handleRegisterBranch}>
-        Registrar establecimiento/obra
-      </Menu.Item>
+      {isSuperAdminUser() && (
+        <Menu.Item key="2" onClick={handleRegister}>
+          Registrar empresa
+        </Menu.Item>
+      )}
+      {isSuperAdminUser() && (
+        <Menu.Item key="3" onClick={handleRegisterBranch}>
+          Registrar establecimiento/obra
+        </Menu.Item>
+      )}
+      {isSuperAdminUser() && (
+        <Menu.Item key="" onClick={handleRegisterEmployee}>
+          Registrar empleado
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -301,7 +318,8 @@ export default function Dashboard() {
           {!showFile &&
           !showRegister &&
           !showRegisterBranch &&
-          !showBranchFiles ? (
+          !showBranchFiles &&
+          !showRegisterEmployee ? (
             <TableContainer component={Paper}>
               <div style={{ marginTop: "20px", marginLeft: "20px" }}>
                 <Dropdown overlay={menu}>
@@ -351,76 +369,100 @@ export default function Dashboard() {
                 <TableBody>
                   {searchUsers(selectedUser).map((row) => (
                     <React.Fragment key={row.email}>
-                      {row.branches.map((branch) => (
-                        <TableRow
-                          key={branch.branchId}
-                          sx={{
-                            "&:last-child td, &:last-child th": { border: 0 },
-                          }}
-                          style={
-                            row.active === false
-                              ? { backgroundColor: "#FB4100", color: "white" }
-                              : {}
-                          }
-                        >
-                          <TableCell component="th" scope="row">
-                            {row.nombreEmpresa}
-                          </TableCell>
-                          <TableCell align="justify">
-                            <a href={`mailto:${row.email}`}>{row.email}</a>
-                          </TableCell>
-                          <TableCell align="justify">
-                            {branch.nombreSede}
-                          </TableCell>
-                          <TableCell align="justify">
-                            {branch?.emails?.map((email, index) => (
-                              <a key={index} href={`mailto:${email}`}>
-                                {email}
-                                {index !== branch.emails.length - 1 && ", "}
-                              </a>
-                            ))}
-                          </TableCell>
-                          <TableCell align="justify">
-                            {row.cuit || "-"}
-                          </TableCell>
-                          <TableCell align="center">{branch.ciudad}</TableCell>
-                          <TableCell align="center">
-                            {branch.direccion}
-                          </TableCell>
-                          <TableCell align="justify">
-                            {branch.telefono || "-"}
-                          </TableCell>
-                          <TableCell align="justify">
-                            {formatDate(branch.createdAt) || "-"}
-                          </TableCell>
-                          <TableCell align="center">
-                            {isSuperAdminUser() && (
-                              <BlockIcon
-                                style={{ cursor: "pointer" }}
-                                onClick={() => deleteUser(row.email)}
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell align="center">
-                            {isSuperAdminUser() && (
-                              <ActiveIcon
-                                style={{ cursor: "pointer" }}
-                                onClick={() => activeUser(row.email)}
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell align="center">
-                            {isSuperAdminUser() && (
-                              <FileIcon
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  handleBranchClick(branch.branchId);
-                                }}
-                              />
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {row.branches.map((branch) => {
+                        const userAccessEmails = branch.accessUser?.flat();
+                        const isUserEmailMatch =
+                          user?.email === row.email ||
+                          userAccessEmails?.includes(user?.email);
+                        const shouldRenderRow =
+                          (isUserEmailMatch && !isSuperAdminUser()) ||
+                          isSuperAdminUser();
+
+                        return shouldRenderRow ? (
+                          <TableRow
+                            key={branch.branchId}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                            style={
+                              row.active === false
+                                ? { backgroundColor: "#FB4100", color: "white" }
+                                : {}
+                            }
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.nombreEmpresa}
+                            </TableCell>
+                            <TableCell align="justify">
+                              <a href={`mailto:${row.email}`}>{row.email}</a>
+                            </TableCell>
+                            <TableCell align="justify">
+                              {branch.nombreSede}
+                            </TableCell>
+                            <TableCell align="justify">
+                              {branch.emails && branch.emails.length > 0 ? (
+                                branch.emails.map((email, index) => (
+                                  <React.Fragment key={index}>
+                                    <a href={`mailto:${email}`}>{email}</a>
+                                    {index !== branch.emails.length - 1 && ", "}
+                                  </React.Fragment>
+                                ))
+                              ) : (
+                                <span
+                                  style={{
+                                    display: "inline-block",
+                                    textAlign: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  -
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell align="justify">
+                              {row.cuit || "-"}
+                            </TableCell>
+                            <TableCell align="center">
+                              {branch.ciudad}
+                            </TableCell>
+                            <TableCell align="center">
+                              {branch.direccion}
+                            </TableCell>
+                            <TableCell align="justify">
+                              {branch.telefono || "-"}
+                            </TableCell>
+                            <TableCell align="justify">
+                              {formatDate(branch.createdAt) || "-"}
+                            </TableCell>
+                            <TableCell align="center">
+                              {isSuperAdminUser() && (
+                                <BlockIcon
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => deleteUser(row.email)}
+                                />
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {isSuperAdminUser() && (
+                                <ActiveIcon
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => activeUser(row.email)}
+                                />
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              {isSuperAdminUser() && (
+                                <FileIcon
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    handleBranchClick(branch.branchId);
+                                  }}
+                                />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ) : null;
+                      })}
                     </React.Fragment>
                   ))}
                 </TableBody>
@@ -455,6 +497,17 @@ export default function Dashboard() {
                 style={{ marginTop: "50px" }}
                 className="btn"
                 onClick={handleBackDashboard}
+              >
+                Volver
+              </button>
+            </>
+          ) : showRegisterEmployee ? (
+            <>
+              <RegisterEmployee />
+              <button
+                style={{ marginTop: "50px" }}
+                className="btn"
+                onClick={handleBackToDashboard}
               >
                 Volver
               </button>

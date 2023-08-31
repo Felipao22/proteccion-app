@@ -22,8 +22,8 @@ import { Form, Select } from "antd";
 import { useAppDispatch } from "../../redux/hooks";
 import { setSelectedBranch } from "../../redux/userSlice";
 import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import "./RegisterBranch.css"
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import "./RegisterBranch.css";
 
 export default function Register() {
   const initialValues = {
@@ -33,11 +33,13 @@ export default function Register() {
     direccion: "",
     telefono: "",
     emails: "",
+    accessUser: ""
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [emailFields, setEmailFields] = useState([""]);
+  const [emailEmployee, setEmailEmployee] = useState([""]);
 
   const selectedCities = useFetchCities();
   const selectedUser = useFetchUsers();
@@ -59,7 +61,8 @@ export default function Register() {
 
   const resetForm = () => {
     setValues(initialValues);
-    setEmailFields([""])
+    setEmailFields([""]);
+    setEmailEmployee([""])
   };
 
   const handleSubmit = async (e) => {
@@ -71,9 +74,14 @@ export default function Register() {
     data.append("direccion", values.direccion);
     data.append("telefono", values.telefono);
     data.append("emails", values.emails);
+    data.append("accessUser", values.accessUser);
 
+   
     // Reinicia los errores
     setErrors({});
+
+    values.accessUser = emailEmployee;
+    // values.accessUser = emailEmployee?.filter(email => email.trim() !== '');
 
     // Valida los campos
     let newErrors = {};
@@ -110,11 +118,14 @@ export default function Register() {
 
     // Filtrar campos de correo electrónico vacíos
     const nonEmptyEmails = emailFields.filter((email) => email.trim() !== "");
+    // values.accessUser = emailEmployee.filter(email => email.trim() !== '');
+    // const nonEmptyUserEmails = emailEmployee.filter((e) => e.trim() !== "");
 
     try {
       const res = await apiClient.post("/branch", {
         ...values,
         emails: nonEmptyEmails,
+        // accessUser: nonEmptyUserEmails
       });
       NotificationWarning(res.data.warning);
       if (res.data.newUserBranch) {
@@ -171,10 +182,60 @@ export default function Register() {
     );
   };
 
-   const handleRemoveEmailField = (index) => {
+  const handleRemoveEmailField = (index) => {
     const updatedFields = emailFields.filter((_, i) => i !== index);
     setEmailFields(updatedFields);
   };
+
+  const AdminEmailSelect = () => {
+    return (
+      <div style={{ marginLeft:"40px"}}>
+        {emailEmployee.map((email, index) => (
+          <div key={index}>
+            <label style={{marginBottom:"10px"}} >Dar acceso a empleados:</label>
+            <Form.Item >
+              <Select
+                value={email}
+                onChange={(value) => handleAdminEmailChange(index, value)}
+                style={{ maxWidth:"700px" }}
+                placeholder="Seleccionar email de empleado"
+                mode="multiple"
+              >
+                {selectedUser
+                  ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
+                  .map((user) => (
+                    <Select.Option key={user.userId} value={user.email}>
+                      {user.email}
+                    </Select.Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  
+  // const handleAdminEmailChange = (index, value) => {
+  //   const updatedFields = [...emailEmployee];
+  //   updatedFields[index] = value;
+  //   setEmailEmployee(updatedFields);
+  // };
+
+  const handleAdminEmailChange = (index, value) => {
+    const updatedFields = [...emailEmployee];
+    if (value) {
+      updatedFields[index] = value;
+    } else {
+      // Remove the email if it's cleared
+      updatedFields.splice(index, 1);
+    }
+    setEmailEmployee(updatedFields);
+  };
+  
+
+  
 
   return (
     <MDBContainer fluid>
@@ -371,18 +432,25 @@ export default function Register() {
                   <div>
                     {emailFields.map((email, index) => (
                       <>
-                      
-                      <MDBInput
-                      label="Email"
-                        key={index}
-                        type="email"
-                        placeholder="example@mail.com"
-                        value={email}
-                        onChange={(e) =>
-                          handleEmailChange(index, e.target.value)
-                        }
-                      />
-                      <button className="close-button" onClick={() => handleRemoveEmailField(index)}>X</button>
+                        <MDBInput
+                          label="Email"
+                          key={index}
+                          type="email"
+                          placeholder="example@mail.com"
+                          value={email}
+                          onChange={(e) =>
+                            handleEmailChange(index, e.target.value)
+                          }
+                        />
+                        <Button
+                        type="primary"
+                        danger
+                          icon={<MinusCircleOutlined />}
+                          onClick={() => handleRemoveEmailField(index)}
+                          style={{marginTop:"5px"}}
+                        >
+                          Eliminar
+                        </Button>
                       </>
                     ))}
                     <Button
@@ -404,13 +472,15 @@ export default function Register() {
                     {errors.emails}
                   </span>
                 )}
+                <div className="">
+  <AdminEmailSelect />
+</div>
                 {loading && (
                   <div className="text-center my-4">
                     <MDBIcon icon="spinner" spin size="3x" />
                     <div>Registrando empresa...</div>
                   </div>
                 )}
-
                 <button
                   type="submit"
                   onClick={handleSubmit}
