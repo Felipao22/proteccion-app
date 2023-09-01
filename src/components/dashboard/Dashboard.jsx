@@ -29,6 +29,7 @@ import "./Dashboard.css";
 import { Menu, Dropdown, Button, Input } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
+import ChangePassword from "../changePassword/ChangePassword"
 const { Search } = Input;
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
@@ -52,6 +53,7 @@ export default function Dashboard() {
   const [showBranchFiles, setShowBranchFiles] = useState(false);
   const [selectedBranchName, setSelectedBranchName] = useState("");
   const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -281,6 +283,13 @@ export default function Dashboard() {
     setShowRegisterEmployee(false);
   };
 
+  const handleChangePsw = () => {
+    setShowChangePassword(true);
+  };
+  const handleBackToMenu = () => {
+    setShowChangePassword(false);
+  };
+
   const handleBranchClick = async (branchId) => {
     setSelectedBranch(branchId);
     await loadBranchFiles(branchId);
@@ -325,18 +334,21 @@ export default function Dashboard() {
       <Menu.Item key="1" onClick={handleLoadFile}>
         Cargar archivos
       </Menu.Item>
+      <Menu.Item key="2" onClick={handleChangePsw}>
+        Cambiar contraseña
+      </Menu.Item>
       {isSuperAdminUser() && (
-        <Menu.Item key="2" onClick={handleRegister}>
+        <Menu.Item key="3" onClick={handleRegister}>
           Registrar empresa
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
-        <Menu.Item key="3" onClick={handleRegisterBranch}>
+        <Menu.Item key="4" onClick={handleRegisterBranch}>
           Registrar establecimiento/obra
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
-        <Menu.Item key="" onClick={handleRegisterEmployee}>
+        <Menu.Item key="5" onClick={handleRegisterEmployee}>
           Registrar empleado
         </Menu.Item>
       )}
@@ -355,7 +367,9 @@ export default function Dashboard() {
           !showRegister &&
           !showRegisterBranch &&
           !showBranchFiles &&
-          !showRegisterEmployee ? (
+          !showRegisterEmployee &&
+          !showChangePassword 
+          ? (
             <TableContainer component={Paper}>
               <div style={{ marginTop: "20px", marginLeft: "20px" }}>
                 <Dropdown overlay={menu}>
@@ -561,6 +575,17 @@ export default function Dashboard() {
                 Volver
               </button>
             </>
+           ) : showChangePassword ? (
+              <>
+                <ChangePassword email={user.email} />
+                <button
+                  style={{ margin: "50px" }}
+                  className="btn"
+                  onClick={handleBackToMenu}
+                >
+                  Volver
+                </button>
+              </>
           ) : null}
           {showBranchFiles && selectedBranch && (
             <>
