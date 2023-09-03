@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../loading/Loading";
 import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
-import { BranchFiles } from "../BranchFiles/BranchFiles";
+import { BranchFiles } from "../branchFiles/BranchFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
 import { Menu, Dropdown, Button, Input } from "antd";

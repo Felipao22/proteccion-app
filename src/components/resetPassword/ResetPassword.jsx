@@ -1,23 +1,30 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
-  Input,
-  Button,
-  Row,
-  Col,
-} from "antd";
+    Input,
+    Button,
+    Row,
+    Col,
+  } from "antd";
 import apiClient from "../../utils/client";
-import UsePasswordToggle from "../hooks/UsePasswordToggle";
-import { NotificationFailure, NotificationSuccess } from "../notifications/Notifications";
 import FormData from "form-data";
-import "./ChangePassword.css"
+import { NotificationSuccess, NotificationFailure } from "../notifications/Notifications";
+import "./ResetPassword.css"
 
-export default function PasswordChange({email}) {
+function ResetPassword() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get("token");
+
+  const navigate = useNavigate();
+
   const initialValues = {
-    oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   };
-  const [values, setValues] = useState(initialValues);
+
+   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [passwordRequirements, setPasswordRequirements] = useState({
     minLength: false,
@@ -25,10 +32,11 @@ export default function PasswordChange({email}) {
     hasNumber: false,
   });
 
-  const data = new FormData();
-
-  const [PasswordInputType, ToggleIcon] = UsePasswordToggle();
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const data = new FormData();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +61,7 @@ export default function PasswordChange({email}) {
     e.preventDefault();
     data.append("oldPassword", values.oldPassword);
     data.append("newPassword", values.newPassword);
+
     setLoading(true);
 
     // Reset errors
@@ -61,9 +70,6 @@ export default function PasswordChange({email}) {
     // Validate fields
     let newErrors = {};
 
-    if (!values.oldPassword) {
-      newErrors.oldPassword = "Contraseña actual requerida";
-    }
 
     if (!values.newPassword) {
       newErrors.newPassword = "Contraseña nueva requerida";
@@ -89,25 +95,29 @@ export default function PasswordChange({email}) {
     }
 
     try {
-        const response = await apiClient.put(`/user/changePsw/${email}`, values);
-        console.log(response)
-        if (response.data) {
-          NotificationSuccess(response.data);
-        } else {
-          NotificationFailure(response.data);
-        }
-      
-        resetForm();
-      } catch (error) {
-        console.log(error)
-        NotificationFailure(error.response.data.error);
-      } finally {
-        setLoading(false);
+
+        const newPassword = values.newPassword
+
+    const response = await apiClient.put(`/user/resetPassword/${token}`, {
+        newPassword
+    });
+
+      if (response.status === 200) {
+        NotificationSuccess(response.data);
+        setTimeout(() => {
+            navigate("/login");
+          }, 1000);
+      } else {
+        NotificationFailure(response.data);
       }
-      
+    } catch (error) {
+    //   console.error("Error al restablecer la contraseña:", error);
+    console.log(error.response.data)
+      NotificationFailure(error.response.data);
+    }
   };
 
-  const handlePasswordChange = (e) => {
+    const handlePasswordChange = (e) => {
     const password = e.target.value;
     const requirements = {
       minLength: password.length >= 6,
@@ -119,22 +129,8 @@ export default function PasswordChange({email}) {
   };
 
   return (
-    <form className="form-changePsw" onSubmit={handleSubmit}>
-        <h2>Cambiar contraseña</h2>
-      <Row gutter={[16, 16]} className="mb-3">
-        <Col span={24}>
-          <Input
-            placeholder="Contraseña actual"
-            name="oldPassword"
-            type={PasswordInputType}
-            value={values.oldPassword}
-            onChange={handleInputChange}
-          />
-          {errors.oldPassword && (
-            <div className="text-danger">{errors.oldPassword}</div>
-          )}
-        </Col>
-      </Row>
+    <form className="form-resetPsw" onSubmit={handleSubmit}>
+        <h2>Restablecer contraseña</h2>
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
@@ -175,10 +171,12 @@ export default function PasswordChange({email}) {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Button type="primary" htmlType="submit" loading={loading}>
-            Cambiar Contraseña
+            Restablecer contraseña
           </Button>
         </Col>
       </Row>
     </form>
   );
 }
+
+export default ResetPassword;

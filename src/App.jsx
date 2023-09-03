@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./components/dashboard/Dashboard";
 import { Routes } from "react-router-dom";
 import { Navigate } from "react-router-dom";
+import ResetPassword from "./components/resetPassword/ResetPassword";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
@@ -80,6 +81,7 @@ function App() {
             path="/dashboard"
             element={user && user.isAdmin ? <Dashboard /> : <Navigate to="/" />}
           />
+          <Route exact path="/resetPassword" element={<ResetPassword />} />
           <Route path="*" element={NotFound} />
         </Routes>
         <Helmet>

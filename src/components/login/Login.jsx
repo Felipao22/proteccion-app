@@ -11,6 +11,7 @@ import { setToken } from "../../utils/token";
 import { NotificationFailure, NotificationSuccess, NotificationWarning } from "../notifications/Notifications";
 import { useNavigate } from "react-router-dom";
 import { setLoginData, setSelectedBranch } from '../../redux/userSlice'
+import { Button, Modal } from "antd";
 
 export default function Login() {
   const initialValues = {
@@ -20,6 +21,8 @@ export default function Login() {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [PasswordInputType, ToggleIcon] = UsePasswordToggle();
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("");
 
 
   const dispatch = useAppDispatch();
@@ -173,6 +176,29 @@ export default function Login() {
     setSelectedBranchId(branchId);
   };
 
+  const handleResetPassword = async () => {
+    if (!resetPasswordEmail || !validateEmail(resetPasswordEmail)) {
+      NotificationFailure("Por favor, ingrese un correo electrónico válido.");
+      return;
+    }
+
+    try {
+      const response = await apiClient.post("/user/forgot-password", {
+        email: resetPasswordEmail,
+      });
+      setShowResetPasswordModal(false);
+      NotificationSuccess(response.data);
+    } catch (error) {
+      NotificationFailure(
+        "Ocurrió un error al enviar el correo de restablecimiento."
+      );
+    }
+  };
+
+  const handleForgotPasswordClick = () => {
+    setShowResetPasswordModal(true);
+  };
+
   return (
     <div>
       <Form onSubmit={handleLogin}>
@@ -231,16 +257,53 @@ export default function Login() {
                   id="flexCheckDefault"
                   label="Recordar"
                 />
-                <a href="!#">¿Olvidaste tu contraseña?</a>
+ <a href="#!" onClick={(e) => { e.preventDefault(); handleForgotPasswordClick(); }}>
+  ¿Olvidaste tu contraseña?
+</a>
+
               </div>
 
-              <button type="submit" className="boton-login" size="lg">
+              <button
+                type="submit"
+                className="boton-login"
+                size="lg"
+              >
                 Ingresar
               </button>
             </MDBCol>
           </MDBRow>
         </MDBContainer>
       </Form>
+
+      <Modal
+        title="Restablecer contraseña"
+        open={showResetPasswordModal}
+        onCancel={() => setShowResetPasswordModal(false)}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => setShowResetPasswordModal(false)}
+          >
+            Cancelar
+          </Button>,
+          <Button
+            key="reset"
+            type="primary"
+            onClick={handleResetPassword}
+          >
+            Enviar correo
+          </Button>,
+        ]}
+      >
+        <p>Por favor, ingrese su dirección de correo electrónico para restablecer su contraseña.</p>
+        <Form.Control
+          type="email"
+          placeholder="Correo electrónico"
+          value={resetPasswordEmail}
+          autoComplete="on"
+          onChange={(e) => setResetPasswordEmail(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 }
