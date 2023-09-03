@@ -28,3 +28,7 @@ dist-ssr
 .env.local
 .env.[mode]
 .env.[mode].local
+
+# Ignore additional .env files
+.env.development
+.env.production
