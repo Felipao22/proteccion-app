@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../loading/Loading";
 import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
-import { BranchFiles } from "../branchFiles/BranchFiles";
+import { BranchFiles } from "../BranchFiles/BranchFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
 import { Menu, Dropdown, Button, Input } from "antd";
@@ -31,6 +31,7 @@ import { CaretDownOutlined } from "@ant-design/icons";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 import ChangePassword from "../changePassword/ChangePassword"
 const { Search } = Input;
+
 // Función de utilidad para implementar el debounce
 // function debounce(func, delay) {
 //   let timeoutId;
