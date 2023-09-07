@@ -244,8 +244,13 @@ export const Usuario = () => {
                   padding: 24,
                   minHeight: 360,
                   background: colorBgContainer,
+                  maxWidth: 700,
+                  margin: "auto",
+                  borderRadius: 20,
+                  marginTop: "60px"
                 }}
               >
+                <h3 style={{marginTop:"20px"}}>Mis datos</h3>
                 <Form
                   labelCol={{ span: 10 }}
                   wrapperCol={{ span: 10 }}
