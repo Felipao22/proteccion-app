@@ -12,7 +12,7 @@ const { Option } = Select;
 import { DatePicker } from "antd";
 import { useFetchKinds } from "../hooks/useFetchKinds";
 
-export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
+export const UserFiles = ({ userFiles, onDeleteFile  }) => {
 
   const selectedKind = useAppSelector((state) => state.files.selectedKind);
   const selectedDate = useAppSelector((state) => state.files.selectedDate);
@@ -71,7 +71,7 @@ export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
     }
   };
 
-  const filteredFiles = branchFiles.filter((file) => {
+  const filteredFiles = userFiles.filter((file) => {
     const fileCreatedAtMoment = moment(file?.createdAt);
     const selectedDateMoment = selectedDate
       ? moment(selectedDate, "YYYY-MM")
@@ -93,10 +93,11 @@ export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
     const formattedDate = date ? date.format("YYYY-MM") : null; // Almacenar la fecha como cadena "YYYY-MM" o null si no hay fecha
     dispatch(setSelectedDate(formattedDate)); // Actualiza el estado global en Redux
   };
+  
 
   return (
     <div>
-    {branchFiles && branchFiles.length > 0 ? (
+    {userFiles && userFiles.length > 0 ? (
       <div className="form-container">
         <Form style={{margin:"20px"}} layout="inline">
           <Form.Item label="Filtrar por tipo" htmlFor="kind">
@@ -126,7 +127,7 @@ export const BranchFiles = ({ branchFiles, onDeleteFile  }) => {
           </Form.Item>
         </Form>
   
-        <ul style={{margin: "20px"}}>
+        <ul style={{margin: "20px", listStyle: "none" }}>
           {filteredFiles.map((file) => (
             <li key={file.id}>
               {getExtensionIcon(file.name)} {file.name}{" "}

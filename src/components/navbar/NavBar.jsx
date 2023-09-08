@@ -22,10 +22,9 @@ export default function ButtonAppBar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const user = useAppSelector(getUser)
-  const branch = user?.selectedBranch
   const navigate = useNavigate();
 
-  let nombre = branch?.nombreSede?.toString();
+  let nombre = user?.nombreSede;
 
   function stringToColor(string) {
     let hash = 0;
@@ -47,23 +46,21 @@ export default function ButtonAppBar() {
     return color;
   }
 
-
   function stringAvatar(name) {
-    let firstName = name.split(" ")[0];
-    let initials = firstName[0];
+    const firstName = name.split(' - ')[0];
+
+    const initials = firstName.split(' ').map((part) => part[0]).join('');
   
-    if (name.split(" ").length > 1) {
-      let lastName = name.split(" ")[1];
-      initials += lastName[0];
-    }
+    const bgcolor = stringToColor(firstName);
   
     return {
       sx: {
-        bgcolor: stringToColor(firstName),
+        bgcolor: bgcolor,
       },
-      children: initials.replace('-', ''),
+      children: initials,
     };
-  };
+  }
+  
 
   return (
 

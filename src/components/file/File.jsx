@@ -16,10 +16,12 @@ import { UploadOutlined } from "@ant-design/icons";
 export const File = () => {
   const initialValues = {
     kindId: null,
-    branchBranchId: null,
+    userEmail: null,
     emails: null,
     emailText: ""
   };
+
+  // console.log(values.userEmail)
 
   const [formData, setFormData] = useState(initialValues);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -29,6 +31,7 @@ export const File = () => {
   const [loading, setLoading] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([])
   const [selectedBusinessEmail, setSelectedBusinessEmail] = useState(null)
+  const [selectedEmailBoss,setSelectedEmailBoss] = useState(null)
 
   const id = useId();
 
@@ -62,7 +65,7 @@ export const File = () => {
   const handleLoadFile = async () => {
     setLoading(true);
     data.append("file", selectedFile);
-    data.append("branchBranchId", formData.branchBranchId);
+    data.append("userEmail", formData.userEmail);
     data.append("kindId", formData.kindId);
     data.append("emails", formData.emails);
     data.append("emailText", formData.emailText)
@@ -91,26 +94,29 @@ export const File = () => {
   }, []);
 
   useEffect(() => {
-    const fetchBranchData = async () => {
+    const fetchUserData = async () => {
       try {
-        const res = await apiClient.get("/branch");
+        const res = await apiClient.get("/user");
         setSelectedUser(res.data);
 
-        if(formData.branchBranchId){
-          const emailResponse = await apiClient.get(`/branch/${formData.branchBranchId}/emails`)
+        if(formData.userEmail){
+          const emailResponse = await apiClient.get(`/user/${formData.userEmail}/emails`)
+          console.log(emailResponse)
           setSelectedEmails(emailResponse.data)
-          const business = await apiClient.get(`/branch/${formData.branchBranchId}`)
+          const business = await apiClient.get(`/user/${formData.userEmail}`)
           const dataBusiness = business?.data
-          const emailBusiness = dataBusiness?.userEmail
+          const emailBusiness = dataBusiness?.email
           setSelectedBusinessEmail(emailBusiness)
+          const emailBoss = dataBusiness.emailJefe
+          setSelectedEmailBoss(emailBoss)
         }
       } catch (error) {
         NotificationFailure(error.response.data.message);
       }
     };
 
-    fetchBranchData();
-  }, [formData.branchBranchId]);
+    fetchUserData();
+  }, [formData.userEmail]);
 
 
   const KindOfFile = () => {
@@ -128,14 +134,17 @@ export const File = () => {
   const BranchNameOfUser = () => {
     return (
       <>
-        {selectedUser?.map((e) => (
-          <Select.Option key={e.branchId} value={e.branchId}>
-            {e.nombreSede}
-          </Select.Option>
-        ))}
+        {selectedUser
+          ?.filter((user) => !user.isAdmin) // Filtra los usuarios que no son admin
+          .map((e) => (
+            <Select.Option key={e.email} value={e.email}>
+              {e.nombreSede}
+            </Select.Option>
+          ))}
       </>
     );
   };
+  
 
   const handleClearFile = () => {
     resetForm();
@@ -153,6 +162,11 @@ export const File = () => {
         {selectedBusinessEmail && ( 
         <Select.Option key={selectedBusinessEmail} value={selectedBusinessEmail}>
           {selectedBusinessEmail}
+        </Select.Option>
+      )}
+       {selectedEmailBoss && ( 
+        <Select.Option key={selectedEmailBoss} value={selectedEmailBoss}>
+          {selectedEmailBoss}
         </Select.Option>
       )}
       </>
@@ -182,10 +196,10 @@ export const File = () => {
         <Select
           onChange={(value) =>
             handleInputChange({
-              target: { name: "branchBranchId", value },
+              target: { name: "userEmail", value },
             })
           }
-          value={formData.branchBranchId}
+          value={formData.userEmail}
           style={{ maxWidth: "400px" }}
           placeholder="Establecimientos"
         >

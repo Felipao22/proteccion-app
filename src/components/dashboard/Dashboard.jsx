@@ -23,23 +23,15 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../loading/Loading";
 import Register from "../register/Register";
 import RegisterBranch from "../registerBranch/RegisterBranch";
-import { BranchFiles } from "../BranchFiles/BranchFiles";
+import { UserFiles } from "../userFiles/UserFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
 import { Menu, Dropdown, Button, Input } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 import ChangePassword from "../changePassword/ChangePassword"
+import { getTableData, updateTableData } from "../../redux/tableSlice";
 const { Search } = Input;
-
-// Función de utilidad para implementar el debounce
-// function debounce(func, delay) {
-//   let timeoutId;
-//   return function (...args) {
-//     clearTimeout(timeoutId);
-//     timeoutId = setTimeout(() => func.apply(this, args), delay);
-//   };
-// }
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -48,13 +40,14 @@ export default function Dashboard() {
   const [showFile, setShowFile] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showRegisterBranch, setShowRegisterBranch] = useState(false);
-  const [sessionActive, setSessionActive] = useState(true);
-  const [selectedBranch, setSelectedBranch] = useState(null);
-  const [branchFiles, setBranchFiles] = useState([]);
-  const [showBranchFiles, setShowBranchFiles] = useState(false);
-  const [selectedBranchName, setSelectedBranchName] = useState("");
+  const [selectedUserEmail, setSelectedUserEmail] = useState(null);
+  const [userFiles, setUserFiles] = useState([]);
+  const [showUserFiles, setShowUserFiles] = useState(false);
+  const [selectedUserName, setSelectedUserName] = useState("");
   const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [userInfo, setUserInfo] = useState([]);
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -68,6 +61,9 @@ export default function Dashboard() {
   const token = getToken();
 
   const user = useAppSelector(getUser);
+
+  // const tableData = useAppSelector(getTableData).tableData;
+  // console.log(tableData)
   const branch = useAppSelector(getUser).selectedBranch;
 
   useEffect(() => {
@@ -116,15 +112,80 @@ export default function Dashboard() {
   const searchUsers = (rows) => {
     const escapedQ = escapeRegExp(q.trim());
     const searchRegex = new RegExp(escapedQ, "i");
-
+  
     return rows.filter(
       (row) =>
-        searchRegex.test(row.email) ||
-        searchRegex.test(row.nombreEmpresa) ||
-        searchRegex.test(row.branches.ciudad) ||
-        searchRegex.test(row.branches.nombreEstablecimiento)
+        !row.isAdmin && // Filtrar usuarios que no sean admin
+        (searchRegex.test(row.email) ||
+          searchRegex.test(row.nombreEmpresa) ||
+          searchRegex.test(row.ciudad) ||
+          searchRegex.test(row.nombreSede))
     );
   };
+  
+
+  // ...
+
+// const searchUsers = () => {
+//   const escapedQ = escapeRegExp(q.trim());
+//   const searchRegex = new RegExp(escapedQ, "i");
+
+//   return tableData?.filter((row) => {
+//     if (row.isAdmin) {
+//       return false;
+//     }
+
+//     return (
+//       searchRegex.test(row.email) ||
+//       searchRegex.test(row.nombreEmpresa) ||
+//       searchRegex.test(row.ciudad) ||
+//       searchRegex.test(row.nombreSede)
+//     );
+//   });
+// };
+// const tableDataArray = Object.values(tableData);
+
+// const searchUsers = (rows) => {
+//   const escapedQ = escapeRegExp(q.trim());
+//   const searchRegex = new RegExp(escapedQ, "i");
+
+//   const filteredRows = rows.filter((row) => {
+//     if (row.isAdmin) {
+//       return false;
+//     }
+
+//     // Aquí debes ajustar cómo accedes a las propiedades del objeto
+//     const shouldInclude =
+//       searchRegex.test(row.email) ||
+//       searchRegex.test(row.nombreEmpresa) ||
+//       searchRegex.test(row.ciudad) ||
+//       searchRegex.test(row.nombreSede);
+
+//     return shouldInclude;
+//   });
+
+//   return filteredRows;
+// };
+// ...
+
+  
+  // const searchUsers = (tableData) => {
+  //   const escapedQ = escapeRegExp(q.trim());
+  //   const searchRegex = new RegExp(escapedQ, "i");
+  
+  //   return tableData?.filter((row) => {
+  //     if (row.isAdmin) {
+  //       return false;
+  //     }
+  
+  //     return (
+  //       searchRegex.test(row.email) ||
+  //       searchRegex.test(row.nombreEmpresa) ||
+  //       searchRegex.test(row.ciudad) ||
+  //       searchRegex.test(row.nombreSede)
+  //     );
+  //   });
+  // };
 
   const signOff = async () => {
     try {
@@ -140,9 +201,11 @@ export default function Dashboard() {
   };
 
   const blockUser = async (email) => {
+    const response = await apiClient.get(`/user/${email}`);
+    const userToBlock = response.data;
     try {
       const result = await Swal.fire({
-        title: "¿Está seguro que desea bloquear al usuario?",
+        title: `¿Está seguro que desea bloquear al usuario: ${userToBlock.nombreSede}?`,
         text: "¡El usuario no tendrá acceso!",
         icon: "warning",
         showCancelButton: true,
@@ -157,7 +220,7 @@ export default function Dashboard() {
         const response = await apiClient.get("/user");
         const updatedUsers = response.data;
         setSelectedUser(updatedUsers);
-        Swal.fire(`Usuario bloqueado`);
+        Swal.fire(`Usuario ${userToBlock.nombreSede} bloqueado`);
       }
     } catch (error) {
       if (
@@ -173,9 +236,11 @@ export default function Dashboard() {
   };
 
   const activeUser = async (email) => {
+    const response = await apiClient.get(`/user/${email}`);
+    const userToActive = response.data;
     try {
       const result = await Swal.fire({
-        title: "¿Está seguro que desea activar el usuario?",
+        title: `¿Está seguro que desea activar el usuario: ${userToActive.nombreSede}?`,
         text: "¡Volverá a estar activo!",
         icon: "warning",
         showCancelButton: true,
@@ -189,8 +254,9 @@ export default function Dashboard() {
         await apiClient.put(`user/activar/${email}`);
         const response = await apiClient.get("/user");
         const updatedUsers = response.data;
+        console.log(updatedUsers)
         setSelectedUser(updatedUsers);
-        Swal.fire(`Usuario activado`);
+        Swal.fire(`Usuario ${userToActive.nombreSede} activado`);
       }
     } catch (error) {
       if (
@@ -205,22 +271,22 @@ export default function Dashboard() {
     }
   };
 
-  const loadBranchFiles = async (branchId) => {
+  const loadBranchFiles = async (email) => {
     try {
-      const response = await apiClient.get(`/branch/${branchId}/files`);
-      setBranchFiles(response.data);
-      setShowBranchFiles(true);
+      const response = await apiClient.get(`/user/${email}/files`);
+      setUserFiles(response.data);
+      setShowUserFiles(true);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const deleteBranch = async(branchId) => {
-    const response = await apiClient.get(`/branch/${branchId}`);
-    const branchToDelete = response.data;
+  const deleteBranch = async(email) => {
+    const response = await apiClient.get(`/user/${email}`);
+    const userToDelete = response.data;
     try {
       const result = await Swal.fire({
-        title: `¿Está seguro que desea eliminar el establecimiento ${branchToDelete.nombreSede}?`,
+        title: `¿Está seguro que desea eliminar el establecimiento ${userToDelete.nombreSede}?`,
         text: "¡Será eliminado y no podrá ver sus datos!",
         icon: "warning",
         showCancelButton: true,
@@ -231,11 +297,11 @@ export default function Dashboard() {
       });
 
       if (result.isConfirmed) {
-        await apiClient.delete(`/branch/${branchId}`)
+        await apiClient.delete(`/user/${email}`)
         const response = await apiClient.get("/user");
         const updatedBranches = response.data;
         setSelectedUser(updatedBranches);
-        Swal.fire(`Establecimiento ${branchToDelete.nombreSede} eliminada`);
+        Swal.fire(`Establecimiento ${userToDelete.nombreSede} eliminada`);
       }
     } catch (error) {
       if (
@@ -253,7 +319,7 @@ export default function Dashboard() {
 
   const handleDeleteFile = (fileId) => {
     // Actualizar la lista de archivos eliminando el archivo con fileId
-    setBranchFiles(branchFiles.filter((file) => file.id !== fileId));
+    setUserFiles(userFiles.filter((file) => file.id !== fileId));
   };
 
   const handleLoadFile = () => {
@@ -291,27 +357,27 @@ export default function Dashboard() {
     setShowChangePassword(false);
   };
 
-  const handleBranchClick = async (branchId) => {
-    setSelectedBranch(branchId);
-    await loadBranchFiles(branchId);
-    setShowBranchFiles(true);
+  const handleBranchClick = async (email) => {
+    setSelectedUserEmail(email);
+    await loadBranchFiles(email);
+    setShowUserFiles(true);
     try {
-      const response = await apiClient.get(`/branch/${branchId}`);
-      setSelectedBranchName(response.data.nombreSede);
+      const response = await apiClient.get(`/user/${email}`);
+      setSelectedUserName(response.data.nombreSede);
     } catch (error) {
       console.error(error);
-      setSelectedBranchName("");
+      setSelectedUserName("");
     }
 
     handleBranchFiles();
   };
 
   const handleBranchFiles = () => {
-    setShowBranchFiles(true);
+    setShowUserFiles(true);
   };
 
   const handleBackToTable = () => {
-    setShowBranchFiles(false);
+    setShowUserFiles(false);
   };
 
   const formatDate = useFormatDate();
@@ -320,7 +386,13 @@ export default function Dashboard() {
     return user?.isSuperAdmin === true;
   };
 
-  const currentFiles = branchFiles.slice(indexOfFirstFile, indexOfLastFile);
+  const sortedFiles = userFiles.toSorted((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return dateB - dateA;
+  });
+
+  const currentFiles = sortedFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
@@ -339,17 +411,12 @@ export default function Dashboard() {
         Cambiar contraseña
       </Menu.Item>
       {isSuperAdminUser() && (
-        <Menu.Item key="3" onClick={handleRegister}>
-          Registrar empresa
-        </Menu.Item>
-      )}
-      {isSuperAdminUser() && (
-        <Menu.Item key="4" onClick={handleRegisterBranch}>
+        <Menu.Item key="3" onClick={handleRegisterBranch}>
           Registrar establecimiento/obra
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
-        <Menu.Item key="5" onClick={handleRegisterEmployee}>
+        <Menu.Item key="4" onClick={handleRegisterEmployee}>
           Registrar empleado
         </Menu.Item>
       )}
@@ -367,7 +434,7 @@ export default function Dashboard() {
           {!showFile &&
           !showRegister &&
           !showRegisterBranch &&
-          !showBranchFiles &&
+          !showUserFiles &&
           !showRegisterEmployee &&
           !showChangePassword 
           ? (
@@ -400,6 +467,7 @@ export default function Dashboard() {
                     <TableCell align="justify">Empresa</TableCell>
                     <TableCell align="justify">Email Empresa</TableCell>
                     <TableCell align="justify">Establecimiento/Obra</TableCell>
+                    <TableCell align="justify">Email Jefe</TableCell>
                     <TableCell align="justify">Emails</TableCell>
                     <TableCell align="justify">Cuit</TableCell>
                     <TableCell align="justify">Ciudad</TableCell>
@@ -421,117 +489,122 @@ export default function Dashboard() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {searchUsers(selectedUser).map((row) => (
-                    <React.Fragment key={row.email}>
-                      {row.branches.map((branch) => {
-                        const userAccessEmails = branch.accessUser?.flat();
-                        const isUserEmailMatch =
-                          user?.email === row.email ||
-                          userAccessEmails?.includes(user?.email);
-                        const shouldRenderRow =
-                          (isUserEmailMatch && !isSuperAdminUser()) ||
-                          isSuperAdminUser();
+               {searchUsers(selectedUser).map((row) => {
+                  const userAccessEmails = row.accessUser?.flat();
+                  const isUserEmailMatch =
+                    user?.email === row.email ||
+                    userAccessEmails?.includes(user?.email);
+                  const shouldRenderRow =
+                    (isUserEmailMatch && !isSuperAdminUser()) ||
+                    isSuperAdminUser();
 
-                        return shouldRenderRow ? (
-                          <TableRow
-                            key={branch.branchId}
-                            sx={{
-                              "&:last-child td, &:last-child th": { border: 0 },
+                  return shouldRenderRow ? (
+                    <TableRow
+                      key={row.userId}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                      style={
+                        row.active === false
+                          ? { backgroundColor: "#FB4100", color: "white" }
+                          : {}
+                      }
+                    >
+                      <TableCell component="th" scope="row">
+                        {row.nombreEmpresa}
+                      </TableCell>
+                      <TableCell align="justify">
+                        <a href={`mailto:${row.email}`}>{row.email}</a>
+                      </TableCell>
+                      <TableCell align="justify">
+                        {row.nombreSede}
+                      </TableCell>
+                      <TableCell align="justify">
+                        {
+                          row.emailJefe && row.emailJefe.length > 0 ? (
+                            <a href={`mailto:${row.emailJefe}`}>{row.emailJefe}</a>
+                          ) : (
+                            <span
+                            style={{
+                              display: "inline-block",
+                              textAlign: "center",
+                              width: "100%",
                             }}
-                            style={
-                              row.active === false
-                                ? { backgroundColor: "#FB4100", color: "white" }
-                                : {}
-                            }
                           >
-                            <TableCell component="th" scope="row">
-                              {row.nombreEmpresa}
-                            </TableCell>
-                            <TableCell align="justify">
-                              <a href={`mailto:${row.email}`}>{row.email}</a>
-                            </TableCell>
-                            <TableCell align="justify">
-                              {branch.nombreSede}
-                            </TableCell>
-                            <TableCell align="justify">
-                              {branch.emails && branch.emails.length > 0 ? (
-                                branch.emails.map((email, index) => (
-                                  <React.Fragment key={index}>
-                                    <a href={`mailto:${email}`}>{email}</a>
-                                    {index !== branch.emails.length - 1 && ", "}
-                                  </React.Fragment>
-                                ))
-                              ) : (
-                                <span
-                                  style={{
-                                    display: "inline-block",
-                                    textAlign: "center",
-                                    width: "100%",
-                                  }}
-                                >
-                                  -
-                                </span>
-                              )}
-                            </TableCell>
-                            <TableCell align="justify">
-                              {row.cuit || "-"}
-                            </TableCell>
-                            <TableCell align="center">
-                              {branch.ciudad}
-                            </TableCell>
-                            <TableCell align="center">
-                              {branch.direccion}
-                            </TableCell>
-                            <TableCell align="justify">
-                              {branch.telefono || "-"}
-                            </TableCell>
-                            <TableCell align="justify">
-                              {formatDate(branch.createdAt) || "-"}
-                            </TableCell>
-                            <TableCell align="center">
-                              {isSuperAdminUser() && (
-                                <BlockIcon
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => blockUser(row.email)}
-                                />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {isSuperAdminUser() && (
-                                <ActiveIcon
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => activeUser(row.email)}
-                                />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {isSuperAdminUser() && (
-                                <FileIcon
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    handleBranchClick(branch.branchId);
-                                  }}
-                                />
-                              )}
-                            </TableCell>
-                            <TableCell align="center">
-                              {isSuperAdminUser() && (
-                                <DeleteIcon
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    deleteBranch(branch.branchId);
-                                  }}
-                                />
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ) : null;
-                      })}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                            -
+                          </span>
+                          )
+                        }
+                      </TableCell>
+                      <TableCell align="justify">
+                        {row.emails && row.emails.length > 0 ? (
+                          row.emails.map((email, index) => (
+                            <React.Fragment key={index}>
+                              <a href={`mailto:${email}`}>{email}</a>
+                              {index !== row.emails.length - 1 && ", "}
+                            </React.Fragment>
+                          ))
+                        ) : (
+                          <span
+                            style={{
+                              display: "inline-block",
+                              textAlign: "center",
+                              width: "100%",
+                            }}
+                          >
+                            -
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell align="justify">
+                        {row.cuit || "-"}
+                      </TableCell>
+                      <TableCell align="center">{row.ciudad}</TableCell>
+                      <TableCell align="center">{row.direccion}</TableCell>
+                      <TableCell align="justify">
+                        {row.telefono || "-"}
+                      </TableCell>
+                      <TableCell align="justify">
+                        {formatDate(row.createdAt) || "-"}
+                      </TableCell>
+                      {isSuperAdminUser() && (
+                        <>
+                          <TableCell align="center">
+                            <BlockIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => blockUser(row.email)}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <ActiveIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => activeUser(row.email)}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <FileIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                handleBranchClick(row.email);
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            <DeleteIcon
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                deleteBranch(row.email);
+                              }}
+                            />
+                          </TableCell>
+                        </>
+                      )}
+                    </TableRow>
+                  ) : null;
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
           ) : showFile ? (
             <>
               <File />
@@ -588,17 +661,17 @@ export default function Dashboard() {
                 </button>
               </>
           ) : null}
-          {showBranchFiles && selectedBranch && (
+          {showUserFiles && selectedUserEmail && (
             <>
-              <h4 style={{margin:"50px"}}>Archivos de: {selectedBranchName}</h4>
-              <BranchFiles
-                branchFiles={currentFiles}
+              <h4 style={{margin:"50px"}}>Archivos de: {selectedUserName}</h4>
+              <UserFiles
+                userFiles={currentFiles}
                 onDeleteFile={handleDeleteFile}
               />
               {currentFiles.length > 0 && (
                 <AntdCustomPagination
                   currentPage={currentPage}
-                  totalPages={Math.ceil(branchFiles.length / filesPerPage)}
+                  totalPages={Math.ceil(userFiles.length / filesPerPage)}
                   onNextPage={handleNextPage}
                   onPrevPage={handlePrevPage}
                 />
@@ -613,7 +686,7 @@ export default function Dashboard() {
             {!showFile &&
             !showRegister &&
             !showRegisterBranch &&
-            !showBranchFiles &&
+            !showUserFiles &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
                 Cerrar sesión

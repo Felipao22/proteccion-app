@@ -15,7 +15,7 @@ import {
 import apiClient from "../../utils/client";
 import { DownloadIcon } from "../icons/Icons";
 import { useNavigate } from "react-router-dom";
-import { getUser, setUserData, setLogoutData } from "../../redux/userSlice";
+import { getUser, setUserData, setLogoutData, setSelectedBranch } from "../../redux/userSlice";
 import { clearToken, getToken } from "../../utils/token";
 import Loading from "../loading/Loading";
 import { FileOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
@@ -68,7 +68,6 @@ export const Usuario = () => {
 
   const user = useAppSelector(getUser);
 
-  const selectedBranchId = useAppSelector((state) => state.user.selectedBranch);
 
   const token = getToken();
 
@@ -98,11 +97,17 @@ export const Usuario = () => {
               email: data.email,
               nombreEmpresa: data.nombreEmpresa,
               cuit: data.cuit,
+              nombreSede: data.nombreSede,
+              ciudad: data.ciudad,
+              direccion: data.direccion,
+              telefono: data.telefono,
               userId: data.userId,
               authToken: data.authToken,
               isAdmin: data.isAdmin,
             };
             dispatch(setUserData(user));
+            dispatch(setFilesData(data.files));
+            // dispatch(setSelectedBranch(user))
             setLoading(false);
           }
         }
@@ -113,25 +118,25 @@ export const Usuario = () => {
     fetchUserData();
   }, [token, user, dispatch]);
 
-  useEffect(() => {
-    const fetchBranchData = async () => {
-      try {
-        if (user && selectedBranchId) {
-          setLoading(true);
-          const response = await apiClient.get(
-            `/branch/${selectedBranchId.branchId}`
-          );
-          setBranchData(response.data);
-          dispatch(setFilesData(response.data.files));
-          setLoading(false);
-        }
-      } catch (error) {
-        setLoading(false);
-        NotificationFailure(error.response.data.message);
-      }
-    };
-    fetchBranchData();
-  }, [user, selectedBranchId]);
+  // useEffect(() => {
+  //   const fetchBranchData = async () => {
+  //     try {
+  //       if (user && selectedBranchId) {
+  //         setLoading(true);
+  //         const response = await apiClient.get(
+  //           `/branch/${selectedBranchId.branchId}`
+  //         );
+  //         setBranchData(response.data);
+  //         dispatch(setFilesData(response.data.files));
+  //         setLoading(false);
+  //       }
+  //     } catch (error) {
+  //       setLoading(false);
+  //       NotificationFailure(error.response.data.message);
+  //     }
+  //   };
+  //   fetchBranchData();
+  // }, [user, selectedBranchId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -214,6 +219,12 @@ export const Usuario = () => {
 
   const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
 
+  const sortedFiles = currentFiles.slice().toSorted((a, b) => {
+    const dateA = moment(a.createdAt);
+    const dateB = moment(b.createdAt);
+    return dateB - dateA;
+  });
+
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
   };
@@ -244,7 +255,7 @@ export const Usuario = () => {
                   padding: 24,
                   minHeight: 360,
                   background: colorBgContainer,
-                  maxWidth: 700,
+                  maxWidth: 900,
                   margin: "auto",
                   borderRadius: 20,
                   marginTop: "60px"
@@ -279,7 +290,7 @@ export const Usuario = () => {
                         type="text"
                         id="nombreEstablecimiento"
                         name="nombreEstablecimiento"
-                        value={selectedBranchId.nombreSede}
+                        value={user.nombreSede}
                       />
                     </Form.Item>
                     <Form.Item label="Ciudad" htmlFor="ciudad">
@@ -288,7 +299,7 @@ export const Usuario = () => {
                         type="text"
                         id="ciudad"
                         name="ciudad"
-                        value={selectedBranchId.ciudad}
+                        value={user.ciudad}
                       />
                     </Form.Item>
                     <Form.Item label="Dirección" htmlFor="direccion">
@@ -297,7 +308,7 @@ export const Usuario = () => {
                         type="text"
                         id="direccion"
                         name="direccion"
-                        value={selectedBranchId.direccion}
+                        value={user.direccion}
                       />
                     </Form.Item>
                     <Form.Item label="Teléfono" htmlFor="telefono">
@@ -306,7 +317,7 @@ export const Usuario = () => {
                         type="number"
                         id="telefono"
                         name="telefono"
-                        value={selectedBranchId.telefono}
+                        value={user.telefono}
                       />
                     </Form.Item>
 
@@ -333,7 +344,7 @@ export const Usuario = () => {
           >
             {selectedMenuItem === "2" && (
               <div>
-                <h3>Archivos:</h3>
+                <h3 style={{marginTop:"20px"}}>Archivos</h3>
                 <Form.Item label="Filtrar por tipo" htmlFor="kind">
                   <Select
                     onChange={handleKindFilterChange}
@@ -366,7 +377,7 @@ export const Usuario = () => {
                 {files.length === 0 ? (
                   <h4>No tiene archivos cargados actualmente.</h4>
                 ) : (
-                  currentFiles?.map((file) => (
+                  sortedFiles?.map((file) => (
                     <div key={file.id}>
                       {getExtensionIcon(file.name)}
                       <a
