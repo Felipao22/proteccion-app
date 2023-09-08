@@ -369,7 +369,6 @@ export const Usuario = () => {
                       selectedDate ? moment(selectedDate, "YYYY-MM") : null
                     }
                     format="MM/YYYY"
-                    // locale="es_ES"
                   />
                   </Form.Item>  
                 </div>
