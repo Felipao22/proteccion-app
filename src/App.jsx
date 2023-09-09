@@ -14,6 +14,7 @@ import Dashboard from "./components/dashboard/Dashboard";
 import { Routes } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import ResetPassword from "./components/resetPassword/ResetPassword";
+import ChangePasswordUser from "./components/changePassword/ChangePasswordUser";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
@@ -82,6 +83,7 @@ function App() {
             element={user && user.isAdmin ? <Dashboard /> : <Navigate to="/" />}
           />
           <Route exact path="/resetPassword" element={<ResetPassword />} />
+          <Route exact path="/changePasswordUser" element={<ChangePasswordUser />} />
           <Route path="*" element={NotFound} />
         </Routes>
         <Helmet>

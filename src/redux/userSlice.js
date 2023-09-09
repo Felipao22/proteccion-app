@@ -95,6 +95,7 @@ const initialState = {
   isAdmin: false,
   isSuperAdmin: false,
   emails: [],
+  emailJefe: "",
   selectedBranch: [],
 };
 
@@ -108,7 +109,7 @@ export const userSlice = createSlice({
   initialState: getUserDataFromCookies(),
   reducers: {
     setUserData: (state, action) => {
-      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser } =
+      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser,emailJefe } =
         action.payload;
       state.email = email;
       state.nombreEmpresa = nombreEmpresa;
@@ -121,6 +122,7 @@ export const userSlice = createSlice({
       state.direccion = direccion;
       state.telefono = telefono;
       state.accessUser = accessUser;
+      state.emailJefe = emailJefe
       setCookie("user", JSON.stringify(state)); // Guardar en la cookie
     },
     setLoginData: (state, action) => {

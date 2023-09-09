@@ -20,7 +20,7 @@ import { clearToken, getToken } from "../../utils/token";
 import Loading from "../loading/Loading";
 import { FileOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
-import { Form } from "antd";
+import { Form, Button } from "antd";
 import { Input } from "antd";
 import { Select } from "antd";
 const { Option } = Select;
@@ -29,6 +29,7 @@ import { useFetchKinds } from "../hooks/useFetchKinds";
 import { getExtensionIcon } from "../../utils/getExtensionIcon";
 import moment from "moment";
 import AntdCustomPagination from "../Pagination/Pagination";
+import { Modal } from "antd";
 
 function getItem(label, key, icon, children, onClick) {
   return {
@@ -59,6 +60,8 @@ export const Usuario = () => {
   const [loading, setLoading] = useState(true);
   const [branchData, setBranchData] = useState(null);
   const [sessionActive, setSessionActive] = useState(true);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("");
 
   const kinds = useFetchKinds();
 
@@ -104,6 +107,7 @@ export const Usuario = () => {
               userId: data.userId,
               authToken: data.authToken,
               isAdmin: data.isAdmin,
+              emailJefe: data.emailJefe
             };
             dispatch(setUserData(user));
             dispatch(setFilesData(data.files));
@@ -233,6 +237,32 @@ export const Usuario = () => {
     setCurrentPage(currentPage - 1);
   };
 
+  const firstName = user?.nombreSede.split(' - ')[0];
+
+  // console.log(user.emailJefe)
+
+  const handleChangePassword = async () => {
+    try {
+      // Enviar el correo electrónico a la dirección de correo de user.emailJefe
+      const response = await apiClient.post("/user/changePswUser", {
+        emailJefe: resetPasswordEmail,
+      });
+  
+      setShowChangePasswordModal(false);
+      NotificationSuccess(response.data);
+    } catch (error) {
+      NotificationFailure(
+       error.response.data
+      );
+    }
+  };
+  
+
+
+  const handlechangePasswordClick = () => {
+    setResetPasswordEmail(user.emailJefe);
+    setShowChangePasswordModal(true);
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -255,7 +285,7 @@ export const Usuario = () => {
                   padding: 24,
                   minHeight: 360,
                   background: colorBgContainer,
-                  maxWidth: 900,
+                  maxWidth: 600,
                   margin: "auto",
                   borderRadius: 20,
                   marginTop: "60px"
@@ -290,7 +320,7 @@ export const Usuario = () => {
                         type="text"
                         id="nombreEstablecimiento"
                         name="nombreEstablecimiento"
-                        value={user.nombreSede}
+                        value={firstName}
                       />
                     </Form.Item>
                     <Form.Item label="Ciudad" htmlFor="ciudad">
@@ -330,6 +360,22 @@ export const Usuario = () => {
                         value={user.cuit}
                       />
                     </Form.Item>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+                    <Button type="primary">
+                      
+                    <a
+                  href="#!"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlechangePasswordClick();
+                  }}
+                  style={{textDecoration:"none"}}
+                >
+                  Cambiar contraseña
+                </a>
+                    </Button>
+                    </div>
                   </div>
                 </Form>
               </div>
@@ -428,6 +474,34 @@ export const Usuario = () => {
             )}
           </div>
         </Content>
+        <Modal
+  title="Cambiar contraseña"
+  visible={showChangePasswordModal}
+  onCancel={() => setShowChangePasswordModal(false)}
+  footer={[
+    <Button key="cancel" onClick={() => setShowChangePasswordModal(false)}>
+      Cancelar
+    </Button>,
+    <Button
+      key="reset"
+      type="primary"
+      onClick={() => handleChangePassword()}
+    >
+      Enviar correo
+    </Button>,
+  ]}
+>
+  <p>Se enviará un correo al siguiente correo electrónico: {user.emailJefe}</p>
+  <Form
+  type="email"
+  placeholder="Correo electrónico"
+  value={resetPasswordEmail}
+  autoComplete="on"
+  onChange={(e) => setResetPasswordEmail(e.target.value)} // Asegúrate de que esta línea sea correcta
+>
+</Form>
+
+</Modal>
       </Layout>
     </Layout>
   );
