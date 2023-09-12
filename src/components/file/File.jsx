@@ -32,6 +32,8 @@ export const File = ({ userEmail }) => {
   const [selectedEmails, setSelectedEmails] = useState([])
   const [selectedBusinessEmail, setSelectedBusinessEmail] = useState(null)
   const [selectedEmailBoss,setSelectedEmailBoss] = useState(null)
+  const userLoggedInEmail = userEmail;
+  const [userInfo, setUserInfo] = useState({});
 
   const id = useId();
 
@@ -130,12 +132,42 @@ export const File = ({ userEmail }) => {
     );
   };
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await apiClient.get(`/user/${userLoggedInEmail}`)
+        const userData = response.data;
+        setUserInfo(userData);
+      } catch (error) {
+        NotificationFailure(error.response.data)
+      }
+    }
+    fetchUserInfo()
+  },[userLoggedInEmail])
+
 
   const BranchNameOfUser = () => {
-    const userLoggedInEmail = userEmail;
+
+    // Verifica si el usuario es isSuperAdmin
+    const isSuperAdmin = userInfo?.isSuperAdmin;
+    // Si es isSuperAdmin, proporciona acceso a todos los establecimientos
+    if (isSuperAdmin) {
+      const allBranches = selectedUser
+        ?.filter((user) => !user.isAdmin)
+        .map((e) => (
+          <Select.Option key={e.email} value={e.email}>
+            {e.nombreSede}
+          </Select.Option>
+        ));
+  
+      return <>{allBranches}</>;
+    }
   
     const filteredBranches = selectedUser
-      ?.filter((user) => !user.isAdmin && user.accessUser?.flat().includes(userLoggedInEmail))
+      ?.filter(
+        (user) =>
+          !user.isAdmin && user.accessUser?.flat().includes(userLoggedInEmail)
+      )
       .map((e) => (
         <Select.Option key={e.email} value={e.email}>
           {e.nombreSede}
@@ -159,6 +191,8 @@ export const File = ({ userEmail }) => {
       </>
     );
   };
+  
+  
   
   
   
