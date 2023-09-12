@@ -13,7 +13,7 @@ import { MDBIcon } from "mdb-react-ui-kit";
 import { formatFileSize } from "../../utils/formatFilesize";
 import { UploadOutlined } from "@ant-design/icons";
 
-export const File = () => {
+export const File = ({ userEmail }) => {
   const initialValues = {
     kindId: null,
     userEmail: null,
@@ -101,7 +101,6 @@ export const File = () => {
 
         if(formData.userEmail){
           const emailResponse = await apiClient.get(`/user/${formData.userEmail}/emails`)
-          console.log(emailResponse)
           setSelectedEmails(emailResponse.data)
           const business = await apiClient.get(`/user/${formData.userEmail}`)
           const dataBusiness = business?.data
@@ -131,19 +130,37 @@ export const File = () => {
     );
   };
 
+
   const BranchNameOfUser = () => {
+    const userLoggedInEmail = userEmail;
+  
+    const filteredBranches = selectedUser
+      ?.filter((user) => !user.isAdmin && user.accessUser?.flat().includes(userLoggedInEmail))
+      .map((e) => (
+        <Select.Option key={e.email} value={e.email}>
+          {e.nombreSede}
+        </Select.Option>
+      ));
+  
+    // Agrega una opción para el caso en que el usuario no tenga acceso
+    const noAccessOption = (
+      <Select.Option key="no-access" value="no-access" disabled>
+        No tiene acceso a ningún establecimiento aún.
+      </Select.Option>
+    );
+  
     return (
       <>
-        {selectedUser
-          ?.filter((user) => !user.isAdmin) // Filtra los usuarios que no son admin
-          .map((e) => (
-            <Select.Option key={e.email} value={e.email}>
-              {e.nombreSede}
-            </Select.Option>
-          ))}
+        {filteredBranches?.length > 0 ? (
+          [...filteredBranches]
+        ) : (
+          noAccessOption
+        )}
       </>
     );
   };
+  
+  
   
 
   const handleClearFile = () => {
@@ -206,7 +223,7 @@ export const File = () => {
           {BranchNameOfUser()}
         </Select>
       </Form.Item>
-      <label htmlFor={id}>Seleccionar emails:</label>
+      <label htmlFor={id}>Seleccione los emails a quien se notificará:</label>
       <Form.Item htmlFor={id}>
         <Select
         mode="multiple"
@@ -222,7 +239,7 @@ export const File = () => {
           {EmailsOfBranch()}
         </Select>
       </Form.Item>
-       <label htmlFor={id}>Texto para el mail:</label>
+       <label htmlFor={id}>Notas/Aclaraciones complementarias:</label>
       <Form.Item htmlFor={id}>
         <TextArea
           rows={4}

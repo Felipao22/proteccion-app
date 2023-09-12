@@ -21,9 +21,6 @@ const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
 const Contact = lazy(() => import("./components/contact/Contact.jsx"));
 const Soluciones = lazy(() => import("./components/soluciones/Soluciones.jsx"));
 const Login = lazy(() => import("./components/login/Login"));
-const RegisterBranch = lazy(() =>
-  import("./components/registerBranch/RegisterBranch")
-);
 
 function App() {
   const user = useSelector((state) => state.user);
@@ -66,7 +63,6 @@ function App() {
               )
             }
           />
-          <Route exact path="/register" element={<RegisterBranch />} />
           <Route
             path="/usuario"
             element={
@@ -80,7 +76,7 @@ function App() {
           <Route
             exact
             path="/dashboard"
-            element={user && user.isAdmin ? <Dashboard /> : <Navigate to="/" />}
+            element={user && user.isAdmin ? <Dashboard /> : <Navigate to="/login" />}
           />
           <Route exact path="/resetPassword" element={<ResetPassword />} />
           <Route exact path="/changePasswordUser" element={<ChangePasswordUser />} />

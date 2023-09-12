@@ -115,7 +115,7 @@ export default function Dashboard() {
   
     return rows.filter(
       (row) =>
-        !row.isAdmin && // Filtrar usuarios que no sean admin
+        !row.isAdmin && 
         (searchRegex.test(row.email) ||
           searchRegex.test(row.nombreEmpresa) ||
           searchRegex.test(row.ciudad) ||
@@ -123,69 +123,6 @@ export default function Dashboard() {
     );
   };
   
-
-  // ...
-
-// const searchUsers = () => {
-//   const escapedQ = escapeRegExp(q.trim());
-//   const searchRegex = new RegExp(escapedQ, "i");
-
-//   return tableData?.filter((row) => {
-//     if (row.isAdmin) {
-//       return false;
-//     }
-
-//     return (
-//       searchRegex.test(row.email) ||
-//       searchRegex.test(row.nombreEmpresa) ||
-//       searchRegex.test(row.ciudad) ||
-//       searchRegex.test(row.nombreSede)
-//     );
-//   });
-// };
-// const tableDataArray = Object.values(tableData);
-
-// const searchUsers = (rows) => {
-//   const escapedQ = escapeRegExp(q.trim());
-//   const searchRegex = new RegExp(escapedQ, "i");
-
-//   const filteredRows = rows.filter((row) => {
-//     if (row.isAdmin) {
-//       return false;
-//     }
-
-//     // Aquí debes ajustar cómo accedes a las propiedades del objeto
-//     const shouldInclude =
-//       searchRegex.test(row.email) ||
-//       searchRegex.test(row.nombreEmpresa) ||
-//       searchRegex.test(row.ciudad) ||
-//       searchRegex.test(row.nombreSede);
-
-//     return shouldInclude;
-//   });
-
-//   return filteredRows;
-// };
-// ...
-
-  
-  // const searchUsers = (tableData) => {
-  //   const escapedQ = escapeRegExp(q.trim());
-  //   const searchRegex = new RegExp(escapedQ, "i");
-  
-  //   return tableData?.filter((row) => {
-  //     if (row.isAdmin) {
-  //       return false;
-  //     }
-  
-  //     return (
-  //       searchRegex.test(row.email) ||
-  //       searchRegex.test(row.nombreEmpresa) ||
-  //       searchRegex.test(row.ciudad) ||
-  //       searchRegex.test(row.nombreSede)
-  //     );
-  //   });
-  // };
 
   const signOff = async () => {
     try {
@@ -423,6 +360,8 @@ export default function Dashboard() {
     </Menu>
   );
 
+  const userLogin = user.email
+
   return (
     <>
       {loading ? (
@@ -607,7 +546,7 @@ export default function Dashboard() {
           </TableContainer>
           ) : showFile ? (
             <>
-              <File />
+              <File userEmail={userLogin}/>
               <button
                 style={{ marginTop: "50px", marginLeft: "20px" }}
                 className="btn"
