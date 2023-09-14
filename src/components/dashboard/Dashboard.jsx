@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import apiClient from "../../utils/client";
 import Swal from "sweetalert2";
 import { File } from "../file/File";
-import Loading from "../loading/Loading"
+import Loading from "../loading/Loading";
 import useFormatDate from "../hooks/useFormattedDate";
 import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
 import { setFilesDataLogOut } from "../../redux/filesSlice";
@@ -25,10 +18,18 @@ import { UserFiles } from "../userFiles/UserFiles";
 import AntdCustomPagination from "../Pagination/Pagination";
 import "./Dashboard.css";
 import { Menu, Dropdown, Button, Input } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 import ChangePassword from "../changePassword/ChangePassword";
-const { Search } = Input;
+import EmployeeList from "../employeeList/EmployeeList";
+import { Table, Space } from "antd";
+import {
+  CaretDownOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  DeleteOutlined,
+  EllipsisOutlined,
+  FileOutlined,
+} from "@ant-design/icons";
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -42,6 +43,7 @@ export default function Dashboard() {
   const [selectedUserName, setSelectedUserName] = useState("");
   const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showEmployeesList, setShowEmployeesList] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -56,8 +58,6 @@ export default function Dashboard() {
 
   const user = useAppSelector(getUser);
 
-  // const tableData = useAppSelector(getTableData).tableData;
-  // console.log(tableData)
   const branch = useAppSelector(getUser).selectedBranch;
 
   useEffect(() => {
@@ -160,9 +160,9 @@ export default function Dashboard() {
         error.response.data &&
         error.response.data.message
       ) {
-        console.log(error.response.data.message);
+        NotificationFailure(error.response.data.message);
       } else {
-        console.error("Error al bloquear el usuario");
+        NotificationFailure("Error al bloquear el usuario");
       }
     }
   };
@@ -196,9 +196,9 @@ export default function Dashboard() {
         error.response.data &&
         error.response.data.message
       ) {
-        console.log(error.response.data.message);
+        NotificationFailure(error.response.data.message);
       } else {
-        console.error("Error al activar el usuario");
+        NotificationFailure("Error al activar el usuario");
       }
     }
   };
@@ -209,7 +209,7 @@ export default function Dashboard() {
       setUserFiles(response.data);
       setShowUserFiles(true);
     } catch (error) {
-      console.error(error);
+      NotificationFailure(error);
     }
   };
 
@@ -241,9 +241,9 @@ export default function Dashboard() {
         error.response.data &&
         error.response.data.message
       ) {
-        console.log(error.response.data.message);
+        NotificationFailure(error.response.data.message);
       } else {
-        console.error("Error al eliminar el Establecimiento/Obra");
+        NotificationFailure("Error al eliminar el Establecimiento/Obra");
       }
     }
   };
@@ -259,11 +259,13 @@ export default function Dashboard() {
     registerBranch: () => setShowRegisterBranch(true),
     backDashboard: () => setShowRegisterBranch(false),
     registerEmployee: () => setShowRegisterEmployee(true),
+    listEmployees: () => setShowEmployeesList(true),
     backToDashboard: () => setShowRegisterEmployee(false),
     changePassword: () => setShowChangePassword(true),
     backToMenu: () => setShowChangePassword(false),
     branchFiles: () => setShowUserFiles(true),
     backToTable: () => setShowUserFiles(false),
+    backTo: () => setShowEmployeesList(false),
   };
 
   const handleActionAdmin = (action) => {
@@ -328,6 +330,11 @@ export default function Dashboard() {
           Registrar empleado
         </Menu.Item>
       )}
+      {isSuperAdminUser() && (
+        <Menu.Item key="5" onClick={() => handleActionAdmin("listEmployees")}>
+          Empleados
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -335,22 +342,26 @@ export default function Dashboard() {
     <Menu>
       {isSuperAdminUser() && (
         <Menu.Item key="1" onClick={() => handleAction("bloquear", email)}>
-          Bloquear
+          <LockOutlined /> Bloquear
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
         <Menu.Item key="2" onClick={() => handleAction("activar", email)}>
-          Activar
+          <UnlockOutlined /> Activar
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
         <Menu.Item key="3" onClick={() => handleAction("archivos", email)}>
-          Archivos
+          <FileOutlined /> Archivos
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
-        <Menu.Item key="4" onClick={() => handleAction("eliminar", email)}>
-          Eliminar
+        <Menu.Item
+          key="4"
+          danger
+          onClick={() => handleAction("eliminar", email)}
+        >
+          <DeleteOutlined /> Eliminar
         </Menu.Item>
       )}
     </Menu>
@@ -377,6 +388,93 @@ export default function Dashboard() {
     }
   };
 
+  const columns = [
+    {
+      title: "Empresa",
+      dataIndex: "nombreEmpresa",
+      key: "nombreEmpresa",
+    },
+    {
+      title: "Email Empresa",
+      dataIndex: "email",
+      key: "email",
+      render: (text) => <a href={`mailto:${text}`}>{text}</a>,
+    },
+    {
+      title: "Establecimiento/Obra",
+      dataIndex: "nombreSede",
+      key: "nombreSede",
+    },
+    {
+      title: "Email Jefe",
+      dataIndex: "emailJefe",
+      key: "emailJefe",
+      render: (text) => (text ? <a href={`mailto:${text}`}>{text}</a> : "-"),
+    },
+    {
+      title: "Emails",
+      dataIndex: "emails",
+      key: "emails",
+      render: (emails) =>
+        emails && emails.length > 0 ? (
+          <span>
+            {emails.map((email, index) => (
+              <span key={index}>
+                <a href={`mailto:${email}`}>{email}</a>
+                {index < emails.length - 1 && ", "}
+              </span>
+            ))}
+          </span>
+        ) : (
+          "-"
+        ),
+    },
+    {
+      title: "Cuit",
+      dataIndex: "cuit",
+      key: "cuit",
+      render: (text) => text || "-",
+    },
+    {
+      title: "Ciudad",
+      dataIndex: "ciudad",
+      key: "ciudad",
+    },
+    {
+      title: "Dirección",
+      dataIndex: "direccion",
+      key: "direccion",
+    },
+    {
+      title: "Teléfono",
+      dataIndex: "telefono",
+      key: "telefono",
+      render: (text) => text || "-",
+    },
+    {
+      title: "Registrado",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => formatDate(date) || "-",
+    },
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (record) => (
+        <Space size="middle">
+          <Dropdown
+            overlay={() => acciones(record.email)}
+            placement="bottomLeft"
+          >
+            <Button>
+              <EllipsisOutlined />
+            </Button>
+          </Dropdown>
+        </Space>
+      ),
+    },
+  ];
+
   const userLogin = user.email;
 
   return (
@@ -391,138 +489,46 @@ export default function Dashboard() {
           !showRegisterBranch &&
           !showUserFiles &&
           !showRegisterEmployee &&
+          !showEmployeesList &&
           !showChangePassword ? (
-            <TableContainer component={Paper}>
-              <div style={{ marginTop: "20px", marginLeft: "20px" }}>
-                <Dropdown overlay={menu}>
-                  <Button
-                    className="ant-dropdown-link"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Acciones <CaretDownOutlined />
-                  </Button>
-                </Dropdown>
-              </div>
-              <div>
-                <Search
-                  style={{ margin: "20px", maxWidth: "200px" }}
-                  type="text"
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                />
-              </div>
-              <Table
-                style={{ marginTop: "20px" }}
-                sx={{ minWidth: 650 }}
-                aria-label="simple table"
-              >
-                <TableHead>
-                  <TableRow style={{ textTransform: "uppercase" }}>
-                    <TableCell align="justify">Empresa</TableCell>
-                    <TableCell align="justify">Email Empresa</TableCell>
-                    <TableCell align="justify">Establecimiento/Obra</TableCell>
-                    <TableCell align="justify">Email Jefe</TableCell>
-                    <TableCell align="justify">Emails</TableCell>
-                    <TableCell align="justify">Cuit</TableCell>
-                    <TableCell align="justify">Ciudad</TableCell>
-                    <TableCell align="justify">Dirección</TableCell>
-                    <TableCell align="justify">Teléfono</TableCell>
-                    <TableCell align="justify">Registrado</TableCell>
-                    {isSuperAdminUser() && (
-                      <TableCell align="justify">Acciones</TableCell>
-                    )}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {searchUsers(selectedUser).map((row) => {
-                    const userAccessEmails = row.accessUser?.flat();
-                    const isUserEmailMatch =
-                      user?.email === row.email ||
-                      userAccessEmails?.includes(user?.email);
-                    const shouldRenderRow =
-                      (isUserEmailMatch && !isSuperAdminUser()) ||
-                      isSuperAdminUser();
+            <div>
+              <Dropdown overlay={menu} className="actions-dropdown">
+                <Button
+                  style={{ margin: "10px" }}
+                  className="ant-dropdown-link"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  Acciones <CaretDownOutlined />
+                </Button>
+              </Dropdown>
 
-                    return shouldRenderRow ? (
-                      <TableRow
-                        key={row.userId}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                        style={
-                          row.active === false
-                            ? { backgroundColor: "#FB4100", color: "white" }
-                            : {}
-                        }
-                      >
-                        <TableCell component="th" scope="row">
-                          {row.nombreEmpresa}
-                        </TableCell>
-                        <TableCell align="justify">
-                          <a href={`mailto:${row.email}`}>{row.email}</a>
-                        </TableCell>
-                        <TableCell align="justify">{row.nombreSede}</TableCell>
-                        <TableCell align="justify">
-                          {row.emailJefe && row.emailJefe.length > 0 ? (
-                            <a href={`mailto:${row.emailJefe}`}>
-                              {row.emailJefe}
-                            </a>
-                          ) : (
-                            <span
-                              style={{
-                                display: "inline-block",
-                                textAlign: "center",
-                                width: "100%",
-                              }}
-                            >
-                              -
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell align="justify">
-                          {row.emails && row.emails.length > 0 ? (
-                            row.emails.map((email, index) => (
-                              <React.Fragment key={index}>
-                                <a href={`mailto:${email}`}>{email}</a>
-                                {index !== row.emails.length - 1 && ", "}
-                              </React.Fragment>
-                            ))
-                          ) : (
-                            <span
-                              style={{
-                                display: "inline-block",
-                                textAlign: "center",
-                                width: "100%",
-                              }}
-                            >
-                              -
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell align="justify">{row.cuit || "-"}</TableCell>
-                        <TableCell align="center">{row.ciudad}</TableCell>
-                        <TableCell align="center">{row.direccion}</TableCell>
-                        <TableCell align="justify">
-                          {row.telefono || "-"}
-                        </TableCell>
-                        <TableCell align="justify">
-                          {formatDate(row.createdAt) || "-"}
-                        </TableCell>
-                        {isSuperAdminUser() && (
-                          <TableCell align="center">
-                            <Dropdown overlay={acciones(row.email)}>
-                              <Button className="ant-dropdown-link">
-                                <CaretDownOutlined />
-                              </Button>
-                            </Dropdown>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    ) : null;
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
+              <Input
+                style={{ margin: "40px", maxWidth: "200px" }}
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Buscar"
+              />
+
+              <Table
+                style={{
+                  marginRight: "10px",
+                  marginLeft: "10px",
+                  marginTop: "30px",
+                }}
+                columns={columns}
+                dataSource={searchUsers(selectedUser)}
+                rowKey="userId"
+                pagination={{
+                  pageSize: 10,
+                  size: "small",
+                }}
+                scroll={{ x: true }}
+                rowClassName={(record) =>
+                  record.active === false ? "blocked-row" : ""
+                }
+              />
+            </div>
           ) : showFile ? (
             <>
               <File userEmail={userLogin} />
@@ -541,6 +547,17 @@ export default function Dashboard() {
                 style={{ margin: "50px" }}
                 className="btn"
                 onClick={() => handleActionAdmin("backDashboard")}
+              >
+                Volver
+              </button>
+            </>
+          ) : showEmployeesList ? (
+            <>
+              <EmployeeList />
+              <button
+                style={{ margin: "50px" }}
+                className="btn"
+                onClick={() => handleActionAdmin("backTo")}
               >
                 Volver
               </button>
@@ -568,6 +585,7 @@ export default function Dashboard() {
               </button>
             </>
           ) : null}
+
           {showUserFiles && selectedUserEmail && (
             <>
               <h4 style={{ margin: "50px" }}>
@@ -595,10 +613,12 @@ export default function Dashboard() {
               </button>
             </>
           )}
+
           <div>
             {!showFile &&
             !showRegisterBranch &&
             !showUserFiles &&
+            !showEmployeesList &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
                 Cerrar sesión
