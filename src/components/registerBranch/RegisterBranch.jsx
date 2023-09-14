@@ -40,7 +40,7 @@ export default function Register() {
     telefono: "",
     emails: "",
     accessUser: "",
-    emailJefe: ""
+    emailJefe: "",
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -115,7 +115,6 @@ export default function Register() {
     setErrors({});
 
     values.accessUser = emailEmployee;
-    // values.accessUser = emailEmployee?.filter(email => email.trim() !== '');
 
     // Valida los campos
     let newErrors = {};
@@ -169,7 +168,7 @@ export default function Register() {
     if (!emailFields) {
       newErrors.emails = "Mails requeridos";
     }
-    
+
     if (!values.emailJefe) {
       newErrors.emailJefe = "Email requerido";
     }
@@ -268,15 +267,17 @@ export default function Register() {
 
   const AdminEmailSelect = () => {
     return (
-      <div style={{ marginLeft:"40px"}}>
+      <div style={{ marginLeft: "40px" }}>
         {emailEmployee.map((email, index) => (
           <div key={index}>
-            <label style={{marginBottom:"10px"}} >Dar acceso a empleados:</label>
-            <Form.Item >
+            <label style={{ marginBottom: "10px" }}>
+              Dar acceso a empleados:
+            </label>
+            <Form.Item>
               <Select
                 value={email}
                 onChange={(value) => handleAdminEmailChange(index, value)}
-                style={{ maxWidth:"700px" }}
+                style={{ maxWidth: "700px" }}
                 placeholder="Seleccionar email de empleado"
                 mode="multiple"
               >
@@ -284,7 +285,7 @@ export default function Register() {
                   ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
                   .map((user) => (
                     <Select.Option key={user.userId} value={user.email}>
-                      {user.email}
+                      {user?.name} {user?.lastName}
                     </Select.Option>
                   ))}
               </Select>
@@ -294,7 +295,6 @@ export default function Register() {
       </div>
     );
   };
-  
 
   // const handleAdminEmailChange = (index, value) => {
   //   const updatedFields = [...emailEmployee];
@@ -354,12 +354,6 @@ export default function Register() {
                 )}
                 <div className="d-flex flex-row align-items-center mb-4">
                   <div style={{ width: "40px", marginRight: "10px" }}>
-                    {/* <MDBIcon
-                      fas
-                      icon="envelope"
-                      size="lg"
-                      style={{ marginTop: "5px" }}
-                    /> */}
                     <MDBIcon fas icon="user" size="lg" />
                   </div>
                   <MDBInput

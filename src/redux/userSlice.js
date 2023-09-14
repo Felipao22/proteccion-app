@@ -90,6 +90,8 @@ const initialState = {
   ciudad:"",
   direccion:"",
   telefono:"",
+  name:"",
+  lastName:"",
   accessUser:[],
   createdAt: "",
   isAdmin: false,
@@ -109,7 +111,7 @@ export const userSlice = createSlice({
   initialState: getUserDataFromCookies(),
   reducers: {
     setUserData: (state, action) => {
-      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser,emailJefe } =
+      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser,emailJefe, name, lastName } =
         action.payload;
       state.email = email;
       state.nombreEmpresa = nombreEmpresa;
@@ -122,7 +124,9 @@ export const userSlice = createSlice({
       state.direccion = direccion;
       state.telefono = telefono;
       state.accessUser = accessUser;
-      state.emailJefe = emailJefe
+      state.emailJefe = emailJefe;
+      state.name = name;
+      state.lastName= lastName;
       setCookie("user", JSON.stringify(state)); // Guardar en la cookie
     },
     setLoginData: (state, action) => {

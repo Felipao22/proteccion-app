@@ -24,6 +24,8 @@ export default function RegisterEmployee() {
     email: "",
     password: "",
     confirmPassword: "",
+    name:"",
+    lastName:""
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
@@ -57,6 +59,11 @@ export default function RegisterEmployee() {
 
   }
 
+  const validateUpperCase = (name) => {
+    const regex = /^[A-Z]/
+    return regex.test(name)
+  }
+
 
   const resetForm = () => {
     setValues(initialValues);
@@ -72,6 +79,8 @@ export default function RegisterEmployee() {
     setLoading(true);
     data.append("email", values.email);
     data.append("password", values.password);
+    data.append("name", values.name);
+    data.append("lastName", values.lastName)
 
     // Reinicia los errores
     setErrors({});
@@ -83,9 +92,27 @@ export default function RegisterEmployee() {
     if (!values.email) {
       newErrors.email = "Email requerido";
     }
+
     if (!validateEmail(values.email)) {
       newErrors.email = "Email inválido";
     }
+
+    if (!values.name) {
+      newErrors.name = "Nombre requerido";
+    }
+
+    if (!validateUpperCase(values.name)) {
+      newErrors.name = "Primera letra debe ser mayúscula";
+    }
+
+    if (!values.lastName) {
+      newErrors.lastName = "Apellido requerido";
+    }
+
+    if (!validateUpperCase(values.lastName)) {
+      newErrors.lastName = "Primera letra debe ser mayúscula";
+    }
+    
     if (!values.password) {
       newErrors.password = "Contraseña requerida";
     }
@@ -163,7 +190,7 @@ export default function RegisterEmployee() {
                     placeholder="mail@example.com"
                     onChange={handleInputChange}
                     label="Email"
-                    id="form3"
+                    id="form1"
                   />
                 </div>
                 {errors.email && (
@@ -175,6 +202,56 @@ export default function RegisterEmployee() {
                     }}
                   >
                     {errors.email}
+                  </span>
+                )}
+                  <div className="d-flex flex-row align-items-center mb-4">
+                  <div style={{ width: "40px", marginRight: "10px" }}>
+                    <MDBIcon fas icon="user" size="lg" />
+                  </div>
+                  <MDBInput
+                    type="text"
+                    name="name"
+                    value={values.name}
+                    placeholder="Cristian"
+                    onChange={handleInputChange}
+                    label="Nombre"
+                    id="form2"
+                  />
+                </div>
+                {errors.name && (
+                  <span
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {errors.name}
+                  </span>
+                )}
+                  <div className="d-flex flex-row align-items-center mb-4">
+                  <div style={{ width: "40px", marginRight: "10px" }}>
+                    <MDBIcon fas icon="user" size="lg" />
+                  </div>
+                  <MDBInput
+                    type="text"
+                    name="lastName"
+                    value={values.lastName}
+                    placeholder="Montenegro"
+                    onChange={handleInputChange}
+                    label="Apellido"
+                    id="form3"
+                  />
+                </div>
+                {errors.lastName && (
+                  <span
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {errors.lastName}
                   </span>
                 )}
 
@@ -258,7 +335,6 @@ export default function RegisterEmployee() {
                 <div>Registrando empleado...</div>
               </div>
             )}
-
                 <button type="submit" className="boton-register" size="lg">
                   Registrar
                 </button>

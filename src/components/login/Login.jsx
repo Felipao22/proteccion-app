@@ -224,12 +224,6 @@ export default function Login() {
               )}
 
               <div className="d-flex justify-content-between mx-4 mb-4 mt-4 label-font">
-                <MDBCheckbox
-                  name="flexCheck"
-                  value=""
-                  id="flexCheckDefault"
-                  label="Recordar"
-                />
                 <a
                   href="#!"
                   onClick={(e) => {
