@@ -207,11 +207,12 @@ const EmployeeList = ({}) => {
 
   return (
     <Table
-      style={{ margin: "50px" }}
+      style={{ margin: "20px", marginTop:"50px" }}
       columns={columns}
       dataSource={employees}
       rowKey="email"
       pagination={false}
+      scroll={{x:true}}
       rowClassName={(record) => (record.active === false ? "blocked-row" : "")}
     />
   );
