@@ -29,7 +29,9 @@ import {
   DeleteOutlined,
   EllipsisOutlined,
   FileOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
+import { AddKind } from "../addKind/AddKind";
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -44,6 +46,7 @@ export default function Dashboard() {
   const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEmployeesList, setShowEmployeesList] = useState(false);
+  const [showAddKind, setShowAddKind] = useState(false)
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -266,6 +269,8 @@ export default function Dashboard() {
     branchFiles: () => setShowUserFiles(true),
     backToTable: () => setShowUserFiles(false),
     backTo: () => setShowEmployeesList(false),
+    addKind: () => setShowAddKind(true),
+    backAgain: () => setShowAddKind(false)
   };
 
   const handleActionAdmin = (action) => {
@@ -333,6 +338,11 @@ export default function Dashboard() {
       {isSuperAdminUser() && (
         <Menu.Item key="5" onClick={() => handleActionAdmin("listEmployees")}>
           Empleados
+        </Menu.Item>
+      )}
+      {isSuperAdminUser() && (
+        <Menu.Item key="6" onClick={() => handleActionAdmin("addKind")}>
+          Agregar tipo de archivo
         </Menu.Item>
       )}
     </Menu>
@@ -490,6 +500,7 @@ export default function Dashboard() {
           !showUserFiles &&
           !showRegisterEmployee &&
           !showEmployeesList &&
+          !showAddKind &&
           !showChangePassword ? (
             <div>
               <Dropdown overlay={menu} className="actions-dropdown">
@@ -532,58 +543,69 @@ export default function Dashboard() {
           ) : showFile ? (
             <>
               <File userEmail={userLogin} />
-              <button
+              <Button
                 style={{ marginTop: "50px", marginLeft: "20px" }}
-                className="btn"
+                type="primary"
                 onClick={() => handleActionAdmin("back")}
               >
                 Volver
-              </button>
+              </Button>
             </>
           ) : showRegisterBranch ? (
             <>
               <RegisterBranch />
-              <button
+              <Button
                 style={{ margin: "50px" }}
-                className="btn"
+                type="primary"
                 onClick={() => handleActionAdmin("backDashboard")}
               >
                 Volver
-              </button>
+              </Button>
             </>
           ) : showEmployeesList ? (
             <>
               <EmployeeList />
-              <button
+              <Button
                 style={{ margin: "50px" }}
-                className="btn"
+                type="primary"
                 onClick={() => handleActionAdmin("backTo")}
               >
                 Volver
-              </button>
+              </Button>
             </>
           ) : showRegisterEmployee ? (
             <>
               <RegisterEmployee />
-              <button
+              <Button
                 style={{ margin: "50px" }}
-                className="btn"
+                type="primary"
                 onClick={() => handleActionAdmin("backToDashboard")}
               >
                 Volver
-              </button>
+              </Button>
             </>
           ) : showChangePassword ? (
             <>
               <ChangePassword email={user.email} />
-              <button
+              <Button
                 style={{ margin: "50px" }}
-                className="btn"
+                type="primary"
                 onClick={() => handleActionAdmin("backToMenu")}
               >
                 Volver
-              </button>
+              </Button>
             </>
+            ) : showAddKind ? (
+              <>
+                <AddKind />
+                <Button
+                  style={{ margin: "50px" }}
+                  type="primary"
+                  onClick={() => handleActionAdmin("backAgain")}
+                >
+                  Volver
+                </Button>
+              </>
           ) : null}
 
           {showUserFiles && selectedUserEmail && (
@@ -619,9 +641,11 @@ export default function Dashboard() {
             !showRegisterBranch &&
             !showUserFiles &&
             !showEmployeesList &&
+            !showAddKind &&
+            !showChangePassword &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
-                Cerrar sesión
+              <LogoutOutlined className="icon-logout" /> Cerrar sesión
               </button>
             ) : null}
           </div>

@@ -207,7 +207,11 @@ const EmployeeList = ({}) => {
 
   return (
     <Table
-      style={{ margin: "20px", marginTop:"50px" }}
+    style={{
+      marginRight: "10px",
+      marginLeft: "10px",
+      marginTop: "50px",
+    }}
       columns={columns}
       dataSource={employees}
       rowKey="email"

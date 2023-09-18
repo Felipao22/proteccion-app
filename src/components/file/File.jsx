@@ -319,12 +319,12 @@ export const File = ({ userEmail }) => {
         className="content d-flex  mb-3 d-flex align-items-start"
         data-aos="fade"
       >
-        <button className="btn btn-primary" onClick={handleLoadFile}>
+        <Button type="primary" style={{ marginRight: '10px' }} onClick={handleLoadFile}>
           Subir
-        </button>
-        <button className="btn btn-primary" onClick={handleClearFile}>
+        </Button>
+        <Button  onClick={handleClearFile}>
           Cancelar
-        </button>
+        </Button>
       </div>
     </div>
   );

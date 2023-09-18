@@ -4,7 +4,7 @@
     font-family: Quicksand;
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 2.5px;
+    letter-spacing: 1px;
     font-weight: 500;
     background-color:red;
     color:white;
@@ -24,4 +24,5 @@
     color: #fff;
     transform: translateY(-7px);
   }
+ 
 
