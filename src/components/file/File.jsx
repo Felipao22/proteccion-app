@@ -21,7 +21,6 @@ export const File = ({ userEmail }) => {
     emailText: ""
   };
 
-  // console.log(values.userEmail)
 
   const [formData, setFormData] = useState(initialValues);
   const [selectedFile, setSelectedFile] = useState(null);

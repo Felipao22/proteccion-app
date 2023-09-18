@@ -30,6 +30,7 @@ import {
   EllipsisOutlined,
   FileOutlined,
   LogoutOutlined,
+  MinusOutlined,
 } from "@ant-design/icons";
 import { AddKind } from "../addKind/AddKind";
 
@@ -419,7 +420,7 @@ export default function Dashboard() {
       title: "Email Jefe",
       dataIndex: "emailJefe",
       key: "emailJefe",
-      render: (text) => (text ? <a href={`mailto:${text}`}>{text}</a> : "-"),
+      render: (text) => (text ? <a href={`mailto:${text}`}>{text}</a> :  <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>),
     },
     {
       title: "Emails",
@@ -436,14 +437,14 @@ export default function Dashboard() {
             ))}
           </span>
         ) : (
-          "-"
+          <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>
         ),
     },
     {
       title: "Cuit",
       dataIndex: "cuit",
       key: "cuit",
-      render: (text) => text || "-",
+      render: (text) => text || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
     },
     {
       title: "Ciudad",
@@ -459,27 +460,26 @@ export default function Dashboard() {
       title: "Teléfono",
       dataIndex: "telefono",
       key: "telefono",
-      render: (text) => text || "-",
+      render: (text) => text || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
     },
     {
       title: "Registrado",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date) => formatDate(date) || "-",
+      render: (date) => formatDate(date) || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
     },
     {
-      title: "Acciones",
+      title: isSuperAdminUser() ? "Acciones" : null,
       key: "acciones",
       render: (record) => (
         <Space size="middle">
-          <Dropdown
-            overlay={() => acciones(record.email)}
-            placement="bottomLeft"
-          >
+          {isSuperAdminUser() && ( 
+          <Dropdown overlay={() => acciones(record.email)} placement="bottomLeft">
             <Button>
               <EllipsisOutlined />
             </Button>
           </Dropdown>
+        )}
         </Space>
       ),
     },
@@ -528,7 +528,17 @@ export default function Dashboard() {
                   marginTop: "30px",
                 }}
                 columns={columns}
-                dataSource={searchUsers(selectedUser)}
+                dataSource={searchUsers(selectedUser).map((row) => {
+                  const userAccessEmails = row.accessUser?.flat();
+                  const isUserEmailMatch =
+                    user?.email === row.email ||
+                    userAccessEmails?.includes(user?.email);
+                  const shouldRenderRow =
+                    (isUserEmailMatch && !isSuperAdminUser()) ||
+                    isSuperAdminUser();
+                  
+                  return shouldRenderRow ? row : null; // Devuelve la fila solo si debe renderizarse
+                }).filter((row) => row !== null)} // Filtra filas nulas
                 rowKey="userId"
                 pagination={{
                   pageSize: 10,
@@ -536,7 +546,7 @@ export default function Dashboard() {
                 }}
                 scroll={{ x: true }}
                 rowClassName={(record) =>
-                  record.active === false ? "blocked-row" : ""
+                  record?.active === false ? "blocked-row" : ""
                 }
               />
             </div>
