@@ -6,26 +6,20 @@ import {
 } from "../notifications/Notifications";
 import FormData from "form-data";
 import apiClient from "../../utils/client";
-import {
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBCard,
-  MDBCardBody,
-  MDBCardImage,
-  MDBInput,
-  MDBIcon,
-} from "mdb-react-ui-kit";
+import { Form, Select, Input, Button, Row, Col, Card } from "antd";
 import { useFetchCities } from "../hooks/useFetchCities";
 import { useFetchUsers } from "../hooks/useFetchUsers";
-import { Form, Select } from "antd";
 import { useAppDispatch } from "../../redux/hooks";
 import { setSelectedBranch } from "../../redux/userSlice";
-import { Button } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  MinusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import "./RegisterBranch.css";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import { updateTableData } from "../../redux/tableSlice";
+import { Tooltip } from "antd";
 
 export default function Register() {
   const initialValues = {
@@ -52,6 +46,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [emailFields, setEmailFields] = useState([""]);
   const [emailEmployee, setEmailEmployee] = useState([""]);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+  const [form] = Form.useForm();
 
   const selectedCities = useFetchCities();
   const selectedUser = useFetchUsers();
@@ -65,6 +61,7 @@ export default function Register() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
+    validateField(name, value);
   };
 
   const validateEmail = (userEmail) => {
@@ -78,7 +75,17 @@ export default function Register() {
     return regex.test(password);
   };
 
+  const validateUpperCase = (name) => {
+    const regex = /^[A-Z]/;
+    return regex.test(name);
+  };
+
   const VALIDATE_CUIT = /^[0-9]{11}$/;
+
+  const validatePhoneNumber = (name) => {
+    const regex = /^[0-9]{10}$/;
+    return regex.test(name);
+  };
 
   const resetForm = () => {
     setValues(initialValues);
@@ -87,17 +94,128 @@ export default function Register() {
       hasUppercase: false,
       hasNumber: false,
     });
-    setEmailFields([""]);
-    setEmailEmployee([""]);
   };
 
-  // const updateTableAfterRegistration = (newData) => {
-  //   dispatch(updateTableData(newData));
-  //   console.log(newData)
-  // };
+  const validateField = (name, value) => {
+    let newErrors = { ...errors };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    switch (name) {
+      case "nombreEmpresa":
+        if (!value) {
+          newErrors.nombreEmpresa = "Nombre de Empresa requerido";      
+        } else if(!validateUpperCase(value)) {
+          newErrors.nombreEmpresa = "Primera letra debe ser mayúscula";
+        } else {
+          delete newErrors.nombreEmpresa;
+        }
+        break;
+
+      case "email":
+        if (!value) {
+          newErrors.email = "Email requerido";
+        } else if (!validateEmail(value)) {
+          newErrors.email = "Email inválido";
+        } else {
+          delete newErrors.email;
+        }
+        break;
+
+      case "cuit":
+        if (!value) {
+          newErrors.cuit = "Cuit requerido";
+        } else if (!VALIDATE_CUIT.test(value)) {
+          newErrors.cuit = "Deben ser 11 números";
+        } else {
+          delete newErrors.cuit;
+        }
+        break;
+
+      case "nombreSede":
+        if (!value) {
+          newErrors.nombreSede = "Nombre de Establecimiento/Obra requerido";
+        } else if(!validateUpperCase(value)) {
+          newErrors.nombreSede = "Primera letra debe ser mayúscula";
+        } else {
+          delete newErrors.nombreSede;
+        }
+        break;
+
+      case "ciudad":
+        if (!value) {
+          newErrors.ciudad = "Ciudad requerida";
+        } else {
+          delete newErrors.ciudad;
+        }
+        break;
+
+      case "direccion":
+        if (!value) {
+          newErrors.direccion = "Direccion requerida";
+        } else if(!validateUpperCase(value)) {
+          newErrors.direccion = "Primera letra debe ser mayúscula";
+        } else {
+          delete newErrors.direccion;
+        }
+        break;
+
+      case "telefono":
+        if (!value) {
+          newErrors.telefono = "Teléfono requerido";
+        } else if(!validatePhoneNumber(value)) {
+          newErrors.telefono = "Deben ser 10 números";
+        } else {
+          delete newErrors.telefono;
+        }
+        break;
+
+      case "password":
+        if (!value) {
+          newErrors.password = "Contraseña requerida";
+        } else if (!validatePassword(value)) {
+          newErrors.password = "Contraseña inválida";
+        } else {
+          delete newErrors.password;
+        }
+        break;
+
+      case "confirmPassword":
+        if (!value) {
+          newErrors.confirmPassword = "Confirmar contraseña";
+        } else if (value !== values.password) {
+          newErrors.confirmPassword = "Las contraseñas no coinciden";
+        } else {
+          delete newErrors.confirmPassword;
+        }
+        break;
+
+      case "emailJefe":
+        if (!value) {
+          newErrors.emailJefe = "Email requerido";
+        } else if (!validateEmail(value)) {
+          newErrors.emailJefe = "Email inválido";
+        } else {
+          delete newErrors.emailJefe;
+        }
+        break;
+
+      case "emails":
+        if (emailFields.some((email) => !email.trim())) {
+          newErrors.emails = "Mails requeridos";
+        } else {
+          delete newErrors.emails;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+    setIsSubmitDisabled(Object.keys(newErrors).length > 0);
+  };
+
+  const handleSubmit = async () => {
+    // e.preventDefault();
     setLoading(true);
     data.append("nombreEmpresa", values.nombreEmpresa);
     data.append("email", values.email);
@@ -116,82 +234,19 @@ export default function Register() {
 
     values.accessUser = emailEmployee;
 
-    // Valida los campos
-    let newErrors = {};
-
-    if (!values.nombreEmpresa) {
-      newErrors.nombreEmpresa = "Nombre de Empresa requerido";
-    }
-
-    if (!values.cuit) {
-      newErrors.cuit = "Cuit requerido";
-    }
-    if (values.cuit && !VALIDATE_CUIT.test(values.cuit)) {
-      newErrors.cuit = "Deben ser 11 números";
-    }
-
-    if (!values.email) {
-      newErrors.email = "Email requerido";
-    }
-    if (!validateEmail(values.email)) {
-      newErrors.email = "Email inválido";
-    }
-    if (!values.password) {
-      newErrors.password = "Contraseña requerida";
-    }
-
-    if (!validatePassword(values.password)) {
-      newErrors.password = "Contraseña inválida";
-    }
-
-    if (!values.confirmPassword) {
-      newErrors.confirmPassword = "Confirmar contraseña";
-    }
-    if (values.password !== values.confirmPassword) {
-      newErrors.confirmPassword = "Las contraseñas no coinciden";
-    }
-
-    if (!values.nombreSede) {
-      newErrors.nombreSede = "Nombre de Establecimiento/Obra requerido";
-    }
-
-    if (!values.ciudad) {
-      newErrors.ciudad = "Ciudad requerida";
-    }
-
-    if (!values.direccion) {
-      newErrors.direccion = "Direccion requerida";
-    }
-    if (!values.telefono) {
-      newErrors.telefono = "Teléfono requerido";
-    }
-    if (!emailFields) {
-      newErrors.emails = "Mails requeridos";
-    }
-
-    if (!values.emailJefe) {
-      newErrors.emailJefe = "Email requerido";
-    }
-    if (!validateEmail(values.emailJefe)) {
-      newErrors.emailJefe = "Email inválido";
-    }
-
-    // Si hay errores, los muestra
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    // Si hay errores, los muestra y no realiza la acción de carga
+    if (Object.keys(errors).length > 0) {
+      setLoading(false);
       return;
     }
 
     // Filtrar campos de correo electrónico vacíos
     const nonEmptyEmails = emailFields.filter((email) => email.trim() !== "");
-    // values.accessUser = emailEmployee.filter(email => email.trim() !== '');
-    // const nonEmptyUserEmails = emailEmployee.filter((e) => e.trim() !== "");
 
     try {
       const res = await apiClient.post("/user", {
         ...values,
         emails: nonEmptyEmails,
-        // accessUser: nonEmptyUserEmails
       });
       NotificationWarning(res.data.warning);
       if (res.data.newUser) {
@@ -200,8 +255,10 @@ export default function Register() {
         dispatch(setSelectedBranch(res.data.newUser));
       }
       resetForm();
+      form.resetFields();
     } catch (error) {
-      NotificationFailure(error.response.data);
+      console.log(error);
+      NotificationFailure(error.response);
     } finally {
       setLoading(false);
     }
@@ -218,6 +275,8 @@ export default function Register() {
     handleInputChange(e);
   };
 
+  
+
   const handleAddEmailField = (e) => {
     e.preventDefault();
     setEmailFields([...emailFields, ""]);
@@ -231,344 +290,292 @@ export default function Register() {
 
   const CitySelect = () => {
     return (
-      <>
-        <select disabled value="">
-          Seleccione una ciudad
-        </select>
+      <Select
+        className="input-select-width"
+        onChange={(value) =>
+          handleInputChange({
+            target: { name: "ciudad", value },
+          })
+        }
+        value={values.ciudad}
+        placeholder="Ciudades"
+      >
+        <Select.Option disabled value="">
+          Ciudades
+        </Select.Option>
         {selectedCities?.map((city) => (
-          <option key={city.id} value={city.nombre}>
+          <Select.Option key={city.id} value={city.nombre}>
             {city.nombre}
-          </option>
+          </Select.Option>
         ))}
-      </>
-    );
-  };
-
-  const UserSelect = () => {
-    return (
-      <>
-        <Select disabled value="">
-          {" "}
-          Selecciona la empresa
-        </Select>
-        {selectedUser?.map((user) => (
-          <Option key={user.userId} value={user.email}>
-            {user.nombreEmpresa}
-          </Option>
-        ))}
-      </>
+      </Select>
     );
   };
 
   const handleRemoveEmailField = (index) => {
-    const updatedFields = emailFields.filter((_, i) => i !== index);
+    const updatedFields = [...emailFields];
+    updatedFields.splice(index, 1);
     setEmailFields(updatedFields);
   };
 
   const AdminEmailSelect = () => {
     return (
-      <div style={{ marginLeft: "40px" }}>
+      <>
         {emailEmployee.map((email, index) => (
-          <div key={index}>
-            <label style={{ marginBottom: "10px" }}>
-              Dar acceso a empleados:
-            </label>
-            <Form.Item>
-              <Select
-                value={email}
-                onChange={(value) => handleAdminEmailChange(index, value)}
-                style={{ maxWidth: "700px" }}
-                placeholder="Seleccionar email de empleado"
-                mode="multiple"
-              >
-                {selectedUser
-                  ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
-                  .map((user) => (
-                    <Select.Option key={user.userId} value={user.email}>
-                      {user?.name} {user?.lastName}
-                    </Select.Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          </div>
+          <Select
+            className="input-select-width"
+            key={index}
+            value={email}
+            onChange={(value) => handleAdminEmailChange(index, value)}
+            placeholder="Seleccionar email de empleado"
+            mode="multiple"
+          >
+            {selectedUser
+              ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
+              .map((user) => (
+                <Select.Option key={user.userId} value={user.email}>
+                  {user?.name} {user?.lastName}
+                </Select.Option>
+              ))}
+          </Select>
         ))}
-      </div>
+      </>
     );
   };
-
-  // const handleAdminEmailChange = (index, value) => {
-  //   const updatedFields = [...emailEmployee];
-  //   updatedFields[index] = value;
-  //   setEmailEmployee(updatedFields);
-  // };
 
   const handleAdminEmailChange = (index, value) => {
     const updatedFields = [...emailEmployee];
     if (value) {
       updatedFields[index] = value;
     } else {
-      // Remove the email if it's cleared
       updatedFields.splice(index, 1);
     }
     setEmailEmployee(updatedFields);
   };
 
   return (
-    <MDBContainer fluid>
-      <MDBCard className="text-black m-5" style={{ borderRadius: "25px" }}>
-        <MDBCardBody>
-          <MDBRow>
-            <MDBCol
-              md="10"
-              lg="6"
-              className="order-2 order-lg-1 d-flex flex-column align-items-center"
-            >
-              <p className="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                Registrar Establecimiento/Obra
-              </p>
-              <form>
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="user" size="lg" />
-                  </div>
-                  <MDBInput
-                    name="nombreEmpresa"
-                    value={values.nombreEmpresa}
-                    label="Empresa"
-                    id="form1"
-                    type="text"
-                    className="w-100"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.nombreEmpresa && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.nombreEmpresa}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="user" size="lg" />
-                  </div>
-                  <MDBInput
-                    type="email"
-                    name="email"
-                    value={values.email}
-                    placeholder="mail@example.com"
-                    onChange={handleInputChange}
-                    label="Email"
-                    id="form2"
-                  />
-                </div>
-                {errors.email && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.email}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="user" size="lg" />
-                  </div>
-                  <MDBInput
-                    name="cuit"
-                    value={values.cuit}
-                    label="Cuit"
-                    id="form3"
-                    type="number"
-                    className="w-100"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.cuit && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.cuit}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="user" size="lg" />
-                  </div>
-                  <MDBInput
-                    name="nombreSede"
-                    value={values.nombreSede}
-                    label="Establecimiento/Obra"
-                    id="form4"
-                    type="text"
-                    className="w-100"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.nombreSede && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.nombreSede}
-                  </span>
-                )}
-                <div>
-                  {/* <div style={{ width: "40px", marginRight: "10px" }}>
-                      <MDBIcon
-                        fas
-                        icon="envelope"
-                        size="lg"
-                        style={{ marginTop: "5px" }}
-                      />
-                    </div> */}
-                  {/* <select
-                      name="userEmail"
-                      value={values.userEmail}
-                      onChange={handleInputChange}
-                    >
-                      {UserSelect()}
-                    </select> */}
-                  {/* <MDBInput
-                      type="email"
-                      name="userEmail"
-                      value={values.userEmail}
-                      placeholder="mail@example.com"
-                      onChange={handleInputChange}
-                      label="Email"
-                      id="form2"
-                    /> */}
-                </div>
-                {errors.userEmail && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.userEmail}
-                  </span>
-                )}
+    <div className="background-image">
+      <Row justify="center" align="middle">
+        <Col span={24} lg={12}>
+          <Card
+            className="text-black m-5 box-register"
+            style={{ borderRadius: "25px" }}
+          >
+            <Form className="register" form={form} onFinish={handleSubmit}>
+              <h3 className="text-center"> Registrar Establecimiento/Obra</h3>
 
-                <div>
-                  {/* <div style={{ width: "40px", marginRight: "10px" }}>
-                      <MDBIcon fas icon="lock" size="lg" />
-                    </div> */}
-                  <Form.Item htmlFor="ciudad">
-                    <Select
-                      onChange={(value) =>
-                        handleInputChange({
-                          target: { name: "ciudad", value },
-                        })
-                      }
-                      value={values.ciudad}
-                      style={{ maxWidth: "210px", marginLeft: "44px" }}
-                      placeholder="Ciudades"
-                    >
-                      <Select.Option disabled value="">
-                        Ciudades
-                      </Select.Option>
-                      {selectedCities?.map((city) => (
-                        <Select.Option key={city.id} value={city.nombre}>
-                          {city.nombre}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                  {/* <select
-                      id="ciudad"
-                      name="ciudad"
-                      value={values.ciudad}
-                      onChange={handleInputChange}
-                    >
-                      {CitySelect()}
-                    </select> */}
-                  {errors.ciudad && (
-                    <span
-                      style={{
-                        color: "red",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {errors.ciudad}
-                    </span>
-                  )}
-                  {/* <i className="eye-icon">{ToggleIcon}</i> */}
-                </div>
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="key" size="lg" />
-                  </div>
-                  <MDBInput
-                    label="Teléfono"
-                    id="form5"
-                    type="number"
-                    name="telefono"
-                    placeholder="2664897896"
-                    value={values.telefono}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.telefono && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {errors.telefono}
-                  </span>
-                )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Empresa"
+                name="nombreEmpresa"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="Empresa X"
+                  name="nombreEmpresa"
+                  value={values.nombreEmpresa}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.nombreEmpresa && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.nombreEmpresa}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.nombreEmpresa}
+                </small>
+              )}
 
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="key" size="lg" />
-                  </div>
-                  <MDBInput
-                    label="Dirección"
-                    id="form6"
-                    type="text"
-                    name="direccion"
-                    // placeholder="2664897896"
-                    value={values.direccion}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="d-flex flex-row align-items-center mb-4 input-text">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="lock" size="lg" />
-                  </div>
-                  <MDBInput
-                    label="Contraseña"
-                    id="form7"
-                    type={PasswordInputType}
-                    name="password"
-                    placeholder="Contraseña"
-                    autoComplete="off"
-                    value={values.password}
-                    onChange={handlePasswordChange}
-                  />
-                  {/* <i className="eye-icon">{ToggleIcon}</i> */}
-                </div>
-                <ul>
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Email"
+                name="email"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="example@mail.com"
+                  name="email"
+                  value={values.email}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.email && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.email}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.email}
+                </small>
+              )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="CUIT"
+                name="cuit"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="20374373075"
+                  name="cuit"
+                  value={values.cuit}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.cuit && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.cuit}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.cuit}
+                </small>
+              )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Establecimiento/Obra"
+                name="nombreSede"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="Establecimiento X"
+                  name="nombreSede"
+                  value={values.nombreSede}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.nombreSede && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.nombreSede}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.nombreSede}
+                </small>
+              )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Teléfono"
+                name="telefono"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="2664598798"
+                  name="telefono"
+                  value={values.telefono}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.telefono && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.telefono}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.telefono}
+                </small>
+              )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Dirección"
+                name="direccion"
+              >
+                <Input
+                  className="input-select-width"
+                  placeholder="Bolivar 1024"
+                  name="direccion"
+                  value={values.direccion}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.direccion && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.direccion}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.direccion}
+                </small>
+              )}
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Ciudad"
+                name="ciudad"
+              >
+                {CitySelect()}
+              </Form.Item>
+              {errors.ciudad && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.ciudad}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.ciudad}
+                </small>
+              )}
+
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Contraseña"
+                name="password"
+              >
+                <Input.Password
+                  className="input-select-width"
+                  name="password"
+                  value={values.password}
+                  onChange={handlePasswordChange}
+                  type={PasswordInputType}
+                />
+                <ul className="password-requirements">
                   <li
                     className={passwordRequirements.minLength ? "success" : ""}
                   >
@@ -587,151 +594,139 @@ export default function Register() {
                     Al menos 1 número.
                   </li>
                 </ul>
-                {errors.password && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {errors.password}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="key" size="lg" />
-                  </div>
-                  <MDBInput
-                    label="Confirmar contraseña"
-                    id="form8"
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Confirmar contraseña"
-                    autoComplete="off"
-                    value={values.confirmPassword}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.confirmPassword && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {errors.confirmPassword}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="key" size="lg" />
-                  </div>
-                  <MDBInput
-                    label="Email del Jefe"
-                    id="form9"
-                    type="email"
-                    name="emailJefe"
-                    placeholder="Email del Jefe"
-                    autoComplete="off"
-                    value={values.emailJefe}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.emailJefe && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {errors.emailJefe}
-                  </span>
-                )}
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <div style={{ width: "40px", marginRight: "10px" }}>
-                    <MDBIcon fas icon="key" size="lg" />
-                  </div>
-                  <div>
-                    {emailFields.map((email, index) => (
-                      <div key={index}>
-                        <MDBInput
-                          label="Email"
-                          type="email"
-                          placeholder="example@mail.com"
-                          value={email}
-                          onChange={(e) =>
-                            handleEmailChange(index, e.target.value)
-                          }
-                        />
-                        <Button
-                          type="primary"
-                          danger
-                          icon={<MinusCircleOutlined />}
-                          onClick={() => handleRemoveEmailField(index)}
-                          style={{ marginTop: "5px" }}
-                        >
-                          Eliminar
-                        </Button>
-                      </div>
-                    ))}
+              </Form.Item>
+              {/* {errors.password && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.password}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.password}
+                </small>
+              )} */}
 
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Confirmar Contraseña"
+                name="confirmPassword"
+              >
+                <Input.Password
+                  className="input-select-width"
+                  name="confirmPassword"
+                  value={values.confirmPassword}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.confirmPassword && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.confirmPassword}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.confirmPassword}
+                </small>
+              )}
+
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Email del Jefe"
+                name="emailJefe"
+              >
+                <Input
+                  className="input-select-width"
+                  name="emailJefe"
+                  value={values.emailJefe}
+                  onChange={handleInputChange}
+                  placeholder="example@mail.com"
+                />
+              </Form.Item>
+              {errors.emailJefe && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.emailJefe}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.emailJefe}
+                </small>
+              )}
+
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Emails"
+                name="emails"
+              >
+                {emailFields.map((email, index) => (
+                  <div key={index}>
+                    <Input
+                      className="input-select-width"
+                      label="Email"
+                      type="email"
+                      placeholder="example@mail.com"
+                      value={email}
+                      onChange={(e) => handleEmailChange(index, e.target.value)}
+                    />
                     <Button
                       icon={<PlusOutlined />}
                       onClick={handleAddEmailField}
-                      size="20px"
                     />
+                    <Button
+                      type="primary"
+                      danger
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => handleRemoveEmailField(index)}
+                      style={{ marginTop: "5px" }}
+                      size="20px"
+                    >
+                      Eliminar
+                    </Button>
                   </div>
-                </div>
-                {errors.emails && (
-                  <span
-                    style={{
-                      color: "red",
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    {errors.emails}
-                  </span>
-                )}
-                <div className="">
-                  <AdminEmailSelect />
-                </div>
-                {loading && (
-                  <div className="text-center my-4">
-                    <MDBIcon icon="spinner" spin size="3x" />
-                    <div>Registrando establecimiento/obra...</div>
-                  </div>
-                )}
-                <button
-                  type="submit"
-                  onClick={handleSubmit}
-                  className="boton-register"
-                  size="lg"
+                ))}
+              </Form.Item>
+
+              <Form.Item
+                labelCol={{ span: 7 }}
+                label="Dar acceso a empleados"
+                name="accessUser"
+              >
+                {AdminEmailSelect()}
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  loading={loading}
+                  type="primary"
+                  htmlType="submit" // Utiliza htmlType="submit" en lugar de onClick
+                  disabled={isSubmitDisabled}
+                  // onClick={form.resetFields()}
                 >
                   Registrar
-                </button>
-              </form>
-            </MDBCol>
-
-            <MDBCol
-              md="10"
-              lg="6"
-              className="order-1 order-lg-2 d-flex align-items-center"
-            >
-              <MDBCardImage
-                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
-                fluid
-              />
-            </MDBCol>
-          </MDBRow>
-        </MDBCardBody>
-      </MDBCard>
-    </MDBContainer>
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   );
 }

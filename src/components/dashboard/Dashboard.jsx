@@ -119,6 +119,8 @@ export default function Dashboard() {
         (searchRegex.test(row.email) ||
           searchRegex.test(row.nombreEmpresa) ||
           searchRegex.test(row.ciudad) ||
+          searchRegex.test(row.cuit) ||
+          searchRegex.test(row.telefono) ||
           searchRegex.test(row.nombreSede))
     );
   };
@@ -488,7 +490,7 @@ export default function Dashboard() {
   const userLogin = user.email;
 
   return (
-    <>
+    <div>
       {loading ? (
         <div>
           <Loading />
@@ -537,8 +539,8 @@ export default function Dashboard() {
                     (isUserEmailMatch && !isSuperAdminUser()) ||
                     isSuperAdminUser();
                   
-                  return shouldRenderRow ? row : null; // Devuelve la fila solo si debe renderizarse
-                }).filter((row) => row !== null)} // Filtra filas nulas
+                  return shouldRenderRow ? row : null;
+                }).filter((row) => row !== null)}
                 rowKey="userId"
                 pagination={{
                   pageSize: 10,
@@ -562,7 +564,7 @@ export default function Dashboard() {
               </Button>
             </>
           ) : showRegisterBranch ? (
-            <>
+            <div className="background-image">
               <RegisterBranch />
               <Button
                 style={{ margin: "50px" }}
@@ -571,7 +573,7 @@ export default function Dashboard() {
               >
                 Volver
               </Button>
-            </>
+            </div>
           ) : showEmployeesList ? (
             <>
               <EmployeeList />
@@ -661,6 +663,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

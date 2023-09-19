@@ -1,13 +1,25 @@
 .close-button {
-    margin-left: 10px;
-    background-color: #ff4444;
-    border: none;
-    color: white;
-    cursor: pointer;
-    margin: 6px;
-  }
-  
-  .close-button:hover {
-    background-color: #ff0000;
-  }
-  
+  margin-left: 10px;
+  background-color: #ff4444;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin: 6px;
+}
+
+.close-button:hover {
+  background-color: #ff0000;
+}
+
+.success {
+  color: rgb(49, 206, 1);
+}
+.input-select-width {
+  max-width: 350px;
+}
+
+.register .ant-form-item-label:before {
+  content: " *";
+  color: red;
+  margin-left: -10px;
+}

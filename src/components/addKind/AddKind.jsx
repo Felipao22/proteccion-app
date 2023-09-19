@@ -93,7 +93,7 @@ export const AddKind = () => {
         />
       </Form.Item>
       {errors.name && (
-        <span
+        <small
           style={{
             color: "red",
             display: "flex",
@@ -106,7 +106,7 @@ export const AddKind = () => {
             <InfoCircleOutlined style={{ marginRight: "4px" }} />
           </Tooltip>
           {errors.name}
-        </span>
+        </small>
       )}
       <Button
         loading={loading}
