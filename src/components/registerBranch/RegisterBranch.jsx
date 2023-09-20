@@ -12,8 +12,8 @@ import { useFetchUsers } from "../hooks/useFetchUsers";
 import { useAppDispatch } from "../../redux/hooks";
 import { setSelectedBranch } from "../../redux/userSlice";
 import {
+  CloseCircleOutlined,
   InfoCircleOutlined,
-  MinusCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import "./RegisterBranch.css";
@@ -65,7 +65,6 @@ export default function Register() {
   };
 
   const validateEmail = (userEmail) => {
-    // Utiliza una expresión regular para verificar si el email es válido
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(userEmail);
   };
@@ -102,8 +101,8 @@ export default function Register() {
     switch (name) {
       case "nombreEmpresa":
         if (!value) {
-          newErrors.nombreEmpresa = "Nombre de Empresa requerido";      
-        } else if(!validateUpperCase(value)) {
+          newErrors.nombreEmpresa = "Nombre de Empresa requerido";
+        } else if (!validateUpperCase(value)) {
           newErrors.nombreEmpresa = "Primera letra debe ser mayúscula";
         } else {
           delete newErrors.nombreEmpresa;
@@ -133,7 +132,7 @@ export default function Register() {
       case "nombreSede":
         if (!value) {
           newErrors.nombreSede = "Nombre de Establecimiento/Obra requerido";
-        } else if(!validateUpperCase(value)) {
+        } else if (!validateUpperCase(value)) {
           newErrors.nombreSede = "Primera letra debe ser mayúscula";
         } else {
           delete newErrors.nombreSede;
@@ -151,7 +150,7 @@ export default function Register() {
       case "direccion":
         if (!value) {
           newErrors.direccion = "Direccion requerida";
-        } else if(!validateUpperCase(value)) {
+        } else if (!validateUpperCase(value)) {
           newErrors.direccion = "Primera letra debe ser mayúscula";
         } else {
           delete newErrors.direccion;
@@ -161,7 +160,7 @@ export default function Register() {
       case "telefono":
         if (!value) {
           newErrors.telefono = "Teléfono requerido";
-        } else if(!validatePhoneNumber(value)) {
+        } else if (!validatePhoneNumber(value)) {
           newErrors.telefono = "Deben ser 10 números";
         } else {
           delete newErrors.telefono;
@@ -215,7 +214,6 @@ export default function Register() {
   };
 
   const handleSubmit = async () => {
-    // e.preventDefault();
     setLoading(true);
     data.append("nombreEmpresa", values.nombreEmpresa);
     data.append("email", values.email);
@@ -248,7 +246,6 @@ export default function Register() {
         ...values,
         emails: nonEmptyEmails,
       });
-      NotificationWarning(res.data.warning);
       if (res.data.newUser) {
         NotificationSuccess(res.data.message);
         dispatch(updateTableData(res.data.newUser));
@@ -258,6 +255,7 @@ export default function Register() {
       form.resetFields();
     } catch (error) {
       console.log(error);
+      NotificationWarning(error.response.data.warning);
       NotificationFailure(error.response);
     } finally {
       setLoading(false);
@@ -275,8 +273,6 @@ export default function Register() {
     handleInputChange(e);
   };
 
-  
-
   const handleAddEmailField = (e) => {
     e.preventDefault();
     setEmailFields([...emailFields, ""]);
@@ -291,7 +287,6 @@ export default function Register() {
   const CitySelect = () => {
     return (
       <Select
-        className="input-select-width"
         onChange={(value) =>
           handleInputChange({
             target: { name: "ciudad", value },
@@ -323,7 +318,6 @@ export default function Register() {
       <>
         {emailEmployee.map((email, index) => (
           <Select
-            className="input-select-width"
             key={index}
             value={email}
             onChange={(value) => handleAdminEmailChange(index, value)}
@@ -353,6 +347,7 @@ export default function Register() {
     setEmailEmployee(updatedFields);
   };
 
+
   return (
     <div className="background-image">
       <Row justify="center" align="middle">
@@ -361,16 +356,17 @@ export default function Register() {
             className="text-black m-5 box-register"
             style={{ borderRadius: "25px" }}
           >
-            <Form className="register" form={form} onFinish={handleSubmit}>
-              <h3 className="text-center"> Registrar Establecimiento/Obra</h3>
+            <Form
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 12 }}
+              className="register"
+              form={form}
+              onFinish={handleSubmit}
+            >
+              <h2 className="text-register"> Registrar Establecimiento/Obra</h2>
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Empresa"
-                name="nombreEmpresa"
-              >
+              <Form.Item label="Empresa" name="nombreEmpresa">
                 <Input
-                  className="input-select-width"
                   placeholder="Empresa X"
                   name="nombreEmpresa"
                   value={values.nombreEmpresa}
@@ -394,13 +390,8 @@ export default function Register() {
                 </small>
               )}
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Email"
-                name="email"
-              >
+              <Form.Item label="Email" name="email">
                 <Input
-                  className="input-select-width"
                   placeholder="example@mail.com"
                   name="email"
                   value={values.email}
@@ -423,13 +414,8 @@ export default function Register() {
                   {errors.email}
                 </small>
               )}
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="CUIT"
-                name="cuit"
-              >
+              <Form.Item label="CUIT" name="cuit">
                 <Input
-                  className="input-select-width"
                   placeholder="20374373075"
                   name="cuit"
                   value={values.cuit}
@@ -452,13 +438,8 @@ export default function Register() {
                   {errors.cuit}
                 </small>
               )}
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Establecimiento/Obra"
-                name="nombreSede"
-              >
+              <Form.Item label="Establecimiento/Obra" name="nombreSede">
                 <Input
-                  className="input-select-width"
                   placeholder="Establecimiento X"
                   name="nombreSede"
                   value={values.nombreSede}
@@ -481,13 +462,8 @@ export default function Register() {
                   {errors.nombreSede}
                 </small>
               )}
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Teléfono"
-                name="telefono"
-              >
+              <Form.Item label="Teléfono" name="telefono">
                 <Input
-                  className="input-select-width"
                   placeholder="2664598798"
                   name="telefono"
                   value={values.telefono}
@@ -510,13 +486,8 @@ export default function Register() {
                   {errors.telefono}
                 </small>
               )}
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Dirección"
-                name="direccion"
-              >
+              <Form.Item label="Dirección" name="direccion">
                 <Input
-                  className="input-select-width"
                   placeholder="Bolivar 1024"
                   name="direccion"
                   value={values.direccion}
@@ -539,11 +510,7 @@ export default function Register() {
                   {errors.direccion}
                 </small>
               )}
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Ciudad"
-                name="ciudad"
-              >
+              <Form.Item label="Ciudad" name="ciudad">
                 {CitySelect()}
               </Form.Item>
               {errors.ciudad && (
@@ -563,13 +530,8 @@ export default function Register() {
                 </small>
               )}
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Contraseña"
-                name="password"
-              >
+              <Form.Item label="Contraseña" name="password">
                 <Input.Password
-                  className="input-select-width"
                   name="password"
                   value={values.password}
                   onChange={handlePasswordChange}
@@ -595,7 +557,7 @@ export default function Register() {
                   </li>
                 </ul>
               </Form.Item>
-              {/* {errors.password && (
+              {errors.password && (
                 <small
                   style={{
                     color: "red",
@@ -610,15 +572,10 @@ export default function Register() {
                   </Tooltip>
                   {errors.password}
                 </small>
-              )} */}
+              )}
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Confirmar Contraseña"
-                name="confirmPassword"
-              >
+              <Form.Item label="Confirmar Contraseña" name="confirmPassword">
                 <Input.Password
-                  className="input-select-width"
                   name="confirmPassword"
                   value={values.confirmPassword}
                   onChange={handleInputChange}
@@ -641,13 +598,8 @@ export default function Register() {
                 </small>
               )}
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Email del Jefe"
-                name="emailJefe"
-              >
+              <Form.Item label="Email del Jefe" name="emailJefe">
                 <Input
-                  className="input-select-width"
                   name="emailJefe"
                   value={values.emailJefe}
                   onChange={handleInputChange}
@@ -671,15 +623,10 @@ export default function Register() {
                 </small>
               )}
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Emails"
-                name="emails"
-              >
+              <Form.Item label="Emails" name="emails">
                 {emailFields.map((email, index) => (
                   <div key={index}>
                     <Input
-                      className="input-select-width"
                       label="Email"
                       type="email"
                       placeholder="example@mail.com"
@@ -693,22 +640,16 @@ export default function Register() {
                     <Button
                       type="primary"
                       danger
-                      icon={<MinusCircleOutlined />}
+                      icon={<CloseCircleOutlined />}
                       onClick={() => handleRemoveEmailField(index)}
                       style={{ marginTop: "5px" }}
                       size="20px"
-                    >
-                      Eliminar
-                    </Button>
+                    ></Button>
                   </div>
                 ))}
               </Form.Item>
 
-              <Form.Item
-                labelCol={{ span: 7 }}
-                label="Dar acceso a empleados"
-                name="accessUser"
-              >
+              <Form.Item label="Acceso" name="accessUser">
                 {AdminEmailSelect()}
               </Form.Item>
 
@@ -716,9 +657,8 @@ export default function Register() {
                 <Button
                   loading={loading}
                   type="primary"
-                  htmlType="submit" // Utiliza htmlType="submit" en lugar de onClick
+                  htmlType="submit"
                   disabled={isSubmitDisabled}
-                  // onClick={form.resetFields()}
                 >
                   Registrar
                 </Button>

@@ -14,12 +14,26 @@
 .success {
   color: rgb(49, 206, 1);
 }
-.input-select-width {
-  max-width: 350px;
-}
 
 .register .ant-form-item-label:before {
   content: " *";
   color: red;
-  margin-left: -10px;
+}
+
+.text-register {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+@media only screen and (max-width: 1124px) {
+  .text-register {
+    font-size: medium;
+  }
+}
+
+@media only screen and (max-width: 426px) {
+  .text-register {
+    font-size: smaller;
+    text-align: start;
+  }
 }
