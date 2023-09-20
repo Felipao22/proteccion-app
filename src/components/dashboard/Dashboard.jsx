@@ -47,7 +47,7 @@ export default function Dashboard() {
   const [showRegisterEmployee, setShowRegisterEmployee] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEmployeesList, setShowEmployeesList] = useState(false);
-  const [showAddKind, setShowAddKind] = useState(false)
+  const [showAddKind, setShowAddKind] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -273,7 +273,7 @@ export default function Dashboard() {
     backToTable: () => setShowUserFiles(false),
     backTo: () => setShowEmployeesList(false),
     addKind: () => setShowAddKind(true),
-    backAgain: () => setShowAddKind(false)
+    backAgain: () => setShowAddKind(false),
   };
 
   const handleActionAdmin = (action) => {
@@ -422,7 +422,20 @@ export default function Dashboard() {
       title: "Email Jefe",
       dataIndex: "emailJefe",
       key: "emailJefe",
-      render: (text) => (text ? <a href={`mailto:${text}`}>{text}</a> :  <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>),
+      render: (text) =>
+        text ? (
+          <a href={`mailto:${text}`}>{text}</a>
+        ) : (
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <MinusOutlined />
+          </span>
+        ),
     },
     {
       title: "Emails",
@@ -439,14 +452,33 @@ export default function Dashboard() {
             ))}
           </span>
         ) : (
-          <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <MinusOutlined />
+          </span>
         ),
     },
     {
       title: "Cuit",
       dataIndex: "cuit",
       key: "cuit",
-      render: (text) => text || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
+      render: (text) =>
+        text || (
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <MinusOutlined />
+          </span>
+        ),
     },
     {
       title: "Ciudad",
@@ -462,26 +494,51 @@ export default function Dashboard() {
       title: "Teléfono",
       dataIndex: "telefono",
       key: "telefono",
-      render: (text) => text || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
+      render: (text) =>
+        text || (
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <MinusOutlined />
+          </span>
+        ),
     },
     {
       title: "Registrado",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (date) => formatDate(date) || <span style={{display:"flex", justifyContent:"center", alignContent:"center"}}><MinusOutlined /></span>,
+      render: (date) =>
+        formatDate(date) || (
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <MinusOutlined />
+          </span>
+        ),
     },
     {
       title: isSuperAdminUser() ? "Acciones" : null,
       key: "acciones",
       render: (record) => (
         <Space size="middle">
-          {isSuperAdminUser() && ( 
-          <Dropdown overlay={() => acciones(record.email)} placement="bottomLeft">
-            <Button>
-              <EllipsisOutlined />
-            </Button>
-          </Dropdown>
-        )}
+          {isSuperAdminUser() && (
+            <Dropdown
+              overlay={() => acciones(record.email)}
+              placement="bottomLeft"
+            >
+              <Button>
+                <EllipsisOutlined />
+              </Button>
+            </Dropdown>
+          )}
         </Space>
       ),
     },
@@ -530,17 +587,19 @@ export default function Dashboard() {
                   marginTop: "30px",
                 }}
                 columns={columns}
-                dataSource={searchUsers(selectedUser).map((row) => {
-                  const userAccessEmails = row.accessUser?.flat();
-                  const isUserEmailMatch =
-                    user?.email === row.email ||
-                    userAccessEmails?.includes(user?.email);
-                  const shouldRenderRow =
-                    (isUserEmailMatch && !isSuperAdminUser()) ||
-                    isSuperAdminUser();
-                  
-                  return shouldRenderRow ? row : null;
-                }).filter((row) => row !== null)}
+                dataSource={searchUsers(selectedUser)
+                  .map((row) => {
+                    const userAccessEmails = row.accessUser?.flat();
+                    const isUserEmailMatch =
+                      user?.email === row.email ||
+                      userAccessEmails?.includes(user?.email);
+                    const shouldRenderRow =
+                      (isUserEmailMatch && !isSuperAdminUser()) ||
+                      isSuperAdminUser();
+
+                    return shouldRenderRow ? row : null;
+                  })
+                  .filter((row) => row !== null)}
                 rowKey="userId"
                 pagination={{
                   pageSize: 10,
@@ -607,17 +666,17 @@ export default function Dashboard() {
                 Volver
               </Button>
             </>
-            ) : showAddKind ? (
-              <>
-                <AddKind />
-                <Button
-                  style={{ margin: "50px" }}
-                  type="primary"
-                  onClick={() => handleActionAdmin("backAgain")}
-                >
-                  Volver
-                </Button>
-              </>
+          ) : showAddKind ? (
+            <>
+              <AddKind />
+              <Button
+                style={{ margin: "50px" }}
+                type="primary"
+                onClick={() => handleActionAdmin("backAgain")}
+              >
+                Volver
+              </Button>
+            </>
           ) : null}
 
           {showUserFiles && selectedUserEmail && (
@@ -638,13 +697,13 @@ export default function Dashboard() {
                 />
               )}
 
-              <button
-                className="btn"
+              <Button
+                type="primary"
                 style={{ margin: "50px" }}
                 onClick={() => handleActionAdmin("backToTable")}
               >
                 Volver
-              </button>
+              </Button>
             </>
           )}
 
@@ -657,7 +716,7 @@ export default function Dashboard() {
             !showChangePassword &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
-              <LogoutOutlined className="icon-logout" /> Cerrar sesión
+                <LogoutOutlined className="icon-logout" /> Cerrar sesión
               </button>
             ) : null}
           </div>
