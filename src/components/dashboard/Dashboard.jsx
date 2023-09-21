@@ -31,8 +31,10 @@ import {
   FileOutlined,
   LogoutOutlined,
   MinusOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import { AddKind } from "../addKind/AddKind";
+import EditBranch from "../editBranch/EditBranch";
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -48,6 +50,9 @@ export default function Dashboard() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showEmployeesList, setShowEmployeesList] = useState(false);
   const [showAddKind, setShowAddKind] = useState(false);
+  const [editBranchEmail, setEditBranchEmail] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [originalBranchData, setOriginalBranchData] = useState({});
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -64,18 +69,18 @@ export default function Dashboard() {
 
   const branch = useAppSelector(getUser).selectedBranch;
 
-  useEffect(() => {
-    const fetchBusinessData = async () => {
-      try {
-        const res = await apiClient.get("/user");
-        setSelectedUser(res.data);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchAndSetBusinessData = async () => {
+    try {
+      const res = await apiClient.get("/user");
+      setSelectedUser(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    fetchBusinessData();
+  useEffect(() => {
+    fetchAndSetBusinessData();
   }, [branch]);
 
   useEffect(() => {
@@ -274,6 +279,7 @@ export default function Dashboard() {
     backTo: () => setShowEmployeesList(false),
     addKind: () => setShowAddKind(true),
     backAgain: () => setShowAddKind(false),
+    backdashboard: () => setShowEditForm(false),
   };
 
   const handleActionAdmin = (action) => {
@@ -369,8 +375,13 @@ export default function Dashboard() {
         </Menu.Item>
       )}
       {isSuperAdminUser() && (
+        <Menu.Item key="4" onClick={() => handleAction("editar", email)}>
+          <EditOutlined /> Editar
+        </Menu.Item>
+      )}
+      {isSuperAdminUser() && (
         <Menu.Item
-          key="4"
+          key="5"
           danger
           onClick={() => handleAction("eliminar", email)}
         >
@@ -392,6 +403,9 @@ export default function Dashboard() {
         case "archivos":
           handleBranchClick(email);
           break;
+        case "editar":
+          openEditForm(email);
+          break;
         case "eliminar":
           deleteBranch(email);
           break;
@@ -402,6 +416,25 @@ export default function Dashboard() {
   };
 
   const columns = [
+    {
+      title: "Acciones",
+      key: "acciones",
+      render: (record) => (
+        <Space size="middle">
+          {isSuperAdminUser() && (
+            <Dropdown
+              overlay={() => acciones(record.email)}
+              placement="bottomLeft"
+            >
+              <Button>
+                <EllipsisOutlined />
+              </Button>
+            </Dropdown>
+          )}
+        </Space>
+      ),
+      responsive: ["xs"],
+    },
     {
       title: "Empresa",
       dataIndex: "nombreEmpresa",
@@ -541,10 +574,22 @@ export default function Dashboard() {
           )}
         </Space>
       ),
+      responsive: ["sm", "md", "lg", "xl"],
     },
   ];
 
   const userLogin = user.email;
+
+  const openEditForm = async (email) => {
+    try {
+      setEditBranchEmail(email);
+      setShowEditForm(true);
+      const response = await apiClient.get(`/user/${email}`);
+      setOriginalBranchData(response.data);
+    } catch (error) {
+      NotificationFailure(error);
+    }
+  };
 
   return (
     <div>
@@ -560,6 +605,7 @@ export default function Dashboard() {
           !showRegisterEmployee &&
           !showEmployeesList &&
           !showAddKind &&
+          !showEditForm &&
           !showChangePassword ? (
             <div>
               <Dropdown overlay={menu} className="actions-dropdown">
@@ -678,6 +724,23 @@ export default function Dashboard() {
               </Button>
             </>
           ) : null}
+          {showEditForm && editBranchEmail && (
+            <>
+              <EditBranch
+                email={editBranchEmail}
+                onCancel={() => setOriginalBranchData(originalBranchData)}
+                fetchAndSetBusinessData={fetchAndSetBusinessData}
+                originalBranchData={originalBranchData}
+              />
+              <Button
+                type="primary"
+                style={{ marginLeft: "50px", marginBottom: "20px" }}
+                onClick={() => handleActionAdmin("backdashboard")}
+              >
+                Volver
+              </Button>
+            </>
+          )}
 
           {showUserFiles && selectedUserEmail && (
             <>
@@ -714,6 +777,7 @@ export default function Dashboard() {
             !showEmployeesList &&
             !showAddKind &&
             !showChangePassword &&
+            !showEditForm &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
                 <LogoutOutlined className="icon-logout" /> Cerrar sesión

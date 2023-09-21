@@ -416,6 +416,7 @@ export default function Register() {
               )}
               <Form.Item label="CUIT" name="cuit">
                 <Input
+                type="number"
                   placeholder="20374373075"
                   name="cuit"
                   value={values.cuit}
@@ -464,6 +465,7 @@ export default function Register() {
               )}
               <Form.Item label="Teléfono" name="telefono">
                 <Input
+                type="number"
                   placeholder="2664598798"
                   name="telefono"
                   value={values.telefono}

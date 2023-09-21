@@ -176,6 +176,20 @@ const EmployeeList = ({}) => {
 
   const columns = [
     {
+      title: "Acciones",
+      key: "actions",
+      render: (record) => (
+        <Space size="middle">
+          <Dropdown overlay={() => menu(record.email)} placement="bottomLeft">
+            <Button>
+              <EllipsisOutlined />
+            </Button>
+          </Dropdown>
+        </Space>
+      ),
+      responsive: ['xs'],
+    },
+    {
       title: "Nombre",
       dataIndex: "name",
       key: "name",
@@ -202,6 +216,7 @@ const EmployeeList = ({}) => {
           </Dropdown>
         </Space>
       ),
+      responsive: ['sm', 'md', 'lg', 'xl'],
     },
   ];
 

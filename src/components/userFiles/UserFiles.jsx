@@ -12,15 +12,14 @@ const { Option } = Select;
 import { DatePicker } from "antd";
 import { useFetchKinds } from "../hooks/useFetchKinds";
 
-export const UserFiles = ({ userFiles, onDeleteFile  }) => {
-
+export const UserFiles = ({ userFiles, onDeleteFile }) => {
   const selectedKind = useAppSelector((state) => state.files.selectedKind);
   const selectedDate = useAppSelector((state) => state.files.selectedDate);
   const kinds = useFetchKinds();
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-  const DeleteFile = async(id) => {
+  const DeleteFile = async (id) => {
     try {
       const result = await Swal.fire({
         title: "¿Está seguro que desea eliminar el archivo?",
@@ -35,7 +34,7 @@ export const UserFiles = ({ userFiles, onDeleteFile  }) => {
 
       if (result.isConfirmed) {
         await apiClient.delete(`file/${id}`);
-        onDeleteFile(id)
+        onDeleteFile(id);
         Swal.fire(`Archivo eliminado `);
       }
     } catch (error) {
@@ -49,7 +48,7 @@ export const UserFiles = ({ userFiles, onDeleteFile  }) => {
         console.error("Error al eliminar el archivo");
       }
     }
-  }
+  };
 
   const handleDownload = async (id, name) => {
     try {
@@ -93,77 +92,76 @@ export const UserFiles = ({ userFiles, onDeleteFile  }) => {
     const formattedDate = date ? date.format("YYYY-MM") : null; // Almacenar la fecha como cadena "YYYY-MM" o null si no hay fecha
     dispatch(setSelectedDate(formattedDate)); // Actualiza el estado global en Redux
   };
-  
 
   return (
     <div>
-    {userFiles && userFiles.length > 0 ? (
-      <div className="form-container">
-        <Form style={{margin:"20px"}} layout="inline">
-          <Form.Item label="Filtrar por tipo" htmlFor="kind">
-            <Select
-              onChange={handleKindFilterChange}
-              value={selectedKind}
-              style={{ width: "200px" }}
-              placeholder="Tipo de archivos"
-            >
-              <Option value="">Todos</Option>
-              {kinds?.map((kind) => (
-                <Option key={kind.id} value={kind.id}>
-                  {kind.name}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Filtrar por mes" htmlFor="month">
-            <DatePicker
-              picker="month"
-              onChange={handleDateFilterChange}
-              value={
-                selectedDate ? moment(selectedDate, "YYYY-MM") : null
-              }
-              format="MM/YYYY"
-            />
-          </Form.Item>
-        </Form>
-  
-        <ul style={{margin: "20px", listStyle: "none" }}>
-          {filteredFiles.map((file) => (
-            <li key={file.id}>
-              {getExtensionIcon(file.name)} {file.name}{" "}
-              <DownloadIcon
-                style={{ cursor: "pointer" }}
-                onClick={() => handleDownload(file.id, file.name)}
-              />{" "}
-              <DeleteIcon
-                style={{ cursor: "pointer" }}
-                onClick={() => DeleteFile(file.id)}
+      {userFiles && userFiles.length > 0 ? (
+        <div className="form-container">
+          <Form style={{ margin: "20px" }} layout="inline">
+            <Form.Item label="Filtrar por tipo" htmlFor="kind">
+              <Select
+                onChange={handleKindFilterChange}
+                value={selectedKind}
+                style={{ width: "200px" }}
+                placeholder="Tipo de archivos"
+              >
+                <Select.Option value="">Todos</Select.Option>
+                {kinds?.map((kind) => (
+                  <Select.Option
+                    key={kind.id}
+                    value={kind.id}
+                    style={{
+                      width: "100%",
+                    }}
+                  >
+                    {kind.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Filtrar por mes" htmlFor="month">
+              <DatePicker
+                picker="month"
+                onChange={handleDateFilterChange}
+                value={selectedDate ? moment(selectedDate, "YYYY-MM") : null}
+                format="MM/YYYY"
               />
-            </li>
-          ))}
-        </ul>
-        {(selectedKind || selectedDate) && filteredFiles.length === 0 && (
-        <div style={{margin:"20px"}}>
-          {selectedKind && selectedDate ? (
-            <span>No hay archivos para este tipo y mes.</span>
-          ) : (
-            <>
-              {selectedKind && (
-                <span>No hay archivos para este tipo.</span>
+            </Form.Item>
+          </Form>
+
+          <ul style={{ margin: "20px", listStyle: "none" }}>
+            {filteredFiles.map((file) => (
+              <li key={file.id}>
+                {getExtensionIcon(file.name)} {file.name}{" "}
+                <DownloadIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleDownload(file.id, file.name)}
+                />{" "}
+                <DeleteIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => DeleteFile(file.id)}
+                />
+              </li>
+            ))}
+          </ul>
+          {(selectedKind || selectedDate) && filteredFiles.length === 0 && (
+            <div style={{ margin: "20px" }}>
+              {selectedKind && selectedDate ? (
+                <span>No hay archivos para este tipo y mes.</span>
+              ) : (
+                <>
+                  {selectedKind && <span>No hay archivos para este tipo.</span>}
+                  {selectedDate && <span>No hay archivos para este mes.</span>}
+                </>
               )}
-              {selectedDate && (
-                <span>No hay archivos para este mes.</span>
-              )}
-            </>
+            </div>
           )}
         </div>
+      ) : (
+        <p style={{ margin: "50px" }}>
+          No hay archivos cargados en este Establecimiento/Obra.
+        </p>
       )}
     </div>
-  ) : (
-    <p style={{margin:"50px"}}>No hay archivos cargados en este Establecimiento/Obra.</p>
-  )}
-      </div>
-  
   );
 };
-
