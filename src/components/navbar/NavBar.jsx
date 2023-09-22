@@ -155,7 +155,7 @@ export default function ButtonAppBar() {
                       to="/login"
                       onClick={() => setIsDrawerOpen(false)}
                     >
-                      <ListItemText primary="Iniciar Sesión" />
+                      <ListItemText primary="Iniciar sesión" />
                     </Link>
                   </ListItem>
                 </>

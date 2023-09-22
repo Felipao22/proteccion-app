@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import { MDBContainer, MDBCol, MDBRow, MDBCheckbox } from "mdb-react-ui-kit";
-import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "./Login.css";
-import { Form } from "react-bootstrap";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import log from "../../assets/authentication.png";
 import apiClient from "../../utils/client";
@@ -15,7 +12,8 @@ import {
 } from "../notifications/Notifications";
 import { useNavigate } from "react-router-dom";
 import { setLoginData } from "../../redux/userSlice";
-import { Button, Modal } from "antd";
+import { Button, Col, Modal, Row, Form, Input } from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
 
 export default function Login() {
   const initialValues = {
@@ -31,51 +29,17 @@ export default function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const delayDebounceFn = setTimeout(() => {
-  //     setDebouncedEmail(values.email);
-  //   }, 1000);
-
-  //   return () => clearTimeout(delayDebounceFn);
-  // }, [values.email]);
-
-  // useEffect(() => {
-  //   const fetchBranches = async () => {
-  //     try {
-  //       // Si el usuario es un administrador, no hacemos el fetch
-  //       if (isAdmin) {
-  //         return;
-  //       }
-
-  //       else if (debouncedEmail) {
-  //         setLoading(true);
-  //         const res = await apiClient.get(`/user/${debouncedEmail}/branch`);
-  //         setBranches(res.data.branches);
-  //         setLoading(false);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching branches:", error);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchBranches();
-  // }, [debouncedEmail, isAdmin]);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
   };
 
   const validateEmail = (email) => {
-    // Utiliza una expresión regular para verificar si el email es válido
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
+  const handleLogin = async () => {
     const data = {
       email: values.email,
       password: values.password,
@@ -114,27 +78,21 @@ export default function Login() {
       NotificationSuccess(res.data.message);
       NotificationWarning(res.data.warning);
 
-      // If the user is an admin, navigate to the dashboard directly
       if (res.data.user.isAdmin) {
         return navigate("/dashboard");
       }
 
       navigate(`/usuario`);
     } catch (error) {
-      // Si hay un error específico de "Usuario no encontrado" (status 404)
       if (error.response && error.response.status === 404) {
-        // Mostrar mensaje de error para usuario no encontrado
         NotificationFailure(error.response.data.error);
       } else if (error.response && error.response.status === 401) {
-        // Si el status es 401, entonces la contraseña es incorrecta
         NotificationFailure(error.response.data.error);
       } else {
-        // Otros errores, mostrar un mensaje genérico de error
         NotificationFailure("Ocurrió un error al ingresar al sistema");
       }
     }
   };
-
 
   const handleResetPassword = async () => {
     if (!resetPasswordEmail || !validateEmail(resetPasswordEmail)) {
@@ -161,22 +119,17 @@ export default function Login() {
 
   return (
     <div>
-      <Form onSubmit={handleLogin}>
-        <MDBContainer fluid className="p-3 my-5">
-          <MDBRow>
-            <MDBCol col="10" md="6">
-              <img
-                src={log}
-                className="img-fluid"
-                alt="Phone"
-                style={{ marginTop: "-40px" }}
-              />
-            </MDBCol>
-
-            <MDBCol col="4" md="6">
+      <Form onFinish={handleLogin}>
+        <div style={{ padding: "1rem" }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8} lg={12} xl={12}>
+              <img src={log} className="img-fluid" alt="Imagen login" />
+            </Col>
+            <Col className="col-login" xs={24} sm={12} md={12} lg={12} xl={12}>
               <div className="input-text">
-                <input
+                <Input
                   className="input-email"
+                  prefix={<MailOutlined style={{ fontSize: '16px' }}/>}
                   type="email"
                   placeholder="Ingrese su mail"
                   name="email"
@@ -184,7 +137,6 @@ export default function Login() {
                   id="email"
                   onChange={handleInputChange}
                 />
-                <i className="fa fa-envelope"></i>
               </div>
               {errors.email && (
                 <span
@@ -198,9 +150,9 @@ export default function Login() {
                 </span>
               )}
               <div className="input-text">
-                <input
+                <Input.Password
                   className="input-password"
-                  type={PasswordInputType}
+                  prefix={<LockOutlined style={{ fontSize: '16px' }}/>}
                   placeholder="Ingrese su contraseña"
                   name="password"
                   id="password"
@@ -208,8 +160,6 @@ export default function Login() {
                   onChange={handleInputChange}
                   autoComplete="off"
                 />
-                <i className="fa fa-lock"></i>
-                <i className="eye">{ToggleIcon}</i>
               </div>
               {errors.password && (
                 <span
@@ -222,7 +172,6 @@ export default function Login() {
                   {errors.password}
                 </span>
               )}
-
               <div className="d-flex justify-content-between mx-4 mb-4 mt-4 label-font">
                 <a
                   href="#!"
@@ -234,18 +183,22 @@ export default function Login() {
                   ¿Olvidaste tu contraseña?
                 </a>
               </div>
-
-              <button type="submit" className="boton-login" size="lg">
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="boton-login"
+                size="medium"
+              >
                 Ingresar
-              </button>
-            </MDBCol>
-          </MDBRow>
-        </MDBContainer>
+              </Button>
+            </Col>
+          </Row>
+        </div>
       </Form>
 
       <Modal
         title="Restablecer contraseña"
-        open={showResetPasswordModal}
+        visible={showResetPasswordModal}
         onCancel={() => setShowResetPasswordModal(false)}
         footer={[
           <Button key="cancel" onClick={() => setShowResetPasswordModal(false)}>
@@ -260,7 +213,7 @@ export default function Login() {
           Por favor, ingrese su dirección de correo electrónico para restablecer
           su contraseña.
         </p>
-        <Form.Control
+        <Input
           type="email"
           placeholder="Correo electrónico"
           value={resetPasswordEmail}

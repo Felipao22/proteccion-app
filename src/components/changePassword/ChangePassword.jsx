@@ -120,7 +120,7 @@ export default function PasswordChange({ email }) {
       <h2>Cambiar contraseña</h2>
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
-          <Input
+          <Input.Password
             placeholder="Contraseña actual"
             name="oldPassword"
             type={PasswordInputType}
