@@ -1,11 +1,11 @@
 body {
-  margin: 0;
+  /* margin: 0; */
   font-family: "YuGothL" -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     "Arial", "Quicksand","Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 code {

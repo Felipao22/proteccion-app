@@ -33,7 +33,7 @@ export default function Register() {
     direccion: "",
     telefono: "",
     emails: "",
-    accessUser: "",
+    accessUser: null,
     emailJefe: "",
   };
   const [values, setValues] = useState(initialValues);
@@ -45,7 +45,7 @@ export default function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [emailFields, setEmailFields] = useState([""]);
-  const [emailEmployee, setEmailEmployee] = useState([""]);
+  const [emailEmployee, setEmailEmployee] = useState([]);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [form] = Form.useForm();
 
@@ -315,38 +315,23 @@ export default function Register() {
 
   const AdminEmailSelect = () => {
     return (
-      <>
-        {emailEmployee.map((email, index) => (
-          <Select
-            key={index}
-            value={email}
-            onChange={(value) => handleAdminEmailChange(index, value)}
-            placeholder="Seleccionar email de empleado"
-            mode="multiple"
-          >
-            {selectedUser
-              ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
-              .map((user) => (
-                <Select.Option key={user.userId} value={user.email}>
-                  {user?.name} {user?.lastName}
-                </Select.Option>
-              ))}
-          </Select>
-        ))}
-      </>
+      <Select
+        mode="multiple"
+        style={{ width: "100%" }}
+        placeholder="Seleccionar email de empleado"
+        value={emailEmployee}
+        onChange={(selectedEmails) => setEmailEmployee(selectedEmails)}
+      >
+        {selectedUser
+          ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
+          .map((user) => (
+            <Select.Option key={user.userId} value={user.email}>
+              {user?.name} {user?.lastName}
+            </Select.Option>
+          ))}
+      </Select>
     );
   };
-
-  const handleAdminEmailChange = (index, value) => {
-    const updatedFields = [...emailEmployee];
-    if (value) {
-      updatedFields[index] = value;
-    } else {
-      updatedFields.splice(index, 1);
-    }
-    setEmailEmployee(updatedFields);
-  };
-
 
   return (
     <div className="background-image">
@@ -416,7 +401,7 @@ export default function Register() {
               )}
               <Form.Item label="CUIT" name="cuit">
                 <Input
-                type="number"
+                  type="number"
                   placeholder="20374373075"
                   name="cuit"
                   value={values.cuit}
@@ -465,7 +450,7 @@ export default function Register() {
               )}
               <Form.Item label="Teléfono" name="telefono">
                 <Input
-                type="number"
+                  type="number"
                   placeholder="2664598798"
                   name="telefono"
                   value={values.telefono}

@@ -8,6 +8,7 @@ import { useFetchCities } from "../hooks/useFetchCities";
 import { Select } from "antd";
 import Loading from "../loading/Loading";
 import { NotificationFailure } from "../notifications/Notifications";
+import { useFetchUsers } from "../hooks/useFetchUsers";
 
 export default function EditBranch({
   email,
@@ -25,12 +26,14 @@ export default function EditBranch({
       ciudad: "",
       emailJefe: "",
       emails: [],
+      accessUser: null,
     }
   );
 
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
   const selectedCities = useFetchCities();
+  const selectedUser = useFetchUsers();
 
   useEffect(() => {
     const fetchBranchData = async () => {
@@ -114,6 +117,28 @@ export default function EditBranch({
           ))}
         </Select>
       </div>
+    );
+  };
+
+  const EmployeeAcces = () => {
+    return (
+      <Select
+        mode="multiple"
+        style={{ width: "100%" }}
+        placeholder="Seleccione usuarios"
+        value={branchData.accessUser || []}
+        onChange={(selectedUsers) =>
+          setBranchData({ ...branchData, accessUser: selectedUsers })
+        }
+      >
+        {selectedUser
+          ?.filter((user) => user.isAdmin && !user.isSuperAdmin)
+          .map((user) => (
+            <Select.Option key={user.userId} value={user.email}>
+              {user?.name} {user?.lastName}
+            </Select.Option>
+          ))}
+      </Select>
     );
   };
 
@@ -201,22 +226,27 @@ export default function EditBranch({
                     })
                   }
                 />
+                <label>Empleados con acceso:</label>
+                {EmployeeAcces()}
               </Form>
-              <div style={{marginTop:"20px"}}>
-
-              <Button style={{ marginRight:"5px"}} type="primary" onClick={handleUpdateBranch}>
-                Guardar
-              </Button>
-              <Button
-                type="primary"
-                danger
-                onClick={() => {
-                  setBranchData(originalBranchData);
-                  onCancel();
-                }}
-              >
-                Cancelar
-              </Button>
+              <div style={{ marginTop: "20px" }}>
+                <Button
+                  style={{ marginRight: "5px" }}
+                  type="primary"
+                  onClick={handleUpdateBranch}
+                >
+                  Guardar
+                </Button>
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => {
+                    setBranchData(originalBranchData);
+                    onCancel();
+                  }}
+                >
+                  Cancelar
+                </Button>
               </div>
             </Card>
           </Col>

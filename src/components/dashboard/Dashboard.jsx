@@ -441,15 +441,15 @@ export default function Dashboard() {
       key: "nombreEmpresa",
     },
     {
+      title: "Establecimiento/Obra",
+      dataIndex: "nombreSede",
+      key: "nombreSede",
+    },
+    {
       title: "Email Empresa",
       dataIndex: "email",
       key: "email",
       render: (text) => <a href={`mailto:${text}`}>{text}</a>,
-    },
-    {
-      title: "Establecimiento/Obra",
-      dataIndex: "nombreSede",
-      key: "nombreSede",
     },
     {
       title: "Email Jefe",
