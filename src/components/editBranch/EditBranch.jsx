@@ -3,12 +3,12 @@ import apiClient from "../../utils/client";
 import Swal from "sweetalert2";
 import { Button, Col, Input, Row } from "antd";
 import { Card } from "antd";
-import { Form } from "antd";
 import { useFetchCities } from "../hooks/useFetchCities";
 import { Select } from "antd";
 import Loading from "../loading/Loading";
 import { NotificationFailure } from "../notifications/Notifications";
 import { useFetchUsers } from "../hooks/useFetchUsers";
+import ChangePasswordForAlls from "../changePassword/ChangePasswordForAlls";
 
 export default function EditBranch({
   email,
@@ -31,7 +31,7 @@ export default function EditBranch({
   );
 
   const [loading, setLoading] = useState(true);
-  const [form] = Form.useForm();
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const selectedCities = useFetchCities();
   const selectedUser = useFetchUsers();
 
@@ -153,7 +153,7 @@ export default function EditBranch({
               className="text-black m-5 box-register"
               style={{ borderRadius: "25px" }}
             >
-              <Form className="register" form={form}>
+              <div className="register">
                 <h2 className="text-register">Editar Establecimiento/Obra</h2>
                 <label>Empresa:</label>
                 <Input
@@ -228,7 +228,10 @@ export default function EditBranch({
                 />
                 <label>Empleados con acceso:</label>
                 {EmployeeAcces()}
-              </Form>
+                {isChangingPassword && (
+                             <ChangePasswordForAlls email={email} />
+                )}
+              </div>
               <div style={{ marginTop: "20px" }}>
                 <Button
                   style={{ marginRight: "5px" }}
@@ -237,6 +240,15 @@ export default function EditBranch({
                 >
                   Guardar
                 </Button>
+                {!isChangingPassword && (
+                  <Button
+                  style={{ marginRight: "5px" }}
+                    type="primary"
+                    onClick={() => setIsChangingPassword(true)}
+                  >
+                    Cambiar Contraseña
+                  </Button>
+                )}
                 <Button
                   type="primary"
                   danger

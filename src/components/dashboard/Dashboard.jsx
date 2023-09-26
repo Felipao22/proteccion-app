@@ -417,7 +417,7 @@ export default function Dashboard() {
 
   const columns = [
     {
-      title: "Acciones",
+      title: isSuperAdminUser() ? "Acciones" : null,
       key: "acciones",
       render: (record) => (
         <Space size="middle">
@@ -681,6 +681,7 @@ export default function Dashboard() {
             </div>
           ) : showEmployeesList ? (
             <>
+                <h4 style={{ margin: "50px" }}>Empleados/as:</h4>
               <EmployeeList />
               <Button
                 style={{ margin: "50px" }}

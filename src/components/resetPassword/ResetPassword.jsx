@@ -32,8 +32,6 @@ function ResetPassword() {
     hasNumber: false,
   });
 
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const data = new FormData();

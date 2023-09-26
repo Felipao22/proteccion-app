@@ -6,6 +6,7 @@ import {
   UnlockOutlined,
   DeleteOutlined,
   EllipsisOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 import apiClient from "../../utils/client";
 import { NotificationFailure } from "../notifications/Notifications";
@@ -14,9 +15,13 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import "./EmployeeList.css";
 import { Menu } from "antd";
+import EditEmployee from "./EditEmployee";
 
 const EmployeeList = ({}) => {
   const [employees, setEmployees] = useState([]);
+  const [editEmployeeEmail, setEditEmployeeEmail] = useState("");
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchEmployeesData = async () => {
@@ -34,6 +39,18 @@ const EmployeeList = ({}) => {
 
     fetchEmployeesData();
   }, []);
+
+  const fetchAndSetEmployeesData = async () => {
+    try {
+      const res = await apiClient.get("/user");
+      const filteredEmployees = res.data.filter(
+        (user) => user.isAdmin && !user.isSuperAdmin
+      );
+      setEmployees(filteredEmployees);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleBlockEmployee = async (email) => {
     const response = await apiClient.get(`/user/${email}`);
@@ -168,7 +185,10 @@ const EmployeeList = ({}) => {
       <Menu.Item key="2" onClick={() => handleActivateEmployee(email)}>
         <UnlockOutlined /> Activar
       </Menu.Item>
-      <Menu.Item key="3" danger onClick={() => handleDeleteEmployee(email)}>
+      <Menu.Item key="3" onClick={() => setEditEmployeeEmail(email)}>
+        <EditOutlined /> Editar
+      </Menu.Item>
+      <Menu.Item key="4" danger onClick={() => handleDeleteEmployee(email)}>
         <DeleteOutlined /> Eliminar
       </Menu.Item>
     </Menu>
@@ -220,20 +240,32 @@ const EmployeeList = ({}) => {
     },
   ];
 
-  return (
-    <Table
-    style={{
-      marginRight: "10px",
-      marginLeft: "10px",
-      marginTop: "50px",
-    }}
-      columns={columns}
-      dataSource={employees}
-      rowKey="email"
-      pagination={false}
-      scroll={{x:true}}
-      rowClassName={(record) => (record.active === false ? "blocked-row" : "")}
-    />
+return (
+    <>
+      {editEmployeeEmail ? (
+        <EditEmployee
+          email={editEmployeeEmail}
+          onCancel={() => setEditEmployeeEmail("")}
+          fetchAndSetEmployeesData={fetchAndSetEmployeesData}
+        />
+      ) : (
+        <Table
+          style={{
+            marginRight: "10px",
+            marginLeft: "10px",
+            marginTop: "50px",
+          }}
+          columns={columns}
+          dataSource={employees}
+          rowKey="email"
+          pagination={false}
+          scroll={{ x: true }}
+          rowClassName={(record) =>
+            record.active === false ? "blocked-row" : ""
+          }
+        />
+      )}
+    </>
   );
 };
 
