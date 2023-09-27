@@ -1,5 +1,5 @@
 // original
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getFiles,
   setFilesData,
@@ -58,10 +58,9 @@ export const Usuario = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [loading, setLoading] = useState(true);
-  const [branchData, setBranchData] = useState(null);
-  const [sessionActive, setSessionActive] = useState(true);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
+
 
   const kinds = useFetchKinds();
 
@@ -71,6 +70,22 @@ export const Usuario = () => {
 
   const user = useAppSelector(getUser);
 
+  useEffect(() => {
+    // Agregar un event listener para unload
+    window.addEventListener("unload", handleUnload);
+
+    // Limpia el event listener cuando el componente se desmonta
+    return () => {
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
+
+  const handleUnload = () => {
+    if (user && user.authToken) {
+      signOff();
+      dispatch(setLogoutData());
+    }
+  };
 
   const token = getToken();
 
@@ -122,33 +137,6 @@ export const Usuario = () => {
     fetchUserData();
   }, [token, user, dispatch]);
 
-  // useEffect(() => {
-  //   const fetchBranchData = async () => {
-  //     try {
-  //       if (user && selectedBranchId) {
-  //         setLoading(true);
-  //         const response = await apiClient.get(
-  //           `/branch/${selectedBranchId.branchId}`
-  //         );
-  //         setBranchData(response.data);
-  //         dispatch(setFilesData(response.data.files));
-  //         setLoading(false);
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       NotificationFailure(error.response.data.message);
-  //     }
-  //   };
-  //   fetchBranchData();
-  // }, [user, selectedBranchId]);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
 
   const handleDownload = async (id, name) => {
     try {
@@ -176,7 +164,6 @@ export const Usuario = () => {
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
       clearToken();
-      setSessionActive(false);
       navigate("/");
       NotificationSuccess(res.data.message);
     } catch (error) {

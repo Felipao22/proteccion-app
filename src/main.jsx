@@ -9,7 +9,6 @@ import { store } from "./redux/store.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import dayjs from "dayjs";
-// import esES from "antd/lib/locale/es_ES";
 import esES from 'antd/locale/es_ES.js';
 import "dayjs/locale/es.js"
 dayjs.locale('es')

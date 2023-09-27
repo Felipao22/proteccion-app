@@ -67,6 +67,24 @@ export default function Dashboard() {
 
   const user = useAppSelector(getUser);
 
+  useEffect(() => {
+    // Agregar un event listener para unload
+    window.addEventListener("unload", handleUnload);
+
+    // Limpia el event listener cuando el componente se desmonta
+    return () => {
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, []);
+
+  const handleUnload = () => {
+    if (user && user.authToken) {
+      signOff();
+      dispatch(setLogoutData());
+    }
+  };
+
+
   const branch = useAppSelector(getUser).selectedBranch;
 
   const fetchAndSetBusinessData = async () => {
