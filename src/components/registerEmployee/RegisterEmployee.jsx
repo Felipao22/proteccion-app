@@ -171,15 +171,16 @@ export default function RegisterEmployee() {
   };
 
   return (
+    <div className="container-register">
     <Row justify="center" align="middle">
-      <Col span={24} lg={12}>
+      <Col span={24} lg={48}>
         <Card
           className="text-black m-5 box-register"
           style={{ borderRadius: "25px" }}
         >
           <Form
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 12 }}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
             className="register"
             form={form}
             onFinish={handleSubmit}
@@ -324,6 +325,7 @@ export default function RegisterEmployee() {
             )}
             <Form.Item>
               <Button
+              style={{width:"100%"}}
                 loading={loading}
                 type="primary"
                 htmlType="submit"
@@ -336,5 +338,6 @@ export default function RegisterEmployee() {
         </Card>
       </Col>
     </Row>
+    </div>
   );
 }
