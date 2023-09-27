@@ -97,7 +97,10 @@ export default function ChangePasswordForAlls({ email }) {
     }
 
     try {
-      const response = await apiClient.put(`/user/changePsw/users/${email}`, values);
+      const response = await apiClient.put(
+        `/user/changePsw/users/${email}`,
+        values
+      );
 
       if (response.data) {
         NotificationSuccess(response.data);
@@ -131,25 +134,26 @@ export default function ChangePasswordForAlls({ email }) {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Nueva contraseña"
             name="newPassword"
             value={values.newPassword}
             onChange={handlePasswordChange}
           />
           {errors.newPassword && (
-                <small
-                  style={{
-                    color: "red",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.newPassword}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.newPassword}
-                </small>
-              )}
+            <small
+              style={{
+                color: "red",
+                marginBottom: "10px",
+                marginTop: "-20px",
+              }}
+            >
+              <Tooltip title={errors.newPassword}>
+                <InfoCircleOutlined style={{ marginRight: "4px" }} />
+              </Tooltip>
+              {errors.newPassword}
+            </small>
+          )}
           <ul>
             <li className={passwordRequirements.minLength ? "success" : ""}>
               Mínimo de 6 caracteres.
@@ -166,30 +170,37 @@ export default function ChangePasswordForAlls({ email }) {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Confirmar nueva contraseña"
             name="confirmPassword"
             value={values.confirmPassword}
             onChange={handleInputChange}
           />
-        {errors.confirmPassword && (
-                <small
-                  style={{
-                    color: "red",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.confirmPassword}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.confirmPassword}
-                </small>
-              )}
+          {errors.confirmPassword && (
+            <small
+              style={{
+                color: "red",
+                marginBottom: "10px",
+                marginTop: "-20px",
+              }}
+            >
+              <Tooltip title={errors.confirmPassword}>
+                <InfoCircleOutlined style={{ marginRight: "4px" }} />
+              </Tooltip>
+              {errors.confirmPassword}
+            </small>
+          )}
         </Col>
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Button disabled={isSubmitDisabled}  type="primary" htmlType="submit" loading={loading} >
+          <Button
+          className="button-psw"
+            disabled={isSubmitDisabled}
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
             Cambiar Contraseña
           </Button>
         </Col>

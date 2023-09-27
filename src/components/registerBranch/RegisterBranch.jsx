@@ -334,314 +334,324 @@ export default function Register() {
   };
 
   return (
-    <div className="background-image">
+    <div className="container-register">
       <Row justify="center" align="middle">
-        <Col span={24} lg={12}>
+        <Col span={24} lg={48}>
           <Card
-            className="text-black m-5 box-register"
+            className="text-black m-5"
             style={{ borderRadius: "25px" }}
           >
             <Form
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 12 }}
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
               className="register"
               form={form}
               onFinish={handleSubmit}
             >
               <h2 className="text-register"> Registrar Establecimiento/Obra</h2>
-
-              <Form.Item label="Empresa" name="nombreEmpresa">
-                <Input
-                  placeholder="Empresa X"
-                  name="nombreEmpresa"
-                  value={values.nombreEmpresa}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.nombreEmpresa && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.nombreEmpresa}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.nombreEmpresa}
-                </small>
-              )}
-
-              <Form.Item label="Email" name="email">
-                <Input
-                  placeholder="example@mail.com"
-                  name="email"
-                  value={values.email}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.email && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.email}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.email}
-                </small>
-              )}
-              <Form.Item label="CUIT" name="cuit">
-                <Input
-                  type="number"
-                  placeholder="20374373075"
-                  name="cuit"
-                  value={values.cuit}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.cuit && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.cuit}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.cuit}
-                </small>
-              )}
-              <Form.Item label="Establecimiento/Obra" name="nombreSede">
-                <Input
-                  placeholder="Establecimiento X"
-                  name="nombreSede"
-                  value={values.nombreSede}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.nombreSede && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.nombreSede}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.nombreSede}
-                </small>
-              )}
-              <Form.Item label="Teléfono" name="telefono">
-                <Input
-                  type="number"
-                  placeholder="2664598798"
-                  name="telefono"
-                  value={values.telefono}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.telefono && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.telefono}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.telefono}
-                </small>
-              )}
-              <Form.Item label="Dirección" name="direccion">
-                <Input
-                  placeholder="Bolivar 1024"
-                  name="direccion"
-                  value={values.direccion}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.direccion && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.direccion}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.direccion}
-                </small>
-              )}
-              <Form.Item label="Ciudad" name="ciudad">
-                {CitySelect()}
-              </Form.Item>
-              {errors.ciudad && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.ciudad}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.ciudad}
-                </small>
-              )}
-
-              <Form.Item label="Contraseña" name="password">
-                <Input.Password
-                  name="password"
-                  value={values.password}
-                  onChange={handlePasswordChange}
-                  type={PasswordInputType}
-                />
-                <ul className="password-requirements">
-                  <li
-                    className={passwordRequirements.minLength ? "success" : ""}
+              <div className="form-item">
+                <Form.Item label="Empresa" name="nombreEmpresa">
+                  <Input
+                    placeholder="Empresa X"
+                    name="nombreEmpresa"
+                    value={values.nombreEmpresa}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.nombreEmpresa && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
                   >
-                    Mínimo de 6 caracteres.
-                  </li>
-                  <li
-                    className={
-                      passwordRequirements.hasUppercase ? "success" : ""
-                    }
+                    <Tooltip title={errors.nombreEmpresa}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.nombreEmpresa}
+                  </small>
+                )}
+
+                <Form.Item label="Email" name="email">
+                  <Input
+                    placeholder="example@mail.com"
+                    name="email"
+                    value={values.email}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.email && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
                   >
-                    Al menos 1 mayúscula.
-                  </li>
-                  <li
-                    className={passwordRequirements.hasNumber ? "success" : ""}
+                    <Tooltip title={errors.email}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.email}
+                  </small>
+                )}
+                <Form.Item label="CUIT" name="cuit">
+                  <Input
+                    type="number"
+                    placeholder="20374373075"
+                    name="cuit"
+                    value={values.cuit}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.cuit && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
                   >
-                    Al menos 1 número.
-                  </li>
-                </ul>
-              </Form.Item>
-              {errors.password && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.password}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.password}
-                </small>
-              )}
+                    <Tooltip title={errors.cuit}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.cuit}
+                  </small>
+                )}
+                <Form.Item label="Establecimiento/Obra" name="nombreSede">
+                  <Input
+                    placeholder="Establecimiento X"
+                    name="nombreSede"
+                    value={values.nombreSede}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.nombreSede && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.nombreSede}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.nombreSede}
+                  </small>
+                )}
+                <Form.Item label="Teléfono" name="telefono">
+                  <Input
+                    type="number"
+                    placeholder="2664598798"
+                    name="telefono"
+                    value={values.telefono}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.telefono && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.telefono}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.telefono}
+                  </small>
+                )}
+                <Form.Item label="Dirección" name="direccion">
+                  <Input
+                    placeholder="Bolivar 1024"
+                    name="direccion"
+                    value={values.direccion}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.direccion && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.direccion}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.direccion}
+                  </small>
+                )}
+                <Form.Item label="Ciudad" name="ciudad">
+                  {CitySelect()}
+                </Form.Item>
+                {errors.ciudad && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.ciudad}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.ciudad}
+                  </small>
+                )}
 
-              <Form.Item label="Confirmar Contraseña" name="confirmPassword">
-                <Input.Password
-                  name="confirmPassword"
-                  value={values.confirmPassword}
-                  onChange={handleInputChange}
-                />
-              </Form.Item>
-              {errors.confirmPassword && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.confirmPassword}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.confirmPassword}
-                </small>
-              )}
+                <Form.Item label="Contraseña" name="password">
+                  <Input.Password
+                    autoComplete="new-password"
+                    name="password"
+                    value={values.password}
+                    onChange={handlePasswordChange}
+                    type={PasswordInputType}
+                  />
+                  <ul className="password-requirements">
+                    <li
+                      className={
+                        passwordRequirements.minLength ? "success" : ""
+                      }
+                    >
+                      Mínimo de 6 caracteres.
+                    </li>
+                    <li
+                      className={
+                        passwordRequirements.hasUppercase ? "success" : ""
+                      }
+                    >
+                      Al menos 1 mayúscula.
+                    </li>
+                    <li
+                      className={
+                        passwordRequirements.hasNumber ? "success" : ""
+                      }
+                    >
+                      Al menos 1 número.
+                    </li>
+                  </ul>
+                </Form.Item>
+                {errors.password && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.password}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.password}
+                  </small>
+                )}
 
-              <Form.Item label="Email del Jefe" name="emailJefe">
-                <Input
-                  name="emailJefe"
-                  value={values.emailJefe}
-                  onChange={handleInputChange}
-                  placeholder="example@mail.com"
-                />
-              </Form.Item>
-              {errors.emailJefe && (
-                <small
-                  style={{
-                    color: "red",
-                    display: "flex",
-                    justifyContent: "center",
-                    marginBottom: "10px",
-                    marginTop: "-20px",
-                  }}
-                >
-                  <Tooltip title={errors.emailJefe}>
-                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                  </Tooltip>
-                  {errors.emailJefe}
-                </small>
-              )}
+                <Form.Item label="Confirmar Contraseña" name="confirmPassword">
+                  <Input.Password
+                    autoComplete="new-password"
+                    name="confirmPassword"
+                    value={values.confirmPassword}
+                    onChange={handleInputChange}
+                  />
+                </Form.Item>
+                {errors.confirmPassword && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.confirmPassword}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.confirmPassword}
+                  </small>
+                )}
 
-              <Form.Item label="Emails" name="emails">
-                {emailFields.map((email, index) => (
-                  <div key={index}>
-                    <Input
-                      label="Email"
-                      type="email"
-                      placeholder="example@mail.com"
-                      value={email}
-                      onChange={(e) => handleEmailChange(index, e.target.value)}
-                    />
-                    <Button
-                      icon={<PlusOutlined />}
-                      onClick={handleAddEmailField}
-                    />
-                    <Button
-                      type="primary"
-                      danger
-                      icon={<CloseCircleOutlined />}
-                      onClick={() => handleRemoveEmailField(index)}
-                      style={{ marginTop: "5px" }}
-                      size="20px"
-                    ></Button>
-                  </div>
-                ))}
-              </Form.Item>
+                <Form.Item label="Email del Jefe" name="emailJefe">
+                  <Input
+                    name="emailJefe"
+                    value={values.emailJefe}
+                    onChange={handleInputChange}
+                    placeholder="example@mail.com"
+                  />
+                </Form.Item>
+                {errors.emailJefe && (
+                  <small
+                    style={{
+                      color: "red",
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "10px",
+                      marginTop: "-20px",
+                    }}
+                  >
+                    <Tooltip title={errors.emailJefe}>
+                      <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                    </Tooltip>
+                    {errors.emailJefe}
+                  </small>
+                )}
 
-              <Form.Item label="Acceso" name="accessUser">
-                {AdminEmailSelect()}
-              </Form.Item>
+                <Form.Item label="Emails" name="emails">
+                  {emailFields.map((email, index) => (
+                    <div key={index}>
+                      <Input
+                        label="Email"
+                        type="email"
+                        placeholder="example@mail.com"
+                        value={email}
+                        onChange={(e) =>
+                          handleEmailChange(index, e.target.value)
+                        }
+                      />
+                      <Button
+                        icon={<PlusOutlined />}
+                        onClick={handleAddEmailField}
+                      />
+                      <Button
+                        type="primary"
+                        danger
+                        icon={<CloseCircleOutlined />}
+                        onClick={() => handleRemoveEmailField(index)}
+                        style={{ marginTop: "5px" }}
+                        size="20px"
+                      ></Button>
+                    </div>
+                  ))}
+                </Form.Item>
+
+                <Form.Item label="Acceso" name="accessUser">
+                  {AdminEmailSelect()}
+                </Form.Item>
+              </div>
 
               <Form.Item>
                 <Button
+                  style={{ width: "100%" }}
                   loading={loading}
                   type="primary"
                   htmlType="submit"

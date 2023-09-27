@@ -155,7 +155,7 @@ export default function EditBranch({
             >
               <div className="register">
                 <h2 className="text-register">Editar Establecimiento/Obra</h2>
-                <label>Empresa:</label>
+                <label htmlFor="empresa">Empresa:</label>
                 <Input
                   type="text"
                   value={branchData.nombreEmpresa || ""}
@@ -166,7 +166,7 @@ export default function EditBranch({
                     })
                   }
                 />
-                <label>Establecimiento:</label>
+                <label htmlFor="establecimiento">Establecimiento:</label>
                 <Input
                   type="text"
                   value={branchData.nombreSede || ""}
@@ -174,7 +174,7 @@ export default function EditBranch({
                     setBranchData({ ...branchData, nombreSede: e.target.value })
                   }
                 />
-                <label>Cuit:</label>
+                <label htmlFor="cuit">Cuit:</label>
                 <Input
                   type="number"
                   value={branchData.cuit || ""}
@@ -182,7 +182,7 @@ export default function EditBranch({
                     setBranchData({ ...branchData, cuit: e.target.value })
                   }
                 />
-                <label>N° de teléfono:</label>
+                <label htmlFor="telefono">N° de teléfono:</label>
                 <Input
                   type="number"
                   value={branchData.telefono || ""}
@@ -190,7 +190,7 @@ export default function EditBranch({
                     setBranchData({ ...branchData, telefono: e.target.value })
                   }
                 />
-                <label>Dirección:</label>
+                <label htmlFor="direccion">Dirección:</label>
                 <Input
                   type="text"
                   value={branchData.direccion || ""}
@@ -202,9 +202,9 @@ export default function EditBranch({
                 {CitySelect()}
 
                 <div>
-                  <label>Email del Jefe:</label>
+                  <label htmlFor="email">Email del Jefe:</label>
                   <Input
-                    type="text"
+                    type="email"
                     value={branchData.emailJefe || ""}
                     onChange={(e) =>
                       setBranchData({
@@ -215,9 +215,9 @@ export default function EditBranch({
                   />
                 </div>
 
-                <label>Emails adicionales:</label>
+                <label htmlFor="email">Emails adicionales:</label>
                 <Input
-                  type="text"
+                  type="email"
                   value={branchData.emails || ""}
                   onChange={(e) =>
                     setBranchData({
@@ -228,13 +228,11 @@ export default function EditBranch({
                 />
                 <label>Empleados con acceso:</label>
                 {EmployeeAcces()}
-                {isChangingPassword && (
-                             <ChangePasswordForAlls email={email} />
-                )}
+                {isChangingPassword && <ChangePasswordForAlls email={email} />}
               </div>
-              <div style={{ marginTop: "20px" }}>
+              <div className="buttons-form">
                 <Button
-                  style={{ marginRight: "5px" }}
+                  style={{ marginRight: "5px", marginBottom:"10px", marginTop:"10px" }}
                   type="primary"
                   onClick={handleUpdateBranch}
                 >
@@ -242,7 +240,7 @@ export default function EditBranch({
                 </Button>
                 {!isChangingPassword && (
                   <Button
-                  style={{ marginRight: "5px" }}
+                  className="button-cambiar"
                     type="primary"
                     onClick={() => setIsChangingPassword(true)}
                   >

@@ -598,7 +598,7 @@ export default function Dashboard() {
           <Loading />
         </div>
       ) : (
-        <div>
+        <div className="background-dashboard">
           {!showFile &&
           !showRegisterBranch &&
           !showUserFiles &&

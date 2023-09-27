@@ -6,6 +6,7 @@ import { Card } from "antd";
 import Loading from "../loading/Loading";
 import { NotificationFailure } from "../notifications/Notifications";
 import ChangePasswordForAlls from "../changePassword/ChangePasswordForAlls";
+import "./EditEmployee.css"
 
 export default function EditEmployee({
   email,
@@ -74,7 +75,6 @@ export default function EditEmployee({
     }
   };
 
-
   return (
     <div>
       {loading ? (
@@ -104,16 +104,17 @@ export default function EditEmployee({
                   type="text"
                   value={employeeData.lastName || ""}
                   onChange={(e) =>
-                    setEmployeeData({ ...employeeData, lastName: e.target.value })
+                    setEmployeeData({
+                      ...employeeData,
+                      lastName: e.target.value,
+                    })
                   }
                 />
-                {isChangingPassword && (
-                             <ChangePasswordForAlls email={email} />
-                )}
+                {isChangingPassword && <ChangePasswordForAlls email={email} />}
               </div>
               <div style={{ marginTop: "20px" }}>
                 <Button
-                  style={{ marginRight: "5px" }}
+                  style={{ marginRight: "5px", marginBottom: "10px" }}
                   type="primary"
                   onClick={handleUpdateEmployee}
                 >
@@ -121,7 +122,7 @@ export default function EditEmployee({
                 </Button>
                 {!isChangingPassword && (
                   <Button
-                  style={{ marginRight: "5px" }}
+                  className="button-cambiar"
                     type="primary"
                     onClick={() => setIsChangingPassword(true)}
                   >

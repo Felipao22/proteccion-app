@@ -121,6 +121,7 @@ export default function PasswordChange({ email }) {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+          autoComplete="current-password"
             placeholder="Contraseña actual"
             name="oldPassword"
             type={PasswordInputType}
@@ -135,6 +136,7 @@ export default function PasswordChange({ email }) {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Nueva contraseña"
             name="newPassword"
             value={values.newPassword}
@@ -159,6 +161,7 @@ export default function PasswordChange({ email }) {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Confirmar nueva contraseña"
             name="confirmPassword"
             value={values.confirmPassword}
