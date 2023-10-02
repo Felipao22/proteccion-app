@@ -73,6 +73,9 @@ export const File = ({ userEmail }) => {
     try {
       const res = await apiClient.post("/file", data);
       NotificationSuccess(res.data.message);
+      if(res.data.message.includes("correo enviado")){
+        NotificationSuccess("El correo se ha enviado correctamente.")
+      }
       resetForm();
     } catch (error) {
       NotificationFailure(error.response.data.message);

@@ -7,8 +7,9 @@ import useFormatDate from "../hooks/useFormattedDate";
 import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
 import { setFilesDataLogOut } from "../../redux/filesSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { clearToken, getToken } from "../../utils/token";
+// import { clearToken, getToken } from "../../utils/token";
 import {
+  NotificationInfo,
   NotificationFailure,
   NotificationSuccess,
 } from "../notifications/Notifications";
@@ -35,6 +36,7 @@ import {
 } from "@ant-design/icons";
 import { AddKind } from "../addKind/AddKind";
 import EditBranch from "../editBranch/EditBranch";
+import { deleteCookie, deleteToken, getCookie, getToken, setCookie } from "../../utils/cookieUtils";
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -63,29 +65,126 @@ export default function Dashboard() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const token = getToken();
+  // const token = getCookie('token')
+  // const token = getToken();
+  const token = getToken('token')
 
   const user = useAppSelector(getUser);
 
-  useEffect(() => {
-    // Agregar un event listener para unload
-    window.addEventListener("unload", handleUnload);
+  const branch = useAppSelector(getUser).selectedBranch;
 
-    // Limpia el event listener cuando el componente se desmonta
+
+  // useEffect(() => {
+  //   let inactivityTimer;
+  
+  //   const checkCookieExpiration = () => {
+  //         const userCookie = getCookie("user");
+    
+  //         if (!userCookie) {
+  //           cookieExpiration();
+  //         } else {
+  //           // La cookie existe, verifica si ha caducado
+  //           const user = JSON.parse(userCookie);
+    
+  //           const expirationTime = new Date(user.expirationTime);
+    
+  //           if (expirationTime <= new Date()) {
+  //             // La cookie ha caducado
+  //             cookieExpiration();
+  //           }
+  //         }
+  //       };
+  
+  //   // Verificar la caducidad de la cookie al cargar el componente
+  //   checkCookieExpiration();
+  
+  //   const resetInactivityTimer = () => {
+  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
+  //     clearTimeout(inactivityTimer);
+  //     inactivityTimer = setTimeout(checkCookieExpiration, 30000); // 10 segundos
+  //   };
+  
+  //   // Verificar la caducidad de la cookie al cargar el componente
+  //   checkCookieExpiration();
+  
+  //   // Configurar un temporizador de inactividad inicial
+  //   resetInactivityTimer();
+  
+  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
+  //   window.addEventListener("mousemove", resetInactivityTimer);
+  //   window.addEventListener("scroll", resetInactivityTimer);
+  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
+  
+  //   // Limpia los manejadores de eventos al desmontar el componente
+  //   return () => {
+  //     clearInterval(inactivityTimer);
+  //     window.removeEventListener("mousemove", resetInactivityTimer);
+  //     window.removeEventListener("scroll", resetInactivityTimer);
+  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    let inactivityTimer;
+    let lastActivity = new Date();
+  
+    const checkCookieExpiration = () => {
+      const userCookie = getCookie("user");
+      console.log("Verificando la caducidad de la cookie");
+      if (!userCookie) {
+        // No hay cookie del usuario, redirigir a la página de inicio de sesión
+        cookieExpiration() // Reemplaza "/login" con la ruta de tu página de inicio de sesión
+        return;
+      }
+  
+      // La cookie existe, verifica si ha caducado
+      const user = JSON.parse(userCookie);
+  
+      // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
+      const currentTime = new Date();
+      if (currentTime - lastActivity > 10 * 60 * 1000) {
+        // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
+        cookieExpiration();
+        return;
+      }
+  
+      // Actualiza la última actividad en la cookie
+      user.expirationTime = currentTime.toISOString();
+      setCookie("user",JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+      console.log("Cookie guardada correctamente");
+    };
+  
+    // Verificar la caducidad de la cookie al cargar el componente
+    checkCookieExpiration();
+  
+    const resetInactivityTimer = () => {
+      // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
+      // console.log("Temporizador de inactividad reiniciado");
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(checkCookieExpiration, 60000);
+      lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
+    };
+  
+    // Configurar un temporizador de inactividad inicial
+    resetInactivityTimer();
+  
+    // Agregar manejadores de eventos para el mouse y el desplazamiento
+    window.addEventListener("mousemove", resetInactivityTimer);
+    window.addEventListener("scroll", resetInactivityTimer);
+    window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
+  
+    // Limpia los manejadores de eventos al desmontar el componente
     return () => {
-      window.removeEventListener("unload", handleUnload);
+      clearInterval(inactivityTimer);
+      window.removeEventListener("mousemove", resetInactivityTimer);
+      window.removeEventListener("scroll", resetInactivityTimer);
+      window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
     };
   }, []);
-
-  const handleUnload = () => {
-    if (user && user.authToken) {
-      signOff();
-      dispatch(setLogoutData());
-    }
-  };
-
-
-  const branch = useAppSelector(getUser).selectedBranch;
+  
+  
+  
+  
 
   const fetchAndSetBusinessData = async () => {
     try {
@@ -136,7 +235,7 @@ export default function Dashboard() {
     const escapedQ = escapeRegExp(q.trim());
     const searchRegex = new RegExp(escapedQ, "i");
 
-    return rows.filter(
+    return rows?.filter(
       (row) =>
         !row.isAdmin &&
         (searchRegex.test(row.email) ||
@@ -148,12 +247,33 @@ export default function Dashboard() {
     );
   };
 
+  const cookieExpiration = async () => {
+    try {
+      await apiClient.post("/user/logout");
+      dispatch(setLogoutData());
+      dispatch(setFilesDataLogOut());
+      // clearToken();
+      deleteToken('token')
+      // deleteCookie('token')
+      deleteCookie('user')
+      // NotificationFailure("La sesión ha caducado. Por favor, inicie sesión nuevamente.");
+      NotificationInfo(
+        "La sesión ha caducado. Por favor, inicie sesión nuevamente."
+      );
+    } catch (error) {
+      NotificationFailure(error);
+    }
+  };
+
   const signOff = async () => {
     try {
       const res = await apiClient.post("/user/logout");
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
-      clearToken();
+      // clearToken();
+      deleteToken('token')
+      // deleteCookie('token')
+      deleteCookie('user')
       navigate("/");
       NotificationSuccess(res.data.message);
     } catch (error) {
@@ -643,7 +763,6 @@ export default function Dashboard() {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Buscar"
               />
-
               <Table
                 style={{
                   marginRight: "10px",
@@ -699,7 +818,7 @@ export default function Dashboard() {
             </div>
           ) : showEmployeesList ? (
             <>
-                <h4 style={{ margin: "50px" }}>Empleados/as:</h4>
+              <h4 style={{ margin: "50px" }}>Empleados/as:</h4>
               <EmployeeList />
               <Button
                 style={{ margin: "50px" }}

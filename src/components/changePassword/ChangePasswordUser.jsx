@@ -93,10 +93,12 @@ export default function ChangePasswordUser() {
 
     try {
       const response = await apiClient.put(
-        `/user/changePasswordUser/${token}`, values);
+        `/user/changePasswordUser/${token}`,
+        values
+      );
       if (response.data) {
         NotificationSuccess(response.data);
-        navigate("/usuario")
+        navigate("/usuario");
       } else {
         NotificationFailure(response.data);
       }
@@ -140,6 +142,7 @@ export default function ChangePasswordUser() {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Nueva contraseña"
             name="newPassword"
             value={values.newPassword}
@@ -164,6 +167,7 @@ export default function ChangePasswordUser() {
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
+            autoComplete="new-password"
             placeholder="Confirmar nueva contraseña"
             name="confirmPassword"
             value={values.confirmPassword}

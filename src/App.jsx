@@ -15,6 +15,7 @@ import { Routes } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import ResetPassword from "./components/resetPassword/ResetPassword";
 import ChangePasswordUser from "./components/changePassword/ChangePasswordUser";
+import CookiePolicies from "./components/cookie/CookiePolicies";
 
 const Home = lazy(() => import("./components/home/Home.jsx"));
 const Nosotros = lazy(() => import("./components/nosotros/Nosotros.jsx"));
@@ -33,7 +34,7 @@ function App() {
         <ScrollToTop />
         <ToastContainer
           position="top-center"
-          autoClose={1000}
+          autoClose={3000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -48,6 +49,7 @@ function App() {
           <Route exact path="/nosotros" element={<Nosotros />} />
           <Route exact path="/contact" element={<Contact />} />
           <Route exact path="/services" element={<Soluciones />} />
+          <Route exact path="/politica-de-cookies" element={<CookiePolicies />} />
           <Route
             exact
             path="/login"

@@ -18,7 +18,6 @@ import {
 } from "@ant-design/icons";
 import "./RegisterBranch.css";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
-import { updateTableData } from "../../redux/tableSlice";
 import { Tooltip } from "antd";
 
 export default function Register() {
@@ -248,15 +247,22 @@ export default function Register() {
       });
       if (res.data.newUser) {
         NotificationSuccess(res.data.message);
-        dispatch(updateTableData(res.data.newUser));
         dispatch(setSelectedBranch(res.data.newUser));
+      }
+      if (res.data.message.includes("correo enviado")) {
+        // Muestra un mensaje adicional si el correo se ha enviado
+        NotificationSuccess("El correo se ha enviado correctamente.");
       }
       resetForm();
       form.resetFields();
     } catch (error) {
       console.log(error);
-      NotificationWarning(error.response.data.warning);
-      NotificationFailure(error.response);
+      if (error.response && error.response.status === 401) {
+        NotificationFailure("No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente.");
+      } else {
+        NotificationWarning(error.response.data.warning);
+        NotificationFailure(error.response);
+      }
     } finally {
       setLoading(false);
     }
@@ -377,6 +383,7 @@ export default function Register() {
 
                 <Form.Item label="Email" name="email">
                   <Input
+                  autoComplete="username"
                     placeholder="example@mail.com"
                     name="email"
                     value={values.email}

@@ -28,8 +28,8 @@ const EmployeeList = ({}) => {
       try {
         const res = await apiClient.get("/user");
 
-        const filteredEmployees = res.data.filter(
-          (user) => user.isAdmin && !user.isSuperAdmin
+        const filteredEmployees = res?.data?.filter(
+          (user) => user?.isAdmin && !user?.isSuperAdmin
         );
         setEmployees(filteredEmployees);
       } catch (error) {
@@ -43,8 +43,8 @@ const EmployeeList = ({}) => {
   const fetchAndSetEmployeesData = async () => {
     try {
       const res = await apiClient.get("/user");
-      const filteredEmployees = res.data.filter(
-        (user) => user.isAdmin && !user.isSuperAdmin
+      const filteredEmployees = res?.data?.filter(
+        (user) => user?.isAdmin && !user?.isSuperAdmin
       );
       setEmployees(filteredEmployees);
     } catch (error) {

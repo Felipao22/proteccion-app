@@ -99,6 +99,7 @@ const initialState = {
   emails: [],
   emailJefe: "",
   selectedBranch: [],
+  expirationTime:null
 };
 
 export const getUserDataFromCookies = () => {
@@ -111,7 +112,7 @@ export const userSlice = createSlice({
   initialState: getUserDataFromCookies(),
   reducers: {
     setUserData: (state, action) => {
-      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser,emailJefe, name, lastName } =
+      const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin, emails, nombreSede, ciudad, direccion, telefono, accessUser,emailJefe, name, lastName, expirationTime } =
         action.payload;
       state.email = email;
       state.nombreEmpresa = nombreEmpresa;
@@ -127,6 +128,8 @@ export const userSlice = createSlice({
       state.emailJefe = emailJefe;
       state.name = name;
       state.lastName= lastName;
+      const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+      state.expirationTime = oneHourFromNow.toUTCString();
       setCookie("user", JSON.stringify(state)); // Guardar en la cookie
     },
     setLoginData: (state, action) => {
@@ -137,6 +140,8 @@ export const userSlice = createSlice({
       state.email = email;
       state.isAdmin = isAdmin;
       state.isSuperAdmin = isSuperAdmin;
+      const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+      state.expirationTime = oneHourFromNow.toUTCString();
       setCookie("user", JSON.stringify(state)); // Guardar en la cookie
     },
     setLogoutData: (state) => {

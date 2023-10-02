@@ -4,7 +4,7 @@ import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import log from "../../assets/authentication.png";
 import apiClient from "../../utils/client";
 import { useAppDispatch } from "../../redux/hooks";
-import { setToken } from "../../utils/token";
+// import { setToken } from "../../utils/token";
 import {
   NotificationFailure,
   NotificationSuccess,
@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { setLoginData } from "../../redux/userSlice";
 import { Button, Col, Modal, Row, Form, Input } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { setToken } from "../../utils/cookieUtils";
 
 export default function Login() {
   const initialValues = {
@@ -74,7 +75,8 @@ export default function Login() {
           isSuperAdmin: res.data.user.isSuperAdmin,
         })
       );
-      setToken(res.data.token);
+      // setToken(res.data.token);
+      setToken('token', res.data.token)
       NotificationSuccess(res.data.message);
       NotificationWarning(res.data.warning);
 

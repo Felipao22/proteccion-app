@@ -11,6 +11,7 @@ import { Form, Input, Button, Row, Col, Card } from "antd";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import { Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import axios from "axios";
 
 export default function RegisterEmployee() {
   const initialValues = {
@@ -152,8 +153,13 @@ export default function RegisterEmployee() {
       }
       resetForm();
     } catch (error) {
-      NotificationWarning(error.response.data.warning);
-      NotificationFailure(error.response.data.message);
+      console.error(error);
+      if (error.response && error.response.status === 401) {
+        NotificationFailure("No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente.");
+      } else {
+        NotificationWarning(error.response.data.warning);
+        NotificationFailure(error.response.data.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -189,7 +195,8 @@ export default function RegisterEmployee() {
 
             <Form.Item label="Email" name="email">
               <Input
-                placeholder="example@email.com"
+                autoComplete="username"
+                placeholder="example@mail.com"
                 name="email"
                 value={values.email}
                 onChange={handleInputChange}
@@ -262,6 +269,7 @@ export default function RegisterEmployee() {
             )}
             <Form.Item label="Contraseña" name="password">
               <Input.Password
+              autoComplete="new-password"
                 placeholder="••••••••"
                 name="password"
                 value={values.password}
@@ -301,6 +309,7 @@ export default function RegisterEmployee() {
 
             <Form.Item label="Confirmar Contraseña" name="confirmPassword">
               <Input.Password
+              autoComplete="new-password"
                 placeholder="••••••••"
                 name="confirmPassword"
                 value={values.confirmPassword}

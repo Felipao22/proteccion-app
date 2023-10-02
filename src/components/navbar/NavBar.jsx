@@ -22,6 +22,7 @@ export default function ButtonAppBar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const user = useAppSelector(getUser);
+
   const navigate = useNavigate();
 
   let nombre = user?.nombreSede;
@@ -47,10 +48,10 @@ export default function ButtonAppBar() {
   }
 
   function stringAvatar(name) {
-    const firstName = name.split(" - ")[0];
+    const firstName = name?.split(" - ")[0];
 
     const initials = firstName
-      .split(" ")
+      ?.split(" ")
       .map((part) => part[0])
       .join("");
 
