@@ -78,7 +78,13 @@ export const File = ({ userEmail }) => {
       }
       resetForm();
     } catch (error) {
-      NotificationFailure(error.response.data.message);
+      console.log(error);
+      if (error.response && error.response.status === 401) {
+        NotificationFailure("No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente.");
+      } else {
+        NotificationWarning(error.response.data.warning);
+        NotificationFailure(error.response.data.message);
+      }
     } finally {
       setLoading(false);
     }
