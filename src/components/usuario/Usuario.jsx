@@ -1,5 +1,9 @@
 // original
+import { FileOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Form, Input, Layout, Menu, Modal, Select, theme } from "antd";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getFiles,
   setFilesData,
@@ -9,30 +13,29 @@ import {
 } from "../../redux/filesSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
+  getUser,
+  setLogoutData,
+  setUserData
+} from "../../redux/userSlice";
+import apiClient from "../../utils/client";
+import {
+  deleteCookie,
+  deleteToken,
+  getCookie,
+  setCookie,
+} from "../../utils/cookieUtils";
+import { getExtensionIcon } from "../../utils/getExtensionIcon";
+import AntdCustomPagination from "../Pagination/Pagination";
+import CookieBanner from "../cookie/CookieBanner";
+import { useFetchKinds } from "../hooks/useFetchKinds";
+import { DownloadIcon } from "../icons/Icons";
+import {
   NotificationFailure,
   NotificationInfo,
   NotificationSuccess,
 } from "../notifications/Notifications";
-import apiClient from "../../utils/client";
-import { DownloadIcon } from "../icons/Icons";
-import { useNavigate } from "react-router-dom";
-import { getUser, setUserData, setLogoutData, setSelectedBranch } from "../../redux/userSlice";
-import { clearToken, getToken } from "../../utils/token";
-import Loading from "../loading/Loading";
-import { FileOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
-import { Form, Button } from "antd";
-import { Input } from "antd";
-import { Select } from "antd";
+import "./Ususario.css";
 const { Option } = Select;
-import { DatePicker } from "antd";
-import { useFetchKinds } from "../hooks/useFetchKinds";
-import { getExtensionIcon } from "../../utils/getExtensionIcon";
-import moment from "moment";
-import AntdCustomPagination from "../Pagination/Pagination";
-import { Modal } from "antd";
-import { deleteCookie, deleteToken, getCookie, setCookie } from "../../utils/cookieUtils";
-import CookieBanner from "../cookie/CookieBanner";
 
 function getItem(label, key, icon, children, onClick) {
   return {
@@ -45,7 +48,6 @@ function getItem(label, key, icon, children, onClick) {
 }
 
 export const Usuario = () => {
-
   const initialValues = {
     nombreEmpresa: "",
     nombreEstablecimiento: "",
@@ -64,7 +66,6 @@ export const Usuario = () => {
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
 
-
   const kinds = useFetchKinds();
 
   const dispatch = useAppDispatch();
@@ -73,7 +74,7 @@ export const Usuario = () => {
 
   const user = useAppSelector(getUser);
 
-  const token = getCookie('token')
+  const token = getCookie("token");
 
   const files = useAppSelector(getFiles);
 
@@ -92,45 +93,45 @@ export const Usuario = () => {
 
   // useEffect(() => {
   //   let inactivityTimer;
-  
+
   //   const checkCookieExpiration = () => {
   //         const userCookie = getCookie("user");
-    
+
   //         if (!userCookie) {
   //           cookieExpiration();
   //         } else {
   //           // La cookie existe, verifica si ha caducado
   //           const user = JSON.parse(userCookie);
-    
+
   //           const expirationTime = new Date(user.expirationTime);
-    
+
   //           if (expirationTime <= new Date()) {
   //             // La cookie ha caducado
   //             cookieExpiration();
   //           }
   //         }
   //       };
-  
+
   //   // Verificar la caducidad de la cookie al cargar el componente
   //   checkCookieExpiration();
-  
+
   //   const resetInactivityTimer = () => {
   //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
   //     clearTimeout(inactivityTimer);
   //     inactivityTimer = setTimeout(checkCookieExpiration, 30000); // 10 segundos
   //   };
-  
+
   //   // Verificar la caducidad de la cookie al cargar el componente
   //   checkCookieExpiration();
-  
+
   //   // Configurar un temporizador de inactividad inicial
   //   resetInactivityTimer();
-  
+
   //   // Agregar manejadores de eventos para el mouse y el desplazamiento
   //   window.addEventListener("mousemove", resetInactivityTimer);
   //   window.addEventListener("scroll", resetInactivityTimer);
   //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-  
+
   //   // Limpia los manejadores de eventos al desmontar el componente
   //   return () => {
   //     clearInterval(inactivityTimer);
@@ -140,44 +141,366 @@ export const Usuario = () => {
   //   };
   // }, []);
 
+  // useEffect(() => {
+  //   let inactivityTimer;
+  //   let lastActivity = new Date();
+
+  //   const checkCookieExpiration = () => {
+  //     const userCookie = getCookie("user");
+  //     console.log("Verificando la caducidad de la cookie");
+  //     if (!userCookie) {
+  //       // No hay cookie del usuario, redirigir a la página de inicio de sesión
+  //       cookieExpiration() // Reemplaza "/login" con la ruta de tu página de inicio de sesión
+  //       return;
+  //     }
+
+  //     // La cookie existe, verifica si ha caducado
+  //     const user = JSON.parse(userCookie);
+
+  //     // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
+  //     const currentTime = new Date();
+  //     if (currentTime - lastActivity > 10 * 60 * 1000) {
+  //       // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
+  //       cookieExpiration();
+  //       return;
+  //     }
+
+  //     // Actualiza la última actividad en la cookie
+  //     user.expirationTime = currentTime.toISOString();
+  //     setCookie("user",JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+  //     console.log("Cookie guardada correctamente");
+  //   };
+
+  //   // Verificar la caducidad de la cookie al cargar el componente
+  //   checkCookieExpiration();
+
+  //   const resetInactivityTimer = () => {
+  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
+  //     // console.log("Temporizador de inactividad reiniciado");
+  //     clearTimeout(inactivityTimer);
+  //     inactivityTimer = setTimeout(checkCookieExpiration, 60000);
+  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
+  //   };
+
+  //   // Configurar un temporizador de inactividad inicial
+  //   resetInactivityTimer();
+
+  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
+  //   window.addEventListener("mousemove", resetInactivityTimer);
+  //   window.addEventListener("scroll", resetInactivityTimer);
+  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
+
+  //   // Limpia los manejadores de eventos al desmontar el componente
+  //   return () => {
+  //     clearInterval(inactivityTimer);
+  //     window.removeEventListener("mousemove", resetInactivityTimer);
+  //     window.removeEventListener("scroll", resetInactivityTimer);
+  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
+  //   };
+  // }, []);
+
+  // const getUserDataFromCookiesOrSessionStorage = () => {
+  //   const userDataFromCookies = getCookie("user");
+  //   if (userDataFromCookies) {
+  //     return JSON.parse(userDataFromCookies);
+  //   }
+
+  //   const userDataFromSessionStorage = sessionStorage.getItem("user");
+  //   return userDataFromSessionStorage ? JSON.parse(userDataFromSessionStorage) : null;
+  // };
+  // useEffect(() => {
+  //   let inactivityTimer;
+  //   let lastActivity = new Date();
+
+  //   const resetInactivityTimer = () => {
+  //     clearTimeout(inactivityTimer);
+  //     inactivityTimer = setTimeout(() => {
+  //       // Realiza la verificación de cookies y sessionStorage aquí
+  //       const userData = getUserDataFromCookies();
+  //       console.log(userData)
+  //       if (!userData) {
+  //         // No hay datos de usuario en cookies o sessionStorage, redirigir a la página de inicio de sesión
+  //         cookieExpiration();
+  //         return;
+  //       }
+
+  //       // Actualiza la última actividad en sessionStorage
+  //       userData.expirationTime = new Date().toISOString();
+  //       sessionStorage.setItem("user", JSON.stringify(userData));
+
+  //       console.log("Datos de usuario en sessionStorage actualizados correctamente");
+  //     }, 60000); // Tiempo de inactividad de 1 minuto
+  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
+  //   };
+
+  //   // Configurar un temporizador de inactividad inicial
+  //   resetInactivityTimer();
+
+  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
+  //   window.addEventListener("mousemove", resetInactivityTimer);
+  //   window.addEventListener("scroll", resetInactivityTimer);
+  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
+
+  //   // Limpia los manejadores de eventos al desmontar el componente
+  //   return () => {
+  //     clearInterval(inactivityTimer);
+  //     window.removeEventListener("mousemove", resetInactivityTimer);
+  //     window.removeEventListener("scroll", resetInactivityTimer);
+  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   let inactivityTimer;
+  //   let lastActivity = new Date();
+
+  //   const checkSessionStorage = () => {
+  //     const storedUser = sessionStorage.getItem("user");
+  //     if (storedUser) {
+  //       // Si hay datos de usuario en sessionStorage, usarlos para inicializar el estado
+  //       const parsedUser = JSON.parse(storedUser);
+  //       dispatch(setUserData(parsedUser));
+  //       deleteCookie('user')
+  //       console.log("Datos de usuario cargados desde sessionStorage");
+  //       return true;
+  //     }
+  //     return false;
+  //   };
+
+  //   const checkCookieExpiration = () => {
+  //     if (!checkSessionStorage()) {
+  //       // Si no hay datos en sessionStorage, verifica las cookies
+  //       const userCookie = getCookie("user");
+  //       if (!userCookie) {
+  //         // No hay cookie del usuario, redirigir a la página de inicio de sesión
+  //         cookieExpiration(); // Reemplaza "/login" con la ruta de tu página de inicio de sesión
+  //         return;
+  //       }
+
+  //       // La cookie existe, verifica si ha caducado
+  //       const user = JSON.parse(userCookie);
+
+  //       // Obtiene la última actividad del usuario de la cookie
+  //       const lastActivityTime = new Date(user.expirationTime);
+
+  //       // Obtiene la hora actual
+  //       const currentTime = new Date();
+
+  //       // Verifica si ha habido actividad en los últimos 10 minutos
+  //       if (currentTime - lastActivityTime > 10 * 60 * 1000) {
+  //         // No ha habido actividad en los últimos 10 minutos, la cookie ha caducado
+  //         cookieExpiration();
+  //         return;
+  //       }
+
+  //       // Actualiza la última actividad en la cookie
+  //       user.expirationTime = currentTime.toISOString();
+  //       setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+  //       console.log("Cookie actualizada correctamente con nueva actividad.");
+  //     }
+  //   };
+
+  //   // Verificar la caducidad de la cookie al cargar el componente
+  //   checkCookieExpiration();
+
+  //   const resetInactivityTimer = () => {
+  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
+  //     clearTimeout(inactivityTimer);
+  //     inactivityTimer = setTimeout(checkCookieExpiration, 60000);
+  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
+  //   };
+
+  //   // Configurar un temporizador de inactividad inicial
+  //   resetInactivityTimer();
+
+  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
+  //   window.addEventListener("mousemove", resetInactivityTimer);
+  //   window.addEventListener("scroll", resetInactivityTimer);
+  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
+
+  //   // Limpia los manejadores de eventos al desmontar el componente
+  //   return () => {
+  //     clearInterval(inactivityTimer);
+  //     window.removeEventListener("mousemove", resetInactivityTimer);
+  //     window.removeEventListener("scroll", resetInactivityTimer);
+  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
+  //   };
+  // }, []);
+
+  // const inactivityTimer = useRef(null);
+  // useEffect(() => {
+  //   // console.log("Efecto de useEffect ejecutado correctamente");
+  //   let lastActivity = new Date();
+
+  //   const checkCookieExpiration = () => {
+  //     const userCookie = getCookie("user");
+  //     const userSessionStorage = sessionStorage.getItem("user");
+
+  //     // Verifica si hay datos del usuario en las cookies
+  //     if (userCookie) {
+  //       // La cookie existe, verifica si ha caducado
+  //       const user = JSON.parse(userCookie);
+
+  //       // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
+  //       const currentTime = new Date();
+  //       if (currentTime - lastActivity > 10 * 60 * 1000) {
+  //         // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
+  //         cookieExpiration();
+  //         return;
+  //       }
+
+  //       // Actualiza la última actividad en la cookie
+  //       user.expirationTime = currentTime.toISOString();
+  //       setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+  //       // console.log("Cookie guardada correctamente");
+  //       // console.log("Cookie actualizada correctamente con nueva actividad.");
+  //     } else if (userSessionStorage) {
+  //       const parsedUser = JSON.parse(userSessionStorage);
+  //       dispatch(setUserData(parsedUser));
+  //       deleteCookie('user')
+  //       console.log("sessionStorage guardada correctamente");
+  //     } else {
+  //       cookieExpiration();
+  //       return;
+  //     }
+  //   };
+
+  //   // Verificar la caducidad de la cookie al cargar el componente
+  //   checkCookieExpiration();
+  //       const resetInactivityTimer = () => {
+  //         clearTimeout(inactivityTimer);
+  //         inactivityTimer.current = setTimeout(checkCookieExpiration, 60000);
+  //         lastActivity = new Date();
+  //         console.log("Temporizador de inactividad reiniciado");
+  //   };
+
+  //   return () => {
+  //     // Limpia los manejadores de eventos al desmontar el componente
+  //     clearInterval(inactivityTimer);
+  //     window.removeEventListener("mousemove", resetInactivityTimer);
+  //     window.removeEventListener("scroll", resetInactivityTimer);
+  //     window.removeEventListener("keydown", resetInactivityTimer);
+  //   };
+  // }, []);
+  // useEffect(() => {
+  //   const checkSessionStorageUser = () => {
+  //     const userSessionStorage = sessionStorage.getItem("user");
+  //     if (userSessionStorage) {
+  //       const parsedUser = JSON.parse(userSessionStorage);
+  //       dispatch(setUserData(parsedUser));
+  //       deleteCookie('user'); // Eliminar la cookie si existe
+  //       console.log("Datos de sessionStorage cargados correctamente");
+  //       return true;
+  //     }
+  //     return false;
+  //   };
+  
+  //   const checkCookieUser = () => {
+  //     const userCookie = getCookie("user");
+  //     if (userCookie) {
+  //       const user = JSON.parse(userCookie);
+  //       const currentTime = new Date();
+  //       if (currentTime - new Date(user.expirationTime) > 10 * 60 * 1000) {
+  //         // La cookie ha caducado
+  //         cookieExpiration();
+  //         return false;
+  //       } else {
+  //         // La cookie está válida, actualiza la última actividad
+  //         user.expirationTime = currentTime.toISOString();
+  //         setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+  //         console.log("Cookie actualizada correctamente con nueva actividad.");
+  //         return true;
+  //       }
+  //     }
+  //     return false;
+  //   };
+  
+  //   // Verificar en sessionStorage al cargar el componente
+  //   const hasSessionStorageUser = checkSessionStorageUser();
+  
+  //   // Si no hay datos en sessionStorage, verificar las cookies y activar el temporizador de inactividad
+  //   if (!hasSessionStorageUser) {
+  //     const hasCookieUser = checkCookieUser();
+  //     if (hasCookieUser) {
+  //       // Configurar un temporizador de inactividad si los datos del usuario se cargaron desde las cookies
+  //       let inactivityTimer;
+  //       let lastActivity = new Date();
+  
+  //       const resetInactivityTimer = () => {
+  //         clearTimeout(inactivityTimer);
+  //         inactivityTimer = setTimeout(() => {
+  //           cookieExpiration();
+  //         }, 60000);
+  //         lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
+  //       };
+  
+  //       resetInactivityTimer();
+  
+  //       window.addEventListener("mousemove", resetInactivityTimer);
+  //       window.addEventListener("scroll", resetInactivityTimer);
+  //       window.addEventListener("keydown", resetInactivityTimer);
+  
+  //       // Limpia los manejadores de eventos al desmontar el componente
+  //       return () => {
+  //         clearInterval(inactivityTimer);
+  //         window.removeEventListener("mousemove", resetInactivityTimer);
+  //         window.removeEventListener("scroll", resetInactivityTimer);
+  //         window.removeEventListener("keydown", resetInactivityTimer);
+  //       };
+  //     } else {
+  //       // Si no hay datos en las cookies, ejecutar cookieExpiration y retornar
+  //       cookieExpiration();
+  //       return;
+  //     }
+  //   }
+  
+  //   // Resto del código useEffect...
+  // }, []);
+
   useEffect(() => {
     let inactivityTimer;
     let lastActivity = new Date();
   
-    const checkCookieExpiration = () => {
+    const checkSessionStorageUser = () => {
+      const userSessionStorage = sessionStorage.getItem("user");
+      if (userSessionStorage) {
+        // Si hay un usuario en sessionStorage, establece los datos del usuario y retorna true
+        const parsedUser = JSON.parse(userSessionStorage);
+        dispatch(setUserData(parsedUser));
+        console.log("Datos de sessionStorage cargados correctamente");
+        return true;
+      }
+      return false;
+    };
+
+    checkSessionStorageUser();
+  
+    const checkCookieUser = () => {
       const userCookie = getCookie("user");
-      console.log("Verificando la caducidad de la cookie");
-      if (!userCookie) {
-        // No hay cookie del usuario, redirigir a la página de inicio de sesión
-        cookieExpiration() // Reemplaza "/login" con la ruta de tu página de inicio de sesión
-        return;
+      if (userCookie) {
+        const user = JSON.parse(userCookie);
+        const currentTime = new Date();
+        if (currentTime - new Date(user.expirationTime) > 10 * 60 * 1000) {
+          // La cookie ha caducado
+          cookieExpiration();
+          return false;
+        } else {
+          // La cookie está válida, actualiza la última actividad
+          user.expirationTime = currentTime.toISOString();
+          setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+          return true;
+        }
       }
-  
-      // La cookie existe, verifica si ha caducado
-      const user = JSON.parse(userCookie);
-  
-      // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
-      const currentTime = new Date();
-      if (currentTime - lastActivity > 10 * 60 * 1000) {
-        // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
-        cookieExpiration();
-        return;
-      }
-  
-      // Actualiza la última actividad en la cookie
-      user.expirationTime = currentTime.toISOString();
-      setCookie("user",JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
-      console.log("Cookie guardada correctamente");
+      return false;
     };
   
-    // Verificar la caducidad de la cookie al cargar el componente
-    checkCookieExpiration();
+
   
+    // Si no hay datos en sessionStorage, verificar las cookies y configurar el temporizador de inactividad
     const resetInactivityTimer = () => {
       // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
-      // console.log("Temporizador de inactividad reiniciado");
       clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(checkCookieExpiration, 60000);
+      inactivityTimer = setTimeout(checkCookieUser, 60000);
       lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
     };
   
@@ -196,16 +519,24 @@ export const Usuario = () => {
       window.removeEventListener("scroll", resetInactivityTimer);
       window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
     };
+    
   }, []);
+  
+  
+  
+  
+  
+  
+  
 
   const cookieExpiration = async () => {
     try {
       await apiClient.post("/user/logout");
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
-      deleteToken('token')
-      deleteCookie('user')
-      window.sessionStorage.removeItem('user')
+      deleteToken("token");
+      deleteCookie("user");
+      window.sessionStorage.removeItem("user");
       NotificationInfo(
         "La sesión ha caducado. Por favor, inicie sesión nuevamente."
       );
@@ -232,7 +563,7 @@ export const Usuario = () => {
               userId: data.userId,
               authToken: data.authToken,
               isAdmin: data.isAdmin,
-              emailJefe: data.emailJefe
+              emailJefe: data.emailJefe,
             };
             dispatch(setUserData(user));
             dispatch(setFilesData(data.files));
@@ -246,7 +577,6 @@ export const Usuario = () => {
     };
     fetchUserData();
   }, [token, user, dispatch]);
-
 
   const handleDownload = async (id, name) => {
     try {
@@ -274,9 +604,9 @@ export const Usuario = () => {
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
       // clearToken();
-      deleteToken('token')
-      deleteCookie('user')
-      window.sessionStorage.removeItem('user')
+      deleteToken("token");
+      deleteCookie("user");
+      window.sessionStorage.removeItem("user");
       navigate("/");
       NotificationSuccess(res.data.message);
     } catch (error) {
@@ -337,7 +667,7 @@ export const Usuario = () => {
     setCurrentPage(currentPage - 1);
   };
 
-  const firstName = user?.nombreSede.split(' - ')[0];
+  const firstName = user?.nombreSede.split(" - ")[0];
 
   // console.log(user.emailJefe)
 
@@ -347,17 +677,13 @@ export const Usuario = () => {
       const response = await apiClient.post("/user/changePswUser", {
         emailJefe: resetPasswordEmail,
       });
-  
+
       setShowChangePasswordModal(false);
       NotificationSuccess(response.data);
     } catch (error) {
-      NotificationFailure(
-       error.response.data
-      );
+      NotificationFailure(error.response.data);
     }
   };
-  
-
 
   const handlechangePasswordClick = () => {
     setResetPasswordEmail(user.emailJefe);
@@ -389,10 +715,10 @@ export const Usuario = () => {
                   maxWidth: 600,
                   margin: "auto",
                   borderRadius: 20,
-                  marginTop: "60px"
+                  marginTop: "60px",
                 }}
               >
-                <h3 style={{marginTop:"20px"}}>Mis datos</h3>
+                <h3 style={{ marginTop: "20px" }}>Mis datos</h3>
                 <Form
                   labelCol={{ span: 10 }}
                   wrapperCol={{ span: 10 }}
@@ -401,7 +727,7 @@ export const Usuario = () => {
                 >
                   <div>
                     <Form.Item
-                      label="Nombre de la empresa"
+                      label="Empresa"
                       htmlFor="nombreEmpresa"
                     >
                       <Input
@@ -413,7 +739,7 @@ export const Usuario = () => {
                       />
                     </Form.Item>
                     <Form.Item
-                      label="Nombre del establecimiento"
+                      label="Establecimiento"
                       htmlFor="nombreEstablecimiento"
                     >
                       <Input
@@ -461,21 +787,25 @@ export const Usuario = () => {
                         value={user.cuit}
                       />
                     </Form.Item>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-                    <Button type="primary">
-                      
-                    <a
-                  href="#!"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handlechangePasswordClick();
-                  }}
-                  style={{textDecoration:"none"}}
-                >
-                  Cambiar contraseña
-                </a>
-                    </Button>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button type="primary">
+                        <a
+                          href="#!"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlechangePasswordClick();
+                          }}
+                          style={{ textDecoration: "none" }}
+                        >
+                          Cambiar contraseña
+                        </a>
+                      </Button>
                     </div>
                   </div>
                 </Form>
@@ -490,13 +820,13 @@ export const Usuario = () => {
             }}
           >
             {selectedMenuItem === "2" && (
-              <div>
-                <h3 style={{marginTop:"20px"}}>Archivos</h3>
+              <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+                <h3 style={{ marginTop: "20px" }}>Archivos</h3>
                 <Form.Item label="Filtrar por tipo" htmlFor="kind">
                   <Select
                     onChange={handleKindFilterChange}
                     value={selectedKind}
-                    style={{ maxWidth: "400px" }}
+                    style={{ maxWidth: "100%" }}
                     placeholder="Tipo de archivos"
                   >
                     <Option value="">Todos</Option>
@@ -508,16 +838,17 @@ export const Usuario = () => {
                   </Select>
                 </Form.Item>
                 <div>
-                <Form.Item label="Filtrar por mes" htmlFor="month">
-                  <DatePicker
-                    picker="month"
-                    onChange={handleDateFilterChange}
-                    value={
-                      selectedDate ? moment(selectedDate, "YYYY-MM") : null
-                    }
-                    format="MM/YYYY"
-                  />
-                  </Form.Item>  
+                  <Form.Item label="Filtrar por mes" htmlFor="month">
+                    <DatePicker
+                    style={{ maxWidth: "100%" }}
+                      picker="month"
+                      onChange={handleDateFilterChange}
+                      value={
+                        selectedDate ? moment(selectedDate, "YYYY-MM") : null
+                      }
+                      format="MM/YYYY"
+                    />
+                  </Form.Item>
                 </div>
 
                 {files.length === 0 ? (
@@ -563,46 +894,50 @@ export const Usuario = () => {
                       )}
                     </>
                   ))}
-                 {filteredFiles.length > 0 && (
-                <AntdCustomPagination
-                  currentPage={currentPage}
-                  totalPages={Math.ceil(filteredFiles.length / filesPerPage)}
-                  onNextPage={handleNextPage}
-                  onPrevPage={handlePrevPage}
-                />
-              )}
-              </div>
+                {filteredFiles.length > 0 && (
+                  <AntdCustomPagination
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(filteredFiles.length / filesPerPage)}
+                    onNextPage={handleNextPage}
+                    onPrevPage={handlePrevPage}
+                  />
+                )}
+              </Form>
             )}
           </div>
         </Content>
         <Modal
-  title="Cambiar contraseña"
-  visible={showChangePasswordModal}
-  onCancel={() => setShowChangePasswordModal(false)}
-  footer={[
-    <Button key="cancel" onClick={() => setShowChangePasswordModal(false)}>
-      Cancelar
-    </Button>,
-    <Button
-      key="reset"
-      type="primary"
-      onClick={() => handleChangePassword()}
-    >
-      Enviar correo
-    </Button>,
-  ]}
->
-  <p>Se enviará un correo al siguiente correo electrónico: {user.emailJefe}</p>
-  <Form
-  type="email"
-  placeholder="Correo electrónico"
-  value={resetPasswordEmail}
-  autoComplete="on"
-  onChange={(e) => setResetPasswordEmail(e.target.value)} // Asegúrate de que esta línea sea correcta
->
-</Form>
-
-</Modal>
+          title="Cambiar contraseña"
+          visible={showChangePasswordModal}
+          onCancel={() => setShowChangePasswordModal(false)}
+          footer={[
+            <Button
+              key="cancel"
+              onClick={() => setShowChangePasswordModal(false)}
+            >
+              Cancelar
+            </Button>,
+            <Button
+              key="reset"
+              type="primary"
+              onClick={() => handleChangePassword()}
+            >
+              Enviar correo
+            </Button>,
+          ]}
+        >
+          <p>
+            Se enviará un correo al siguiente correo electrónico:{" "}
+            {user.emailJefe}
+          </p>
+          <Form
+            type="email"
+            placeholder="Correo electrónico"
+            value={resetPasswordEmail}
+            autoComplete="on"
+            onChange={(e) => setResetPasswordEmail(e.target.value)} // Asegúrate de que esta línea sea correcta
+          ></Form>
+        </Modal>
       </Layout>
     </Layout>
   );

@@ -11,6 +11,7 @@ const CookieBanner = () => {
   const handleAcceptCookies = () => {
     localStorage.setItem("cookieConsent", "true");
     setVisible(false);
+    sessionStorage.removeItem('user')
   };
 
   const handleDenyCookies = () => {
@@ -24,7 +25,10 @@ const CookieBanner = () => {
     <Modal
       visible={visible}
       title="Consentimiento de Cookies"
-      onCancel={() => setVisible(false)}
+      onCancel={() => {
+        setVisible(false);
+        handleDenyCookies();
+      }}
       footer={[
         <Button type="primary" key="accept" onClick={handleAcceptCookies}>
           Aceptar Cookies temporales

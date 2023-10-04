@@ -1,81 +1,3 @@
-// import { createSlice } from "@reduxjs/toolkit";
-
-// const initialState = {
-//   email: "",
-//   password: "",
-//   userId: "",
-//   authToken: "",
-//   nombreEmpresa: "",
-//   createdAt: "",
-//   isAdmin: false,
-//   isSuperAdmin: false,
-//   selectedBranch: [],
-// };
-
-// // export const getUserDataFromLocalStorage = () => {
-// //   const userData = localStorage.getItem("user");
-// //   const userClosed = localStorage.getItem("userClosed");
-
-// //   // Verificar si el usuario se cerró intencionalmente, si es así, retornar initialState
-// //   if (userClosed === "true") {
-// //     localStorage.removeItem("userClosed"); // Limpiar la marca del Local Storage
-// //     return initialState;
-// //   }
-
-// //   return userData ? JSON.parse(userData) : initialState;
-// // };
-
-// export const getUserDataFromLocalStorage = () => {
-//   const userData = localStorage.getItem("user");
-//   return userData ? JSON.parse(userData) : initialState;
-// };
-
-// export const userSlice = createSlice({
-//   name: "user",
-//   initialState: getUserDataFromLocalStorage(),
-//   reducers: {
-//     setUserData: (state, action) => {
-//       const { email, nombreEmpresa, cuit, isAdmin, isSuperAdmin } =
-//         action.payload;
-//       state.email = email;
-//       state.nombreEmpresa = nombreEmpresa;
-//       state.cuit = cuit;
-//       state.isAdmin = isAdmin;
-//       state.isSuperAdmin = isSuperAdmin;
-//       // Guardar en Local Storage
-//       localStorage.setItem("user", JSON.stringify(state));
-//     },
-//     setLoginData: (state, action) => {
-//       const { userId, authToken, email, isAdmin, isSuperAdmin } =
-//         action.payload;
-//       state.userId = userId;
-//       state.authToken = authToken;
-//       state.email = email;
-//       state.isAdmin = isAdmin;
-//       state.isSuperAdmin = isSuperAdmin;
-//       // Guardar en Local Storage
-//       localStorage.setItem("user", JSON.stringify(state));
-//     },
-//     setLogoutData: (state) => {
-//       // Restablecer a initialState
-//       Object.assign(state, initialState);
-//       // Eliminar del Local Storage
-//       localStorage.removeItem("user");
-//     },
-//     setSelectedBranch: (state, action) => {
-//       state.selectedBranch = action.payload;
-//     },
-//   },
-// });
-
-// export const { setUserData, setLoginData, setLogoutData, setSelectedBranch } =
-//   userSlice.actions;
-
-// export const getUser = (state) => state.user;
-
-// export default userSlice.reducer;
-
-
 import { createSlice } from "@reduxjs/toolkit";
 import { setCookie, getCookie, deleteCookie } from "../utils/cookieUtils"; // Importar funciones para manipular cookies
 
@@ -102,9 +24,29 @@ const initialState = {
   expirationTime:null
 };
 
+// export const getUserDataFromCookies = () => {
+//   const userData = getCookie("user");
+//   return userData ? JSON.parse(userData) : initialState;
+// };
 export const getUserDataFromCookies = () => {
-  const userData = getCookie("user");
-  return userData ? JSON.parse(userData) : initialState;
+  // Intenta obtener los datos del usuario desde las cookies
+  const userDataFromCookies = getCookie("user");
+
+  // Si los datos de usuario están en las cookies, úsalos
+  if (userDataFromCookies) {
+    return JSON.parse(userDataFromCookies);
+  }
+
+  // Si no hay datos en las cookies, intenta obtenerlos de sessionStorage
+  const userDataFromSessionStorage = sessionStorage.getItem("user");
+
+  // Si los datos de usuario están en sessionStorage, úsalos
+  if (userDataFromSessionStorage) {
+    return JSON.parse(userDataFromSessionStorage);
+  }
+
+  // Si no hay datos en las cookies ni en sessionStorage, devuelve el estado inicial
+  return initialState;
 };
 
 export const userSlice = createSlice({
