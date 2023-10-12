@@ -1,12 +1,3 @@
-import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import { setFilesDataLogOut } from "../../redux/filesSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
-import apiClient from "../../utils/client";
-import { File } from "../file/File";
-import useFormatDate from "../hooks/useFormattedDate";
-import Loading from "../loading/Loading";
 import {
   CaretDownOutlined,
   DeleteOutlined,
@@ -19,22 +10,33 @@ import {
   UnlockOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Input, Menu, Space, Table } from "antd";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { setFilesDataLogOut } from "../../redux/filesSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
+import apiClient from "../../utils/client";
 import { deleteCookie, deleteToken, getCookie, getToken, setCookie } from "../../utils/cookieUtils";
 import AntdCustomPagination from "../Pagination/Pagination";
 import { AddKind } from "../addKind/AddKind";
 import ChangePassword from "../changePassword/ChangePassword";
 import EditBranch from "../editBranch/EditBranch";
 import EmployeeList from "../employeeList/EmployeeList";
+import { File } from "../file/File";
+import useFormatDate from "../hooks/useFormattedDate";
+import Loading from "../loading/Loading";
 import {
   NotificationFailure,
   NotificationInfo,
   NotificationSuccess,
 } from "../notifications/Notifications";
+import ProgressBar from "../progressBar/ProgressBar";
 import RegisterBranch from "../registerBranch/RegisterBranch";
 import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 import { UserFiles } from "../userFiles/UserFiles";
 import "./Dashboard.css";
+
 
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
@@ -53,6 +55,7 @@ export default function Dashboard() {
   const [editBranchEmail, setEditBranchEmail] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [originalBranchData, setOriginalBranchData] = useState({});
+  const [showProgressBar, setShowProgressBar] = useState(false)
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -63,8 +66,6 @@ export default function Dashboard() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // const token = getCookie('token')
-  // const token = getToken();
   const token = getToken('token')
 
   const user = useAppSelector(getUser);
@@ -125,9 +126,6 @@ export default function Dashboard() {
       window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
     };
   }, []);
-  
-  
-  
   
 
   const fetchAndSetBusinessData = async () => {
@@ -361,6 +359,8 @@ export default function Dashboard() {
     addKind: () => setShowAddKind(true),
     backAgain: () => setShowAddKind(false),
     backdashboard: () => setShowEditForm(false),
+    progressBar: () => setShowProgressBar(true),
+    backToBack: () => setShowProgressBar(false)
   };
 
   const handleActionAdmin = (action) => {
@@ -433,6 +433,11 @@ export default function Dashboard() {
       {isSuperAdminUser() && (
         <Menu.Item key="6" onClick={() => handleActionAdmin("addKind")}>
           Agregar tipo de archivo
+        </Menu.Item>
+      )}
+        {isSuperAdminUser() && (
+        <Menu.Item key="7" onClick={() => handleActionAdmin("progressBar")}>
+          Almacenamiento
         </Menu.Item>
       )}
     </Menu>
@@ -687,6 +692,7 @@ export default function Dashboard() {
           !showEmployeesList &&
           !showAddKind &&
           !showEditForm &&
+          !showProgressBar &&
           !showChangePassword ? (
             <div>
               <Dropdown overlay={menu} className="actions-dropdown">
@@ -782,6 +788,17 @@ export default function Dashboard() {
                 Volver
               </Button>
             </>
+              ) : showProgressBar ? (
+                <>
+                  <ProgressBar />
+                  <Button
+                    style={{ margin: "50px" }}
+                    type="primary"
+                    onClick={() => handleActionAdmin("backToBack")}
+                  >
+                    Volver
+                  </Button>
+                </>
           ) : showChangePassword ? (
             <>
               <ChangePassword email={user.email} />
@@ -859,6 +876,7 @@ export default function Dashboard() {
             !showAddKind &&
             !showChangePassword &&
             !showEditForm &&
+            !showProgressBar &&
             !showRegisterEmployee ? (
               <button className="boton-logout" onClick={signOff}>
                 <LogoutOutlined className="icon-logout" /> Cerrar sesión
