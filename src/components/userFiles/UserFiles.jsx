@@ -75,9 +75,9 @@ export const UserFiles = ({ userFiles, onDeleteFile }) => {
     const selectedDateMoment = selectedDate
       ? moment(selectedDate, "YYYY-MM")
       : null;
-
+  
     return (
-      (!selectedKind || file?.kindId === parseInt(selectedKind)) &&
+      (!selectedKind || file?.kindId.toString() === selectedKind) &&
       (!selectedDateMoment ||
         fileCreatedAtMoment.format("MM/YY") ===
           selectedDateMoment.format("MM/YY"))

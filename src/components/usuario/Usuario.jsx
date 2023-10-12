@@ -48,18 +48,7 @@ function getItem(label, key, icon, children, onClick) {
 }
 
 export const Usuario = () => {
-  const initialValues = {
-    nombreEmpresa: "",
-    nombreEstablecimiento: "",
-    cuit: "",
-    telefono: "",
-    provincia: "",
-    ciudad: "",
-    email: "",
-    direccion: "",
-  };
 
-  const [values, setValues] = useState(initialValues);
   const [collapsed, setCollapsed] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [loading, setLoading] = useState(true);
@@ -91,371 +80,6 @@ export const Usuario = () => {
 
   const allFiles = files?.files || [];
 
-  // useEffect(() => {
-  //   let inactivityTimer;
-
-  //   const checkCookieExpiration = () => {
-  //         const userCookie = getCookie("user");
-
-  //         if (!userCookie) {
-  //           cookieExpiration();
-  //         } else {
-  //           // La cookie existe, verifica si ha caducado
-  //           const user = JSON.parse(userCookie);
-
-  //           const expirationTime = new Date(user.expirationTime);
-
-  //           if (expirationTime <= new Date()) {
-  //             // La cookie ha caducado
-  //             cookieExpiration();
-  //           }
-  //         }
-  //       };
-
-  //   // Verificar la caducidad de la cookie al cargar el componente
-  //   checkCookieExpiration();
-
-  //   const resetInactivityTimer = () => {
-  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
-  //     clearTimeout(inactivityTimer);
-  //     inactivityTimer = setTimeout(checkCookieExpiration, 30000); // 10 segundos
-  //   };
-
-  //   // Verificar la caducidad de la cookie al cargar el componente
-  //   checkCookieExpiration();
-
-  //   // Configurar un temporizador de inactividad inicial
-  //   resetInactivityTimer();
-
-  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
-  //   window.addEventListener("mousemove", resetInactivityTimer);
-  //   window.addEventListener("scroll", resetInactivityTimer);
-  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-
-  //   // Limpia los manejadores de eventos al desmontar el componente
-  //   return () => {
-  //     clearInterval(inactivityTimer);
-  //     window.removeEventListener("mousemove", resetInactivityTimer);
-  //     window.removeEventListener("scroll", resetInactivityTimer);
-  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   let inactivityTimer;
-  //   let lastActivity = new Date();
-
-  //   const checkCookieExpiration = () => {
-  //     const userCookie = getCookie("user");
-  //     console.log("Verificando la caducidad de la cookie");
-  //     if (!userCookie) {
-  //       // No hay cookie del usuario, redirigir a la página de inicio de sesión
-  //       cookieExpiration() // Reemplaza "/login" con la ruta de tu página de inicio de sesión
-  //       return;
-  //     }
-
-  //     // La cookie existe, verifica si ha caducado
-  //     const user = JSON.parse(userCookie);
-
-  //     // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
-  //     const currentTime = new Date();
-  //     if (currentTime - lastActivity > 10 * 60 * 1000) {
-  //       // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
-  //       cookieExpiration();
-  //       return;
-  //     }
-
-  //     // Actualiza la última actividad en la cookie
-  //     user.expirationTime = currentTime.toISOString();
-  //     setCookie("user",JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
-  //     console.log("Cookie guardada correctamente");
-  //   };
-
-  //   // Verificar la caducidad de la cookie al cargar el componente
-  //   checkCookieExpiration();
-
-  //   const resetInactivityTimer = () => {
-  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
-  //     // console.log("Temporizador de inactividad reiniciado");
-  //     clearTimeout(inactivityTimer);
-  //     inactivityTimer = setTimeout(checkCookieExpiration, 60000);
-  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
-  //   };
-
-  //   // Configurar un temporizador de inactividad inicial
-  //   resetInactivityTimer();
-
-  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
-  //   window.addEventListener("mousemove", resetInactivityTimer);
-  //   window.addEventListener("scroll", resetInactivityTimer);
-  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-
-  //   // Limpia los manejadores de eventos al desmontar el componente
-  //   return () => {
-  //     clearInterval(inactivityTimer);
-  //     window.removeEventListener("mousemove", resetInactivityTimer);
-  //     window.removeEventListener("scroll", resetInactivityTimer);
-  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
-  //   };
-  // }, []);
-
-  // const getUserDataFromCookiesOrSessionStorage = () => {
-  //   const userDataFromCookies = getCookie("user");
-  //   if (userDataFromCookies) {
-  //     return JSON.parse(userDataFromCookies);
-  //   }
-
-  //   const userDataFromSessionStorage = sessionStorage.getItem("user");
-  //   return userDataFromSessionStorage ? JSON.parse(userDataFromSessionStorage) : null;
-  // };
-  // useEffect(() => {
-  //   let inactivityTimer;
-  //   let lastActivity = new Date();
-
-  //   const resetInactivityTimer = () => {
-  //     clearTimeout(inactivityTimer);
-  //     inactivityTimer = setTimeout(() => {
-  //       // Realiza la verificación de cookies y sessionStorage aquí
-  //       const userData = getUserDataFromCookies();
-  //       console.log(userData)
-  //       if (!userData) {
-  //         // No hay datos de usuario en cookies o sessionStorage, redirigir a la página de inicio de sesión
-  //         cookieExpiration();
-  //         return;
-  //       }
-
-  //       // Actualiza la última actividad en sessionStorage
-  //       userData.expirationTime = new Date().toISOString();
-  //       sessionStorage.setItem("user", JSON.stringify(userData));
-
-  //       console.log("Datos de usuario en sessionStorage actualizados correctamente");
-  //     }, 60000); // Tiempo de inactividad de 1 minuto
-  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
-  //   };
-
-  //   // Configurar un temporizador de inactividad inicial
-  //   resetInactivityTimer();
-
-  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
-  //   window.addEventListener("mousemove", resetInactivityTimer);
-  //   window.addEventListener("scroll", resetInactivityTimer);
-  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-
-  //   // Limpia los manejadores de eventos al desmontar el componente
-  //   return () => {
-  //     clearInterval(inactivityTimer);
-  //     window.removeEventListener("mousemove", resetInactivityTimer);
-  //     window.removeEventListener("scroll", resetInactivityTimer);
-  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   let inactivityTimer;
-  //   let lastActivity = new Date();
-
-  //   const checkSessionStorage = () => {
-  //     const storedUser = sessionStorage.getItem("user");
-  //     if (storedUser) {
-  //       // Si hay datos de usuario en sessionStorage, usarlos para inicializar el estado
-  //       const parsedUser = JSON.parse(storedUser);
-  //       dispatch(setUserData(parsedUser));
-  //       deleteCookie('user')
-  //       console.log("Datos de usuario cargados desde sessionStorage");
-  //       return true;
-  //     }
-  //     return false;
-  //   };
-
-  //   const checkCookieExpiration = () => {
-  //     if (!checkSessionStorage()) {
-  //       // Si no hay datos en sessionStorage, verifica las cookies
-  //       const userCookie = getCookie("user");
-  //       if (!userCookie) {
-  //         // No hay cookie del usuario, redirigir a la página de inicio de sesión
-  //         cookieExpiration(); // Reemplaza "/login" con la ruta de tu página de inicio de sesión
-  //         return;
-  //       }
-
-  //       // La cookie existe, verifica si ha caducado
-  //       const user = JSON.parse(userCookie);
-
-  //       // Obtiene la última actividad del usuario de la cookie
-  //       const lastActivityTime = new Date(user.expirationTime);
-
-  //       // Obtiene la hora actual
-  //       const currentTime = new Date();
-
-  //       // Verifica si ha habido actividad en los últimos 10 minutos
-  //       if (currentTime - lastActivityTime > 10 * 60 * 1000) {
-  //         // No ha habido actividad en los últimos 10 minutos, la cookie ha caducado
-  //         cookieExpiration();
-  //         return;
-  //       }
-
-  //       // Actualiza la última actividad en la cookie
-  //       user.expirationTime = currentTime.toISOString();
-  //       setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
-  //       console.log("Cookie actualizada correctamente con nueva actividad.");
-  //     }
-  //   };
-
-  //   // Verificar la caducidad de la cookie al cargar el componente
-  //   checkCookieExpiration();
-
-  //   const resetInactivityTimer = () => {
-  //     // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
-  //     clearTimeout(inactivityTimer);
-  //     inactivityTimer = setTimeout(checkCookieExpiration, 60000);
-  //     lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
-  //   };
-
-  //   // Configurar un temporizador de inactividad inicial
-  //   resetInactivityTimer();
-
-  //   // Agregar manejadores de eventos para el mouse y el desplazamiento
-  //   window.addEventListener("mousemove", resetInactivityTimer);
-  //   window.addEventListener("scroll", resetInactivityTimer);
-  //   window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-
-  //   // Limpia los manejadores de eventos al desmontar el componente
-  //   return () => {
-  //     clearInterval(inactivityTimer);
-  //     window.removeEventListener("mousemove", resetInactivityTimer);
-  //     window.removeEventListener("scroll", resetInactivityTimer);
-  //     window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
-  //   };
-  // }, []);
-
-  // const inactivityTimer = useRef(null);
-  // useEffect(() => {
-  //   // console.log("Efecto de useEffect ejecutado correctamente");
-  //   let lastActivity = new Date();
-
-  //   const checkCookieExpiration = () => {
-  //     const userCookie = getCookie("user");
-  //     const userSessionStorage = sessionStorage.getItem("user");
-
-  //     // Verifica si hay datos del usuario en las cookies
-  //     if (userCookie) {
-  //       // La cookie existe, verifica si ha caducado
-  //       const user = JSON.parse(userCookie);
-
-  //       // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
-  //       const currentTime = new Date();
-  //       if (currentTime - lastActivity > 10 * 60 * 1000) {
-  //         // No ha habido movimiento en los últimos 10 minutos, la cookie ha caducado
-  //         cookieExpiration();
-  //         return;
-  //       }
-
-  //       // Actualiza la última actividad en la cookie
-  //       user.expirationTime = currentTime.toISOString();
-  //       setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
-  //       // console.log("Cookie guardada correctamente");
-  //       // console.log("Cookie actualizada correctamente con nueva actividad.");
-  //     } else if (userSessionStorage) {
-  //       const parsedUser = JSON.parse(userSessionStorage);
-  //       dispatch(setUserData(parsedUser));
-  //       deleteCookie('user')
-  //       console.log("sessionStorage guardada correctamente");
-  //     } else {
-  //       cookieExpiration();
-  //       return;
-  //     }
-  //   };
-
-  //   // Verificar la caducidad de la cookie al cargar el componente
-  //   checkCookieExpiration();
-  //       const resetInactivityTimer = () => {
-  //         clearTimeout(inactivityTimer);
-  //         inactivityTimer.current = setTimeout(checkCookieExpiration, 60000);
-  //         lastActivity = new Date();
-  //         console.log("Temporizador de inactividad reiniciado");
-  //   };
-
-  //   return () => {
-  //     // Limpia los manejadores de eventos al desmontar el componente
-  //     clearInterval(inactivityTimer);
-  //     window.removeEventListener("mousemove", resetInactivityTimer);
-  //     window.removeEventListener("scroll", resetInactivityTimer);
-  //     window.removeEventListener("keydown", resetInactivityTimer);
-  //   };
-  // }, []);
-  // useEffect(() => {
-  //   const checkSessionStorageUser = () => {
-  //     const userSessionStorage = sessionStorage.getItem("user");
-  //     if (userSessionStorage) {
-  //       const parsedUser = JSON.parse(userSessionStorage);
-  //       dispatch(setUserData(parsedUser));
-  //       deleteCookie('user'); // Eliminar la cookie si existe
-  //       console.log("Datos de sessionStorage cargados correctamente");
-  //       return true;
-  //     }
-  //     return false;
-  //   };
-  
-  //   const checkCookieUser = () => {
-  //     const userCookie = getCookie("user");
-  //     if (userCookie) {
-  //       const user = JSON.parse(userCookie);
-  //       const currentTime = new Date();
-  //       if (currentTime - new Date(user.expirationTime) > 10 * 60 * 1000) {
-  //         // La cookie ha caducado
-  //         cookieExpiration();
-  //         return false;
-  //       } else {
-  //         // La cookie está válida, actualiza la última actividad
-  //         user.expirationTime = currentTime.toISOString();
-  //         setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
-  //         console.log("Cookie actualizada correctamente con nueva actividad.");
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   };
-  
-  //   // Verificar en sessionStorage al cargar el componente
-  //   const hasSessionStorageUser = checkSessionStorageUser();
-  
-  //   // Si no hay datos en sessionStorage, verificar las cookies y activar el temporizador de inactividad
-  //   if (!hasSessionStorageUser) {
-  //     const hasCookieUser = checkCookieUser();
-  //     if (hasCookieUser) {
-  //       // Configurar un temporizador de inactividad si los datos del usuario se cargaron desde las cookies
-  //       let inactivityTimer;
-  //       let lastActivity = new Date();
-  
-  //       const resetInactivityTimer = () => {
-  //         clearTimeout(inactivityTimer);
-  //         inactivityTimer = setTimeout(() => {
-  //           cookieExpiration();
-  //         }, 60000);
-  //         lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
-  //       };
-  
-  //       resetInactivityTimer();
-  
-  //       window.addEventListener("mousemove", resetInactivityTimer);
-  //       window.addEventListener("scroll", resetInactivityTimer);
-  //       window.addEventListener("keydown", resetInactivityTimer);
-  
-  //       // Limpia los manejadores de eventos al desmontar el componente
-  //       return () => {
-  //         clearInterval(inactivityTimer);
-  //         window.removeEventListener("mousemove", resetInactivityTimer);
-  //         window.removeEventListener("scroll", resetInactivityTimer);
-  //         window.removeEventListener("keydown", resetInactivityTimer);
-  //       };
-  //     } else {
-  //       // Si no hay datos en las cookies, ejecutar cookieExpiration y retornar
-  //       cookieExpiration();
-  //       return;
-  //     }
-  //   }
-  
-  //   // Resto del código useEffect...
-  // }, []);
 
   useEffect(() => {
     let inactivityTimer;
@@ -522,12 +146,6 @@ export const Usuario = () => {
     
   }, []);
   
-  
-  
-  
-  
-  
-  
 
   const cookieExpiration = async () => {
     try {
@@ -567,7 +185,6 @@ export const Usuario = () => {
             };
             dispatch(setUserData(user));
             dispatch(setFilesData(data.files));
-            // dispatch(setSelectedBranch(user))
             setLoading(false);
           }
         }
@@ -603,7 +220,6 @@ export const Usuario = () => {
       const res = await apiClient.post("/user/logout");
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
-      // clearToken();
       deleteToken("token");
       deleteCookie("user");
       window.sessionStorage.removeItem("user");
@@ -642,9 +258,9 @@ export const Usuario = () => {
     const selectedDateMoment = selectedDate
       ? moment(selectedDate, "YYYY-MM")
       : null;
-
+  
     return (
-      (!selectedKind || file?.kindId === parseInt(selectedKind)) &&
+      (!selectedKind || file?.kindId.toString() === selectedKind) &&
       (!selectedDateMoment ||
         fileCreatedAtMoment.format("MM/YY") ===
           selectedDateMoment.format("MM/YY"))
@@ -667,9 +283,8 @@ export const Usuario = () => {
     setCurrentPage(currentPage - 1);
   };
 
-  const firstName = user?.nombreSede.split(" - ")[0];
+  const sede = user?.nombreSede.split(" - ")[0];
 
-  // console.log(user.emailJefe)
 
   const handleChangePassword = async () => {
     try {
@@ -747,7 +362,7 @@ export const Usuario = () => {
                         type="text"
                         id="nombreEstablecimiento"
                         name="nombreEstablecimiento"
-                        value={firstName}
+                        value={sede}
                       />
                     </Form.Item>
                     <Form.Item label="Ciudad" htmlFor="ciudad">
