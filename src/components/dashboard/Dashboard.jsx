@@ -343,6 +343,8 @@ export default function Dashboard() {
     setUserFiles(userFiles.filter((file) => file.id !== fileId));
   };
 
+  
+
   const handleActions = {
     loadFile: () => setShowFile(true),
     back: () => setShowFile(false),
