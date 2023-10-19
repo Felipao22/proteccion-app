@@ -4,7 +4,6 @@ import "./Carousel.css";
 import logoBlanco from '../../assets/LOGO CUADRADO blanco.webp';
 import exit from '../../assets/exit.webp';
 import im1 from '../../assets/im1.webp';
-import im3 from '../../assets/im3.webp'
 import pro from '../../assets/PRO.webp'
 
 export default function Carrusel() {

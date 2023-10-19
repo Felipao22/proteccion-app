@@ -10,7 +10,7 @@ import {
 } from "../notifications/Notifications";
 import "./ProgressBar.css";
 
-const TOTAL_SPACE_GB = 20;
+const TOTAL_SPACE_GB = 10;
 const TOTAL_SPACE_MB = TOTAL_SPACE_GB * 1024;
 
 const ProgressBar = () => {
@@ -87,7 +87,7 @@ const ProgressBar = () => {
         />
         <p style={{ marginTop: "40px" }}>{`Espacio usado: ${usedSpaceMB.toFixed(
           2
-        )} MB de ${totalSpaceMB} MB (20 GB)`}</p>
+        )} MB de ${totalSpaceMB} MB (10 GB)`}</p>
         <div className="button-container">
           {isSuperAdminUser() && (
             <Button
