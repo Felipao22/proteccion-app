@@ -54,6 +54,8 @@ export const Usuario = () => {
   const [loading, setLoading] = useState(true);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
+  const [hasFiles, setHasFiles] = useState(false);
+
 
   const kinds = useFetchKinds();
 
@@ -185,6 +187,7 @@ export const Usuario = () => {
             };
             dispatch(setUserData(user));
             dispatch(setFilesData(data.files));
+            setHasFiles(data.files?.length > 0);
             setLoading(false);
           }
         }
@@ -443,6 +446,7 @@ export const Usuario = () => {
                     value={selectedKind}
                     style={{ maxWidth: "100%" }}
                     placeholder="Tipo de archivos"
+                    disabled={!hasFiles}
                   >
                     <Option value="">Todos</Option>
                     {kinds.map((kind) => (
@@ -462,11 +466,12 @@ export const Usuario = () => {
                         selectedDate ? moment(selectedDate, "YYYY-MM") : null
                       }
                       format="MM/YYYY"
+                      disabled={!hasFiles}
                     />
                   </Form.Item>
                 </div>
 
-                {files.length === 0 ? (
+                {allFiles.length === 0 ? (
                   <h4>No tiene archivos cargados actualmente.</h4>
                 ) : (
                   sortedFiles?.map((file) => (
