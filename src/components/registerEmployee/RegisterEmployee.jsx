@@ -1,17 +1,15 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Form, Input, Row, Tooltip } from "antd";
+import FormData from "form-data";
 import React, { useState } from "react";
-import "./RegisterEmployee.css";
+import apiClient from "../../utils/client";
+import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import {
   NotificationFailure,
   NotificationSuccess,
   NotificationWarning,
 } from "../notifications/Notifications";
-import FormData from "form-data";
-import apiClient from "../../utils/client";
-import { Form, Input, Button, Row, Col, Card } from "antd";
-import UsePasswordToggle from "../hooks/UsePasswordToggle";
-import { Tooltip } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import axios from "axios";
+import "./RegisterEmployee.css";
 
 export default function RegisterEmployee() {
   const initialValues = {
@@ -155,7 +153,9 @@ export default function RegisterEmployee() {
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 401) {
-        NotificationFailure("No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente.");
+        NotificationFailure(
+          "No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente."
+        );
       } else {
         NotificationWarning(error.response.data.warning);
         NotificationFailure(error.response.data.message);
@@ -178,175 +178,181 @@ export default function RegisterEmployee() {
 
   return (
     <div className="container-register">
-    <Row justify="center" align="middle">
-      <Col span={24} lg={48}>
-        <Card
-          className="text-black m-5 box-register"
-          style={{ borderRadius: "25px" }}
-        >
-          <Form
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-            className="register"
-            form={form}
-            onFinish={handleSubmit}
+      <Row justify="center" align="middle">
+        <Col span={24} lg={48}>
+          <Card
+            className="text-black m-5 box-register"
+            style={{ borderRadius: "25px" }}
           >
-            <h2 className="text-register"> Registrar Empleado</h2>
+            <Form
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+              className="register"
+              form={form}
+              onFinish={handleSubmit}
+            >
+              <h3 className="text-register"> Registrar Empleado</h3>
 
-            <Form.Item label="Email" name="email">
-              <Input
-                autoComplete="username"
-                placeholder="example@mail.com"
-                name="email"
-                value={values.email}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
-            {errors.email && (
-              <small
-                style={{
-                  color: "red",
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "10px",
-                  marginTop: "-20px",
-                }}
-              >
-                <Tooltip title={errors.email}>
-                  <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                </Tooltip>
-                {errors.email}
-              </small>
-            )}
-
-            <Form.Item label="Nombre" name="name">
-              <Input
-                placeholder="Cristian"
-                name="name"
-                value={values.name}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
-            {errors.name && (
-              <small
-                style={{
-                  color: "red",
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "10px",
-                  marginTop: "-20px",
-                }}
-              >
-                <Tooltip title={errors.name}>
-                  <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                </Tooltip>
-                {errors.name}
-              </small>
-            )}
-            <Form.Item label="Apellido" name="lastName">
-              <Input
-                placeholder="Montenegro"
-                name="lastName"
-                value={values.lastName}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
-            {errors.lastName && (
-              <small
-                style={{
-                  color: "red",
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "10px",
-                  marginTop: "-20px",
-                }}
-              >
-                <Tooltip title={errors.lastName}>
-                  <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                </Tooltip>
-                {errors.lastName}
-              </small>
-            )}
-            <Form.Item label="Contraseña" name="password">
-              <Input.Password
-              autoComplete="new-password"
-                placeholder="••••••••"
-                name="password"
-                value={values.password}
-                onChange={handlePasswordChange}
-                type={PasswordInputType}
-              />
-              <ul className="password-requirements">
-                <li className={passwordRequirements.minLength ? "success" : ""}>
-                  Mínimo de 6 caracteres.
-                </li>
-                <li
-                  className={passwordRequirements.hasUppercase ? "success" : ""}
+              <Form.Item label="Email" name="email">
+                <Input
+                  autoComplete="username"
+                  placeholder="example@mail.com"
+                  name="email"
+                  value={values.email}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.email && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
                 >
-                  Al menos 1 mayúscula.
-                </li>
-                <li className={passwordRequirements.hasNumber ? "success" : ""}>
-                  Al menos 1 número.
-                </li>
-              </ul>
-            </Form.Item>
-            {errors.password && (
-              <small
-                style={{
-                  color: "red",
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "10px",
-                  marginTop: "-20px",
-                }}
-              >
-                <Tooltip title={errors.password}>
-                  <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                </Tooltip>
-                {errors.password}
-              </small>
-            )}
+                  <Tooltip title={errors.email}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.email}
+                </small>
+              )}
 
-            <Form.Item label="Confirmar Contraseña" name="confirmPassword">
-              <Input.Password
-              autoComplete="new-password"
-                placeholder="••••••••"
-                name="confirmPassword"
-                value={values.confirmPassword}
-                onChange={handleInputChange}
-              />
-            </Form.Item>
-            {errors.confirmPassword && (
-              <small
-                style={{
-                  color: "red",
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "10px",
-                  marginTop: "-20px",
-                }}
-              >
-                <Tooltip title={errors.confirmPassword}>
-                  <InfoCircleOutlined style={{ marginRight: "4px" }} />
-                </Tooltip>
-                {errors.confirmPassword}
-              </small>
-            )}
-            <Form.Item>
-              <Button
-              style={{width:"100%"}}
-                loading={loading}
-                type="primary"
-                htmlType="submit"
-                disabled={isSubmitDisabled}
-              >
-                Registrar
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
-      </Col>
-    </Row>
+              <Form.Item label="Nombre" name="name">
+                <Input
+                  placeholder="Cristian"
+                  name="name"
+                  value={values.name}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.name && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.name}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.name}
+                </small>
+              )}
+              <Form.Item label="Apellido" name="lastName">
+                <Input
+                  placeholder="Montenegro"
+                  name="lastName"
+                  value={values.lastName}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.lastName && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.lastName}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.lastName}
+                </small>
+              )}
+              <Form.Item label="Contraseña" name="password">
+                <Input.Password
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  name="password"
+                  value={values.password}
+                  onChange={handlePasswordChange}
+                  type={PasswordInputType}
+                />
+                <ul className="password-requirements">
+                  <li
+                    className={passwordRequirements.minLength ? "success" : ""}
+                  >
+                    Mínimo de 6 caracteres.
+                  </li>
+                  <li
+                    className={
+                      passwordRequirements.hasUppercase ? "success" : ""
+                    }
+                  >
+                    Al menos 1 mayúscula.
+                  </li>
+                  <li
+                    className={passwordRequirements.hasNumber ? "success" : ""}
+                  >
+                    Al menos 1 número.
+                  </li>
+                </ul>
+              </Form.Item>
+              {errors.password && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.password}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.password}
+                </small>
+              )}
+
+              <Form.Item label="Confirmar Contraseña" name="confirmPassword">
+                <Input.Password
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  name="confirmPassword"
+                  value={values.confirmPassword}
+                  onChange={handleInputChange}
+                />
+              </Form.Item>
+              {errors.confirmPassword && (
+                <small
+                  style={{
+                    color: "red",
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "10px",
+                    marginTop: "-20px",
+                  }}
+                >
+                  <Tooltip title={errors.confirmPassword}>
+                    <InfoCircleOutlined style={{ marginRight: "4px" }} />
+                  </Tooltip>
+                  {errors.confirmPassword}
+                </small>
+              )}
+              <Form.Item>
+                <Button
+                  style={{ width: "100%" }}
+                  loading={loading}
+                  type="primary"
+                  htmlType="submit"
+                  disabled={isSubmitDisabled}
+                >
+                  Registrar
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

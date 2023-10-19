@@ -6,7 +6,7 @@ import { Card } from "antd";
 import Loading from "../loading/Loading";
 import { NotificationFailure } from "../notifications/Notifications";
 import ChangePasswordForAlls from "../changePassword/ChangePasswordForAlls";
-import "./EditEmployee.css"
+import "./EditEmployee.css";
 
 export default function EditEmployee({
   email,
@@ -88,7 +88,7 @@ export default function EditEmployee({
             >
               <div className="register">
                 <h2 className="text-register">Editar Empleado/a</h2>
-                <label>Nombre:</label>
+                <label style={{ fontFamily: "Poppins" }}>Nombre:</label>
                 <Input
                   type="text"
                   value={employeeData.name || ""}
@@ -99,7 +99,7 @@ export default function EditEmployee({
                     })
                   }
                 />
-                <label>Apellido:</label>
+                <label style={{ fontFamily: "Poppins" }}>Apellido:</label>
                 <Input
                   type="text"
                   value={employeeData.lastName || ""}
@@ -114,7 +114,11 @@ export default function EditEmployee({
               </div>
               <div style={{ marginTop: "20px" }}>
                 <Button
-                  style={{ marginRight: "5px", marginBottom: "10px" }}
+                  style={{
+                    marginRight: "5px",
+                    marginBottom: "10px",
+                    fontFamily: "Poppins",
+                  }}
                   type="primary"
                   onClick={handleUpdateEmployee}
                 >
@@ -122,7 +126,8 @@ export default function EditEmployee({
                 </Button>
                 {!isChangingPassword && (
                   <Button
-                  className="button-cambiar"
+                    style={{ fontFamily: "Poppins" }}
+                    className="button-cambiar"
                     type="primary"
                     onClick={() => setIsChangingPassword(true)}
                   >
@@ -130,6 +135,7 @@ export default function EditEmployee({
                   </Button>
                 )}
                 <Button
+                  style={{ fontFamily: "Poppins" }}
                   type="primary"
                   danger
                   onClick={() => {

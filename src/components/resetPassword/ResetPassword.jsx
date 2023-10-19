@@ -1,16 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import {
-    Input,
-    Button,
-    Row,
-    Col,
-  } from "antd";
-import apiClient from "../../utils/client";
+import { Button, Col, Input, Row } from "antd";
 import FormData from "form-data";
-import { NotificationSuccess, NotificationFailure } from "../notifications/Notifications";
-import "./ResetPassword.css"
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import apiClient from "../../utils/client";
+import {
+  NotificationFailure,
+  NotificationSuccess,
+} from "../notifications/Notifications";
+import "./ResetPassword.css";
 
 function ResetPassword() {
   const location = useLocation();
@@ -24,7 +21,7 @@ function ResetPassword() {
     confirmPassword: "",
   };
 
-   const [values, setValues] = useState(initialValues);
+  const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [passwordRequirements, setPasswordRequirements] = useState({
     minLength: false,
@@ -68,7 +65,6 @@ function ResetPassword() {
     // Validate fields
     let newErrors = {};
 
-
     if (!values.newPassword) {
       newErrors.newPassword = "Contraseña nueva requerida";
     }
@@ -93,29 +89,28 @@ function ResetPassword() {
     }
 
     try {
+      const newPassword = values.newPassword;
 
-        const newPassword = values.newPassword
-
-    const response = await apiClient.put(`/user/resetPassword/${token}`, {
-        newPassword
-    });
+      const response = await apiClient.put(`/user/resetPassword/${token}`, {
+        newPassword,
+      });
 
       if (response.status === 200) {
         NotificationSuccess(response.data);
         setTimeout(() => {
-            navigate("/login");
-          }, 1000);
+          navigate("/login");
+        }, 1000);
       } else {
         NotificationFailure(response.data);
       }
     } catch (error) {
-    //   console.error("Error al restablecer la contraseña:", error);
-    console.log(error.response.data)
+      //   console.error("Error al restablecer la contraseña:", error);
+      console.log(error.response.data);
       NotificationFailure(error.response.data);
     }
   };
 
-    const handlePasswordChange = (e) => {
+  const handlePasswordChange = (e) => {
     const password = e.target.value;
     const requirements = {
       minLength: password.length >= 6,
@@ -128,7 +123,7 @@ function ResetPassword() {
 
   return (
     <form className="form-resetPsw" onSubmit={handleSubmit}>
-        <h2>Restablecer contraseña</h2>
+      <h2>Restablecer contraseña</h2>
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password

@@ -1,14 +1,13 @@
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { Button, Col, Input, Row, Tooltip } from "antd";
+import FormData from "form-data";
 import React, { useState } from "react";
-import { Input, Button, Row, Col } from "antd";
 import apiClient from "../../utils/client";
 import {
   NotificationFailure,
   NotificationSuccess,
 } from "../notifications/Notifications";
-import FormData from "form-data";
 import "./ChangePassword.css";
-import { Tooltip } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
 
 export default function ChangePasswordForAlls({ email }) {
   const initialValues = {
@@ -130,7 +129,7 @@ export default function ChangePasswordForAlls({ email }) {
 
   return (
     <form className="form-changePsw" onSubmit={handleSubmit}>
-      <h2>Cambiar contraseña</h2>
+      <h4 style={{ fontFamily: "Poppins" }}>Cambiar contraseña</h4>
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
           <Input.Password
@@ -154,7 +153,7 @@ export default function ChangePasswordForAlls({ email }) {
               {errors.newPassword}
             </small>
           )}
-          <ul>
+          <ul style={{ fontFamily: "Poppins" }}>
             <li className={passwordRequirements.minLength ? "success" : ""}>
               Mínimo de 6 caracteres.
             </li>
@@ -195,11 +194,12 @@ export default function ChangePasswordForAlls({ email }) {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Button
-          className="button-psw"
+            className="button-psw"
             disabled={isSubmitDisabled}
             type="primary"
             htmlType="submit"
             loading={loading}
+            style={{ fontFamily: "Poppins" }}
           >
             Cambiar Contraseña
           </Button>

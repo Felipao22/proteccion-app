@@ -25,11 +25,10 @@
 }
 
 .container-contact .ant-input-textarea::placeholder {
-  color: rgba(0, 0, 0, 0.816)
+  color: rgba(0, 0, 0, 0.816);
 }
 
-
-.container-text{
+.container-text {
   margin-top: 6.25rem;
 }
 @media only screen and (min-width: 1101px) {
@@ -40,7 +39,7 @@
     margin-bottom: 12.5rem;
     margin-top: 4rem;
     background-color: rgb(233, 238, 244);
-    border-radius:0.313rem;
+    border-radius: 0.313rem;
     border: none;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.404),
       0 6px 20px 0 rgba(0, 0, 0, 0.382);
@@ -75,13 +74,13 @@
   border-radius: 0.25rem;
   cursor: pointer;
   color: white;
-  font-family: YuGothL, sans-serif;
+  font-family: Poppins, sans-serif;
   margin-top: 4rem;
 }
 
 .boton-contact:hover {
-  background-color: #3178C8;
-  box-shadow: 0px 15px 20px #3178C8;
+  background-color: #3178c8;
+  box-shadow: 0px 15px 20px #3178c8;
   color: #fff;
   transform: translateY(-7px);
 }
@@ -89,7 +88,7 @@
 .datos-contact {
   color: #02003d;
   text-transform: uppercase;
-  font-family: YuGothL, sans-serif;
+  font-family: Poppins, sans-serif;
 }
 
 .input-container label {
@@ -109,10 +108,9 @@
   color: #0a53e4;
 }
 
-
 #contact-section {
   padding-top: 2rem;
-  background: url('../../assets/soluciones-background2.webp') fixed no-repeat;
+  background: url("../../assets/soluciones-background2.webp") fixed no-repeat;
   background-size: cover;
   -webkit-background-size: cover;
   -moz-background-size: cover;

@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import "./Login.css";
-import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import log from "../../assets/authentication.png";
-import apiClient from "../../utils/client";
 import { useAppDispatch } from "../../redux/hooks";
+import apiClient from "../../utils/client";
+import UsePasswordToggle from "../hooks/UsePasswordToggle";
+import "./Login.css";
 // import { setToken } from "../../utils/token";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Col, Form, Input, Modal, Row } from "antd";
+import { useNavigate } from "react-router-dom";
+import { setLoginData } from "../../redux/userSlice";
+import { setToken } from "../../utils/cookieUtils";
 import {
   NotificationFailure,
   NotificationSuccess,
   NotificationWarning,
 } from "../notifications/Notifications";
-import { useNavigate } from "react-router-dom";
-import { setLoginData } from "../../redux/userSlice";
-import { Button, Col, Modal, Row, Form, Input } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { setToken } from "../../utils/cookieUtils";
 
 export default function Login() {
   const initialValues = {
@@ -76,7 +76,7 @@ export default function Login() {
         })
       );
       // setToken(res.data.token);
-      setToken('token', res.data.token)
+      setToken("token", res.data.token);
       NotificationSuccess(res.data.message);
       NotificationWarning(res.data.warning);
 
@@ -131,7 +131,7 @@ export default function Login() {
               <div className="input-text">
                 <Input
                   className="input-email"
-                  prefix={<MailOutlined style={{ fontSize: '16px' }}/>}
+                  prefix={<MailOutlined style={{ fontSize: "16px" }} />}
                   type="email"
                   placeholder="Ingrese su mail"
                   name="email"
@@ -154,7 +154,7 @@ export default function Login() {
               <div className="input-text">
                 <Input.Password
                   className="input-password"
-                  prefix={<LockOutlined style={{ fontSize: '16px' }}/>}
+                  prefix={<LockOutlined style={{ fontSize: "16px" }} />}
                   placeholder="Ingrese su contraseña"
                   name="password"
                   id="password"
@@ -199,14 +199,24 @@ export default function Login() {
       </Form>
 
       <Modal
+        style={{ fontFamily: "Poppins" }}
         title="Restablecer contraseña"
         visible={showResetPasswordModal}
         onCancel={() => setShowResetPasswordModal(false)}
         footer={[
-          <Button key="cancel" onClick={() => setShowResetPasswordModal(false)}>
+          <Button
+            style={{ fontFamily: "Poppins" }}
+            key="cancel"
+            onClick={() => setShowResetPasswordModal(false)}
+          >
             Cancelar
           </Button>,
-          <Button key="reset" type="primary" onClick={handleResetPassword}>
+          <Button
+            style={{ fontFamily: "Poppins" }}
+            key="reset"
+            type="primary"
+            onClick={handleResetPassword}
+          >
             Enviar correo
           </Button>,
         ]}

@@ -17,7 +17,13 @@ import { setFilesDataLogOut } from "../../redux/filesSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
 import apiClient from "../../utils/client";
-import { deleteCookie, deleteToken, getCookie, getToken, setCookie } from "../../utils/cookieUtils";
+import {
+  deleteCookie,
+  deleteToken,
+  getCookie,
+  getToken,
+  setCookie,
+} from "../../utils/cookieUtils";
 import AntdCustomPagination from "../Pagination/Pagination";
 import { AddKind } from "../addKind/AddKind";
 import ChangePassword from "../changePassword/ChangePassword";
@@ -37,7 +43,6 @@ import RegisterEmployee from "../registerEmployee/RegisterEmployee";
 import { UserFiles } from "../userFiles/UserFiles";
 import "./Dashboard.css";
 
-
 export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState([]);
   const [q, setQ] = useState("");
@@ -55,7 +60,7 @@ export default function Dashboard() {
   const [editBranchEmail, setEditBranchEmail] = useState(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [originalBranchData, setOriginalBranchData] = useState({});
-  const [showProgressBar, setShowProgressBar] = useState(false)
+  const [showProgressBar, setShowProgressBar] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
@@ -66,27 +71,26 @@ export default function Dashboard() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const token = getToken('token')
+  const token = getToken("token");
 
   const user = useAppSelector(getUser);
 
   const branch = useAppSelector(getUser).selectedBranch;
 
-
   useEffect(() => {
     let inactivityTimer;
     let lastActivity = new Date();
-  
+
     const checkCookieExpiration = () => {
       const userCookie = getCookie("user");
       if (!userCookie) {
         cookieExpiration();
         return;
       }
-  
+
       // La cookie existe, verifica si ha caducado
       const user = JSON.parse(userCookie);
-  
+
       // Verifica si ha habido movimiento en la pantalla en los últimos 10 minutos
       const currentTime = new Date();
       if (currentTime - lastActivity > 10 * 60 * 1000) {
@@ -94,30 +98,30 @@ export default function Dashboard() {
         cookieExpiration();
         return;
       }
-  
+
       // Actualiza la última actividad en la cookie
       user.expirationTime = currentTime.toISOString();
-      setCookie("user",JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
+      setCookie("user", JSON.stringify(user)); // Actualiza la cookie con el nuevo tiempo de actividad
     };
-  
+
     // Verificar la caducidad de la cookie al cargar el componente
     checkCookieExpiration();
-  
+
     const resetInactivityTimer = () => {
       // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(checkCookieExpiration, 60000);
       lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
     };
-  
+
     // Configurar un temporizador de inactividad inicial
     resetInactivityTimer();
-  
+
     // Agregar manejadores de eventos para el mouse y el desplazamiento
     window.addEventListener("mousemove", resetInactivityTimer);
     window.addEventListener("scroll", resetInactivityTimer);
     window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-  
+
     // Limpia los manejadores de eventos al desmontar el componente
     return () => {
       clearInterval(inactivityTimer);
@@ -126,7 +130,6 @@ export default function Dashboard() {
       window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
     };
   }, []);
-  
 
   const fetchAndSetBusinessData = async () => {
     try {
@@ -195,9 +198,9 @@ export default function Dashboard() {
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
       // clearToken();
-      deleteToken('token')
+      deleteToken("token");
       // deleteCookie('token')
-      deleteCookie('user')
+      deleteCookie("user");
       // NotificationFailure("La sesión ha caducado. Por favor, inicie sesión nuevamente.");
       NotificationInfo(
         "La sesión ha caducado. Por favor, inicie sesión nuevamente."
@@ -213,9 +216,9 @@ export default function Dashboard() {
       dispatch(setLogoutData());
       dispatch(setFilesDataLogOut());
       // clearToken();
-      deleteToken('token')
+      deleteToken("token");
       // deleteCookie('token')
-      deleteCookie('user')
+      deleteCookie("user");
       navigate("/");
       NotificationSuccess(res.data.message);
     } catch (error) {
@@ -343,8 +346,6 @@ export default function Dashboard() {
     setUserFiles(userFiles.filter((file) => file.id !== fileId));
   };
 
-  
-
   const handleActions = {
     loadFile: () => setShowFile(true),
     back: () => setShowFile(false),
@@ -362,7 +363,7 @@ export default function Dashboard() {
     backAgain: () => setShowAddKind(false),
     backdashboard: () => setShowEditForm(false),
     progressBar: () => setShowProgressBar(true),
-    backToBack: () => setShowProgressBar(false)
+    backToBack: () => setShowProgressBar(false),
   };
 
   const handleActionAdmin = (action) => {
@@ -437,7 +438,7 @@ export default function Dashboard() {
           Agregar tipo de archivo
         </Menu.Item>
       )}
-        {isSuperAdminUser() && (
+      {isSuperAdminUser() && (
         <Menu.Item key="7" onClick={() => handleActionAdmin("progressBar")}>
           Almacenamiento
         </Menu.Item>
@@ -749,7 +750,11 @@ export default function Dashboard() {
             <>
               <File userEmail={userLogin} />
               <Button
-                style={{ marginTop: "50px", marginLeft: "20px" }}
+                style={{
+                  marginTop: "50px",
+                  marginLeft: "20px",
+                  fontFamily: "Poppins",
+                }}
                 type="primary"
                 onClick={() => handleActionAdmin("back")}
               >
@@ -760,7 +765,7 @@ export default function Dashboard() {
             <div className="background-image">
               <RegisterBranch />
               <Button
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 type="primary"
                 onClick={() => handleActionAdmin("backDashboard")}
               >
@@ -769,10 +774,12 @@ export default function Dashboard() {
             </div>
           ) : showEmployeesList ? (
             <>
-              <h4 style={{ margin: "50px" }}>Empleados/as:</h4>
+              <h4 style={{ margin: "50px", fontFamily: "Poppins, sans-serif" }}>
+                Empleados/as:
+              </h4>
               <EmployeeList />
               <Button
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 type="primary"
                 onClick={() => handleActionAdmin("backTo")}
               >
@@ -783,29 +790,29 @@ export default function Dashboard() {
             <>
               <RegisterEmployee />
               <Button
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 type="primary"
                 onClick={() => handleActionAdmin("backToDashboard")}
               >
                 Volver
               </Button>
             </>
-              ) : showProgressBar ? (
-                <>
-                  <ProgressBar />
-                  <Button
-                    style={{ margin: "50px" }}
-                    type="primary"
-                    onClick={() => handleActionAdmin("backToBack")}
-                  >
-                    Volver
-                  </Button>
-                </>
+          ) : showProgressBar ? (
+            <>
+              <ProgressBar />
+              <Button
+                style={{ margin: "50px", fontFamily: "Poppins" }}
+                type="primary"
+                onClick={() => handleActionAdmin("backToBack")}
+              >
+                Volver
+              </Button>
+            </>
           ) : showChangePassword ? (
             <>
               <ChangePassword email={user.email} />
               <Button
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 type="primary"
                 onClick={() => handleActionAdmin("backToMenu")}
               >
@@ -816,7 +823,7 @@ export default function Dashboard() {
             <>
               <AddKind />
               <Button
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 type="primary"
                 onClick={() => handleActionAdmin("backAgain")}
               >
@@ -834,7 +841,11 @@ export default function Dashboard() {
               />
               <Button
                 type="primary"
-                style={{ marginLeft: "50px", marginBottom: "20px" }}
+                style={{
+                  marginLeft: "50px",
+                  marginBottom: "20px",
+                  fontFamily: "Poppins",
+                }}
                 onClick={() => handleActionAdmin("backdashboard")}
               >
                 Volver
@@ -844,7 +855,7 @@ export default function Dashboard() {
 
           {showUserFiles && selectedUserEmail && (
             <>
-              <h4 style={{ margin: "50px" }}>
+              <h4 style={{ margin: "50px", fontFamily: "Poppins, sans-serif" }}>
                 Archivos de: {selectedUserName}
               </h4>
               <UserFiles
@@ -862,7 +873,7 @@ export default function Dashboard() {
 
               <Button
                 type="primary"
-                style={{ margin: "50px" }}
+                style={{ margin: "50px", fontFamily: "Poppins" }}
                 onClick={() => handleActionAdmin("backToTable")}
               >
                 Volver

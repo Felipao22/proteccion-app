@@ -1,24 +1,23 @@
-import React, { useState } from "react";
-import {
-  NotificationFailure,
-  NotificationSuccess,
-  NotificationWarning,
-} from "../notifications/Notifications";
-import FormData from "form-data";
-import apiClient from "../../utils/client";
-import { Form, Select, Input, Button, Row, Col, Card } from "antd";
-import { useFetchCities } from "../hooks/useFetchCities";
-import { useFetchUsers } from "../hooks/useFetchUsers";
-import { useAppDispatch } from "../../redux/hooks";
-import { setSelectedBranch } from "../../redux/userSlice";
 import {
   CloseCircleOutlined,
   InfoCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import "./RegisterBranch.css";
+import { Button, Card, Col, Form, Input, Row, Select, Tooltip } from "antd";
+import FormData from "form-data";
+import React, { useState } from "react";
+import { useAppDispatch } from "../../redux/hooks";
+import { setSelectedBranch } from "../../redux/userSlice";
+import apiClient from "../../utils/client";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
-import { Tooltip } from "antd";
+import { useFetchCities } from "../hooks/useFetchCities";
+import { useFetchUsers } from "../hooks/useFetchUsers";
+import {
+  NotificationFailure,
+  NotificationSuccess,
+  NotificationWarning,
+} from "../notifications/Notifications";
+import "./RegisterBranch.css";
 
 export default function Register() {
   const initialValues = {
@@ -258,7 +257,9 @@ export default function Register() {
     } catch (error) {
       console.log(error);
       if (error.response && error.response.status === 401) {
-        NotificationFailure("No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente.");
+        NotificationFailure(
+          "No estás autorizado para realizar esta acción, token inválido. Por favor, inicia sesión nuevamente."
+        );
       } else {
         NotificationWarning(error.response.data.warning);
         NotificationFailure(error.response);
@@ -343,10 +344,7 @@ export default function Register() {
     <div className="container-register">
       <Row justify="center" align="middle">
         <Col span={24} lg={48}>
-          <Card
-            className="text-black m-5"
-            style={{ borderRadius: "25px" }}
-          >
+          <Card className="text-black m-5" style={{ borderRadius: "25px" }}>
             <Form
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
@@ -354,7 +352,7 @@ export default function Register() {
               form={form}
               onFinish={handleSubmit}
             >
-              <h2 className="text-register"> Registrar Establecimiento/Obra</h2>
+              <h3 className="text-register"> Registrar Establecimiento/Obra</h3>
               <div className="form-item">
                 <Form.Item label="Empresa" name="nombreEmpresa">
                   <Input
@@ -383,7 +381,7 @@ export default function Register() {
 
                 <Form.Item label="Email" name="email">
                   <Input
-                  autoComplete="username"
+                    autoComplete="username"
                     placeholder="example@mail.com"
                     name="email"
                     value={values.email}
@@ -526,6 +524,7 @@ export default function Register() {
 
                 <Form.Item label="Contraseña" name="password">
                   <Input.Password
+                    placeholder="••••••••"
                     autoComplete="new-password"
                     name="password"
                     value={values.password}
@@ -575,6 +574,7 @@ export default function Register() {
 
                 <Form.Item label="Confirmar Contraseña" name="confirmPassword">
                   <Input.Password
+                    placeholder="••••••••"
                     autoComplete="new-password"
                     name="confirmPassword"
                     value={values.confirmPassword}

@@ -1,12 +1,12 @@
+import { Button, Col, Input, Row } from "antd";
+import FormData from "form-data";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Input, Button, Row, Col } from "antd";
 import apiClient from "../../utils/client";
 import {
   NotificationFailure,
   NotificationSuccess,
 } from "../notifications/Notifications";
-import FormData from "form-data";
 import "./ChangePassword.css";
 
 export default function ChangePasswordUser() {
@@ -151,7 +151,7 @@ export default function ChangePasswordUser() {
           {errors.newPassword && (
             <div className="text-danger">{errors.newPassword}</div>
           )}
-          <ul>
+          <ul style={{ fontFamily: "Poppins" }}>
             <li className={passwordRequirements.minLength ? "success" : ""}>
               Mínimo de 6 caracteres.
             </li>
@@ -180,7 +180,12 @@ export default function ChangePasswordUser() {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button
+            style={{ fontFamily: "Poppins" }}
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
             Cambiar Contraseña
           </Button>
         </Col>

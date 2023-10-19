@@ -1,12 +1,12 @@
+import { Button, Col, Input, Row } from "antd";
+import FormData from "form-data";
 import React, { useState } from "react";
-import { Input, Button, Row, Col } from "antd";
 import apiClient from "../../utils/client";
 import UsePasswordToggle from "../hooks/UsePasswordToggle";
 import {
   NotificationFailure,
   NotificationSuccess,
 } from "../notifications/Notifications";
-import FormData from "form-data";
 import "./ChangePassword.css";
 
 export default function PasswordChange({ email }) {
@@ -117,15 +117,10 @@ export default function PasswordChange({ email }) {
 
   return (
     <form className="form-changePsw" onSubmit={handleSubmit}>
-      <h2>Cambiar contraseña</h2>
+      <h3>Cambiar contraseña</h3>
       <Row gutter={[16, 16]} className="mb-3">
         <Col span={24}>
-        <Input
-                  autoComplete="username"
-                    name="username"
-                    value={email}
-                    hidden
-                  />
+          <Input autoComplete="username" name="username" value={email} hidden />
           <Input.Password
             autoComplete="current-password"
             placeholder="Contraseña actual"
@@ -180,7 +175,12 @@ export default function PasswordChange({ email }) {
       </Row>
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button
+            style={{ fontFamily: "Poppins" }}
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
             Cambiar Contraseña
           </Button>
         </Col>

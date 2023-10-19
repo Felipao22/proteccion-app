@@ -41,7 +41,6 @@ const ProgressBar = () => {
     return user?.isSuperAdmin === true;
   };
 
-
   const confirmDeleteAllFiles = async () => {
     const result = await Swal.fire({
       title: "¿Está seguro que desea eliminar todos los archivos?",
@@ -79,13 +78,17 @@ const ProgressBar = () => {
   return (
     <>
       <div className="progress-bar">
-        <h4 style={{ marginBottom: "40px" }}>Espacio ocupado por archivos</h4>
+        <h4 style={{ marginBottom: "40px", fontFamily: "Poppins, sans-serif" }}>
+          Espacio ocupado por archivos
+        </h4>
         <Progress
           size="medium"
           type="dashboard"
           percent={usedSpacePercentage}
         />
-        <p style={{ marginTop: "40px" }}>{`Espacio usado: ${usedSpaceMB.toFixed(
+        <p
+          style={{ marginTop: "40px", fontFamily: "Poppins, sans-serif" }}
+        >{`Espacio usado: ${usedSpaceMB.toFixed(
           2
         )} MB de ${totalSpaceMB} MB (10 GB)`}</p>
         <div className="button-container">
@@ -96,6 +99,7 @@ const ProgressBar = () => {
               onClick={confirmDeleteAllFiles}
               type="primary"
               danger
+              style={{ fontFamily: "Poppins, sans-serif" }}
             >
               Eliminar todos los archivos
             </Button>

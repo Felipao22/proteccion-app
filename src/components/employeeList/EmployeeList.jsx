@@ -1,21 +1,18 @@
 // EmployeeList.js
-import React from "react";
-import { Table, Button, Space, Dropdown } from "antd";
 import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
   LockOutlined,
   UnlockOutlined,
-  DeleteOutlined,
-  EllipsisOutlined,
-  EditOutlined,
 } from "@ant-design/icons";
+import { Button, Dropdown, Menu, Space, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 import apiClient from "../../utils/client";
 import { NotificationFailure } from "../notifications/Notifications";
-import { useEffect } from "react";
-import { useState } from "react";
-import Swal from "sweetalert2";
-import "./EmployeeList.css";
-import { Menu } from "antd";
 import EditEmployee from "./EditEmployee";
+import "./EmployeeList.css";
 
 const EmployeeList = ({}) => {
   const [employees, setEmployees] = useState([]);
@@ -207,7 +204,7 @@ const EmployeeList = ({}) => {
           </Dropdown>
         </Space>
       ),
-      responsive: ['xs'],
+      responsive: ["xs"],
     },
     {
       title: "Nombre",
@@ -236,11 +233,11 @@ const EmployeeList = ({}) => {
           </Dropdown>
         </Space>
       ),
-      responsive: ['sm', 'md', 'lg', 'xl'],
+      responsive: ["sm", "md", "lg", "xl"],
     },
   ];
 
-return (
+  return (
     <>
       {editEmployeeEmail ? (
         <EditEmployee

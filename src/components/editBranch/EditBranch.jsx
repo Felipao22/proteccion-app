@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import apiClient from "../../utils/client";
+import { Button, Card, Col, Input, Row, Select } from "antd";
+import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { Button, Col, Input, Row } from "antd";
-import { Card } from "antd";
+import apiClient from "../../utils/client";
+import ChangePasswordForAlls from "../changePassword/ChangePasswordForAlls";
 import { useFetchCities } from "../hooks/useFetchCities";
-import { Select } from "antd";
+import { useFetchUsers } from "../hooks/useFetchUsers";
 import Loading from "../loading/Loading";
 import { NotificationFailure } from "../notifications/Notifications";
-import { useFetchUsers } from "../hooks/useFetchUsers";
-import ChangePasswordForAlls from "../changePassword/ChangePasswordForAlls";
+import "./EditBranch.css";
 
 export default function EditBranch({
   email,
@@ -232,7 +231,12 @@ export default function EditBranch({
               </div>
               <div className="buttons-form">
                 <Button
-                  style={{ marginRight: "5px", marginBottom:"10px", marginTop:"10px" }}
+                  className="register-button"
+                  style={{
+                    marginRight: "5px",
+                    marginBottom: "10px",
+                    marginTop: "10px",
+                  }}
                   type="primary"
                   onClick={handleUpdateBranch}
                 >
@@ -240,7 +244,7 @@ export default function EditBranch({
                 </Button>
                 {!isChangingPassword && (
                   <Button
-                  className="button-cambiar"
+                    className="register-button"
                     type="primary"
                     onClick={() => setIsChangingPassword(true)}
                   >
@@ -248,6 +252,8 @@ export default function EditBranch({
                   </Button>
                 )}
                 <Button
+                  className="register-button"
+                  style={{ marginLeft: "5px" }}
                   type="primary"
                   danger
                   onClick={() => {

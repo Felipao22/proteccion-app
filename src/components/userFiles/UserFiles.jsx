@@ -1,17 +1,15 @@
+import { Col, DatePicker, Form, Row, Select } from "antd";
+import moment from "moment";
 import Swal from "sweetalert2";
-import { getExtensionIcon } from "../../utils/getExtensionIcon";
+import { setSelectedDate, setSelectedKind } from "../../redux/filesSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import apiClient from "../../utils/client";
+import { getExtensionIcon } from "../../utils/getExtensionIcon";
+import { useFetchKinds } from "../hooks/useFetchKinds";
 import { DeleteIcon, DownloadIcon } from "../icons/Icons";
 import { NotificationFailure } from "../notifications/Notifications";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { setSelectedDate, setSelectedKind } from "../../redux/filesSlice";
-import moment from "moment";
-import { Col, Form, Row } from "antd";
-import { Select } from "antd";
+import "./UserFiles.css";
 const { Option } = Select;
-import { DatePicker } from "antd";
-import { useFetchKinds } from "../hooks/useFetchKinds";
-import "./UserFiles.css"
 
 export const UserFiles = ({ userFiles, onDeleteFile }) => {
   const selectedKind = useAppSelector((state) => state.files.selectedKind);
@@ -76,7 +74,7 @@ export const UserFiles = ({ userFiles, onDeleteFile }) => {
     const selectedDateMoment = selectedDate
       ? moment(selectedDate, "YYYY-MM")
       : null;
-  
+
     return (
       (!selectedKind || file?.kindId.toString() === selectedKind) &&
       (!selectedDateMoment ||
@@ -95,73 +93,85 @@ export const UserFiles = ({ userFiles, onDeleteFile }) => {
   };
 
   return (
-<>
-  {userFiles && userFiles.length > 0 ? (
-    <Form style={{ margin: "20px" }} layout="vertical">
-      <Row gutter={8}>
-        <Col xs={{ span: 24 }} md={{ span: 8 }}>
-          <Form.Item label="Filtrar por tipo" htmlFor="kind" style={{ marginBottom: 8 }}>
-            <Select
-              onChange={handleKindFilterChange}
-              value={selectedKind}
-              style={{ maxWidth: "60%" }}
-              placeholder="Tipo de archivos"
-            >
-              <Select.Option value="">Todos</Select.Option>
-              {kinds?.map((kind) => (
-                <Select.Option key={kind.id} value={kind.id}>
-                  {kind.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col xs={{ span: 24 }} md={{ span: 12 }}>
-          <Form.Item label="Filtrar por mes" htmlFor="month" style={{ marginBottom: 8 }}>
-            <DatePicker
-              picker="month"
-              onChange={handleDateFilterChange}
-              value={selectedDate ? moment(selectedDate, "YYYY-MM") : null}
-              format="MM/YYYY"
-              style={{ maxWidth: "100%" }}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+    <>
+      {userFiles && userFiles.length > 0 ? (
+        <Form style={{ margin: "20px" }} layout="vertical">
+          <Row gutter={8}>
+            <Col xs={{ span: 24 }} md={{ span: 8 }}>
+              <Form.Item
+                label={
+                  <span style={{ fontFamily: "Poppins" }}>Filtrar por mes</span>
+                }
+                htmlFor="kind"
+                style={{ marginBottom: 8 }}
+              >
+                <Select
+                  onChange={handleKindFilterChange}
+                  value={selectedKind}
+                  style={{ maxWidth: "60%" }}
+                  placeholder="Tipo de archivos"
+                >
+                  <Select.Option value="">Todos</Select.Option>
+                  {kinds?.map((kind) => (
+                    <Select.Option key={kind.id} value={kind.id}>
+                      {kind.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={{ span: 24 }} md={{ span: 12 }}>
+              <Form.Item
+                label={
+                  <span style={{ fontFamily: "Poppins" }}>Filtrar por mes</span>
+                }
+                htmlFor="month"
+                style={{ marginBottom: 8 }}
+              >
+                <DatePicker
+                  picker="month"
+                  onChange={handleDateFilterChange}
+                  value={selectedDate ? moment(selectedDate, "YYYY-MM") : null}
+                  format="MM/YYYY"
+                  style={{ maxWidth: "100%" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-      <ul className="list-files">
-        {filteredFiles.map((file) => (
-          <li key={file.id}>
-            {getExtensionIcon(file.name)} {file.name}{" "}
-            <DownloadIcon
-              style={{ cursor: "pointer" }}
-              onClick={() => handleDownload(file.id, file.name)}
-            />{" "}
-            <DeleteIcon
-              style={{ cursor: "pointer" }}
-              onClick={() => DeleteFile(file.id)}
-            />
-          </li>
-        ))}
-      </ul>
-      {(selectedKind || selectedDate) && filteredFiles.length === 0 && (
-        <div>
-          {selectedKind && selectedDate ? (
-            <span>No hay archivos para este tipo y mes.</span>
-          ) : (
-            <>
-              {selectedKind && <span>No hay archivos para este tipo.</span>}
-              {selectedDate && <span>No hay archivos para este mes.</span>}
-            </>
+          <ul className="list-files">
+            {filteredFiles.map((file) => (
+              <li key={file.id}>
+                {getExtensionIcon(file.name)} {file.name}{" "}
+                <DownloadIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleDownload(file.id, file.name)}
+                />{" "}
+                <DeleteIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => DeleteFile(file.id)}
+                />
+              </li>
+            ))}
+          </ul>
+          {(selectedKind || selectedDate) && filteredFiles.length === 0 && (
+            <div>
+              {selectedKind && selectedDate ? (
+                <span>No hay archivos para este tipo y mes.</span>
+              ) : (
+                <>
+                  {selectedKind && <span>No hay archivos para este tipo.</span>}
+                  {selectedDate && <span>No hay archivos para este mes.</span>}
+                </>
+              )}
+            </div>
           )}
-        </div>
+        </Form>
+      ) : (
+        <p style={{ margin: "50px" }}>
+          No hay archivos cargados en este Establecimiento/Obra.
+        </p>
       )}
-    </Form>
-  ) : (
-    <p style={{ margin: "50px" }}>
-      No hay archivos cargados en este Establecimiento/Obra.
-    </p>
-  )}
-</>
+    </>
   );
 };

@@ -1,10 +1,10 @@
-.container-register{
+.container-register {
   display: flex;
   justify-content: center;
   align-content: center;
 }
 
-.password-requirements{
+.password-requirements {
   margin-top: 20px;
 }
 
@@ -33,6 +33,7 @@
 .text-register {
   text-align: center;
   margin-bottom: 40px;
+  font-family: Poppins, sans-serif;
 }
 
 @media only screen and (max-width: 1124px) {

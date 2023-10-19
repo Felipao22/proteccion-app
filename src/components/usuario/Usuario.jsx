@@ -1,6 +1,16 @@
 // original
 import { FileOutlined, LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Form, Input, Layout, Menu, Modal, Select, theme } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Layout,
+  Menu,
+  Modal,
+  Select,
+  theme,
+} from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,11 +22,7 @@ import {
   setSelectedKind,
 } from "../../redux/filesSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  getUser,
-  setLogoutData,
-  setUserData
-} from "../../redux/userSlice";
+import { getUser, setLogoutData, setUserData } from "../../redux/userSlice";
 import apiClient from "../../utils/client";
 import {
   deleteCookie,
@@ -48,14 +54,12 @@ function getItem(label, key, icon, children, onClick) {
 }
 
 export const Usuario = () => {
-
   const [collapsed, setCollapsed] = useState(false);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   const [loading, setLoading] = useState(true);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
   const [hasFiles, setHasFiles] = useState(false);
-
 
   const kinds = useFetchKinds();
 
@@ -82,11 +86,10 @@ export const Usuario = () => {
 
   const allFiles = files?.files || [];
 
-
   useEffect(() => {
     let inactivityTimer;
     let lastActivity = new Date();
-  
+
     const checkSessionStorageUser = () => {
       const userSessionStorage = sessionStorage.getItem("user");
       if (userSessionStorage) {
@@ -100,7 +103,7 @@ export const Usuario = () => {
     };
 
     checkSessionStorageUser();
-  
+
     const checkCookieUser = () => {
       const userCookie = getCookie("user");
       if (userCookie) {
@@ -119,9 +122,7 @@ export const Usuario = () => {
       }
       return false;
     };
-  
 
-  
     // Si no hay datos en sessionStorage, verificar las cookies y configurar el temporizador de inactividad
     const resetInactivityTimer = () => {
       // Reiniciar el temporizador de inactividad cada vez que el usuario interactúa
@@ -129,15 +130,15 @@ export const Usuario = () => {
       inactivityTimer = setTimeout(checkCookieUser, 60000);
       lastActivity = new Date(); // Actualiza la última actividad cuando hay movimiento
     };
-  
+
     // Configurar un temporizador de inactividad inicial
     resetInactivityTimer();
-  
+
     // Agregar manejadores de eventos para el mouse y el desplazamiento
     window.addEventListener("mousemove", resetInactivityTimer);
     window.addEventListener("scroll", resetInactivityTimer);
     window.addEventListener("keydown", resetInactivityTimer); // Agregar evento para teclado
-  
+
     // Limpia los manejadores de eventos al desmontar el componente
     return () => {
       clearInterval(inactivityTimer);
@@ -145,9 +146,7 @@ export const Usuario = () => {
       window.removeEventListener("scroll", resetInactivityTimer);
       window.removeEventListener("keydown", resetInactivityTimer); // Remover evento del teclado
     };
-    
   }, []);
-  
 
   const cookieExpiration = async () => {
     try {
@@ -261,7 +260,7 @@ export const Usuario = () => {
     const selectedDateMoment = selectedDate
       ? moment(selectedDate, "YYYY-MM")
       : null;
-  
+
     return (
       (!selectedKind || file?.kindId.toString() === selectedKind) &&
       (!selectedDateMoment ||
@@ -287,7 +286,6 @@ export const Usuario = () => {
   };
 
   const sede = user?.nombreSede.split(" - ")[0];
-
 
   const handleChangePassword = async () => {
     try {
@@ -344,12 +342,9 @@ export const Usuario = () => {
                   style={{ maxWidth: 1000 }}
                 >
                   <div>
-                    <Form.Item
-                      label="Empresa"
-                      htmlFor="nombreEmpresa"
-                    >
+                    <Form.Item label="Empresa" htmlFor="nombreEmpresa">
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="text"
                         id="nombreEmpresa"
                         name="nombreEmpresa"
@@ -361,7 +356,7 @@ export const Usuario = () => {
                       htmlFor="nombreEstablecimiento"
                     >
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="text"
                         id="nombreEstablecimiento"
                         name="nombreEstablecimiento"
@@ -370,7 +365,7 @@ export const Usuario = () => {
                     </Form.Item>
                     <Form.Item label="Ciudad" htmlFor="ciudad">
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="text"
                         id="ciudad"
                         name="ciudad"
@@ -379,7 +374,7 @@ export const Usuario = () => {
                     </Form.Item>
                     <Form.Item label="Dirección" htmlFor="direccion">
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="text"
                         id="direccion"
                         name="direccion"
@@ -388,7 +383,7 @@ export const Usuario = () => {
                     </Form.Item>
                     <Form.Item label="Teléfono" htmlFor="telefono">
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="number"
                         id="telefono"
                         name="telefono"
@@ -398,7 +393,7 @@ export const Usuario = () => {
 
                     <Form.Item label="CUIT" htmlFor="cuit">
                       <Input
-                        style={{ cursor: "default" }}
+                        style={{ cursor: "default", fontFamily: "Poppins" }}
                         type="number"
                         id="cuit"
                         name="cuit"
@@ -419,7 +414,10 @@ export const Usuario = () => {
                             e.preventDefault();
                             handlechangePasswordClick();
                           }}
-                          style={{ textDecoration: "none" }}
+                          style={{
+                            textDecoration: "none",
+                            fontFamily: "Poppins",
+                          }}
                         >
                           Cambiar contraseña
                         </a>
@@ -459,7 +457,7 @@ export const Usuario = () => {
                 <div>
                   <Form.Item label="Filtrar por mes" htmlFor="month">
                     <DatePicker
-                    style={{ maxWidth: "100%" }}
+                      style={{ maxWidth: "100%" }}
                       picker="month"
                       onChange={handleDateFilterChange}
                       value={
@@ -483,6 +481,7 @@ export const Usuario = () => {
                           cursor: "pointer",
                           textDecoration: "none",
                           color: "#51666C",
+                          fontFamily: "Poppins",
                         }}
                         onClick={(e) => {
                           e.preventDefault();
@@ -527,17 +526,20 @@ export const Usuario = () => {
           </div>
         </Content>
         <Modal
+          style={{ fontFamily: "Poppins" }}
           title="Cambiar contraseña"
           visible={showChangePasswordModal}
           onCancel={() => setShowChangePasswordModal(false)}
           footer={[
             <Button
+              style={{ fontFamily: "Poppins" }}
               key="cancel"
               onClick={() => setShowChangePasswordModal(false)}
             >
               Cancelar
             </Button>,
             <Button
+              style={{ fontFamily: "Poppins" }}
               key="reset"
               type="primary"
               onClick={() => handleChangePassword()}
@@ -555,7 +557,7 @@ export const Usuario = () => {
             placeholder="Correo electrónico"
             value={resetPasswordEmail}
             autoComplete="on"
-            onChange={(e) => setResetPasswordEmail(e.target.value)} // Asegúrate de que esta línea sea correcta
+            onChange={(e) => setResetPasswordEmail(e.target.value)}
           ></Form>
         </Modal>
       </Layout>

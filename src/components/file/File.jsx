@@ -1,17 +1,16 @@
-import { useState, useRef, useEffect } from "react";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Select } from "antd";
 import FormData from "form-data";
+import { MDBIcon } from "mdb-react-ui-kit";
+import { useEffect, useId, useRef, useState } from "react";
+import apiClient from "../../utils/client";
+import { formatFileSize } from "../../utils/formatFilesize";
 import {
   NotificationFailure,
   NotificationSuccess,
 } from "../notifications/Notifications";
-import apiClient from "../../utils/client";
 import "./File.css";
-import { useId } from "react";
-import { Form, Select, Input, Upload, Button } from "antd";
 const { TextArea } = Input;
-import { MDBIcon } from "mdb-react-ui-kit";
-import { formatFileSize } from "../../utils/formatFilesize";
-import { UploadOutlined } from "@ant-design/icons";
 
 export const File = ({ userEmail }) => {
   const initialValues = {
@@ -296,7 +295,11 @@ export const File = ({ userEmail }) => {
       <div className="content d-flex flex-column mb-4" data-aos="fade">
         <span>Archivo:</span>
         <label className="file">
-          <Button icon={<UploadOutlined />} onClick={handleFileClick}>
+          <Button
+            style={{ fontFamily: "Poppins" }}
+            icon={<UploadOutlined />}
+            onClick={handleFileClick}
+          >
             Seleccionar Archivo
           </Button>
           <input
@@ -325,12 +328,14 @@ export const File = ({ userEmail }) => {
       >
         <Button
           type="primary"
-          style={{ marginRight: "10px" }}
+          style={{ marginRight: "10px", fontFamily: "Poppins" }}
           onClick={handleLoadFile}
         >
           Subir
         </Button>
-        <Button onClick={handleClearFile}>Cancelar</Button>
+        <Button style={{ fontFamily: "Poppins" }} onClick={handleClearFile}>
+          Cancelar
+        </Button>
       </div>
     </div>
   );
