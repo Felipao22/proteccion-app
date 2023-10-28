@@ -31,7 +31,7 @@
 .col-login {
   padding: 1rem;
   margin-bottom: 3rem;
-  margin-top: 3rem;
+  /* margin-top: 3rem; */
 }
 @media only screen and (max-width: 576px) {
   .col-login {
@@ -76,4 +76,10 @@
 
 .label-font {
   font-family: Poppins, sans-serif;
+}
+
+@media only screen and (max-width: 576px) {
+  .text-welcome {
+    font-size: 1.4rem;
+  }
 }
