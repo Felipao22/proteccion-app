@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import log from "../../assets/authentication.png";
-import { useAppDispatch } from "../../redux/hooks";
-import apiClient from "../../utils/client";
-import UsePasswordToggle from "../hooks/UsePasswordToggle";
-import "./Login.css";
-// import { setToken } from "../../utils/token";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Col, Form, Input, Modal, Row } from "antd";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import log from "../../assets/authentication.png";
+import { useAppDispatch } from "../../redux/hooks";
 import { setLoginData } from "../../redux/userSlice";
+import apiClient from "../../utils/client";
 import { setToken } from "../../utils/cookieUtils";
 import {
   NotificationFailure,
   NotificationSuccess,
   NotificationWarning,
 } from "../notifications/Notifications";
+import "./Login.css";
 
 export default function Login() {
   const initialValues = {
@@ -23,10 +21,8 @@ export default function Login() {
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
-  const [PasswordInputType, ToggleIcon] = UsePasswordToggle();
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
-  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -76,7 +72,6 @@ export default function Login() {
           isSuperAdmin: res.data.user.isSuperAdmin,
         })
       );
-      // setToken(res.data.token);
       setToken("token", res.data.token);
       NotificationSuccess(res.data.message);
       NotificationWarning(res.data.warning);
@@ -120,18 +115,6 @@ export default function Login() {
     setShowResetPasswordModal(true);
   };
 
-  const handleInfo = () => {
-    setShowInfoModal(true);
-  };
-
-  // const handleCancelInfo = () => {
-  //   setShowInfoModal(false)
-  // }
-
-  const goToForm = () => {
-    navigate("/contact")
-  }
-
   return (
     <div>
       <Form onFinish={handleLogin}>
@@ -142,19 +125,29 @@ export default function Login() {
             </Col>
             <Col className="col-login" xs={24} sm={12} md={12} lg={12} xl={12}>
               <h1 className="text-welcome">¡Bienvenido a PRO!</h1>
-              <div style={{fontWeight:"500", fontSize:"1rem", textAlign:"start"}}>
-              <span >
-         Bienvenido a la plataforma virtual de gestión de archivos de PROTECCIÓN LABORAL, para poder acceder deberás ingresar con tu mail y contraseña asignada.
-        </span>
-        <span style={{fontWeight:"500"}}> Si aún no posees acceso, podés solicitarlo a:&nbsp;
-           <a href="mailto:info@proteccionlaboral.com.ar">info@proteccionlaboral.com.ar</a>
-          <br />
-           {/* <br />
-           <p>o hacer click en consultar.</p> */}
-           </span>
-           </div>
-            
-            <div className="input-text">
+              <div
+                style={{
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  textAlign: "start",
+                }}
+              >
+                <span>
+                  Bienvenido a la plataforma virtual de gestión de archivos de
+                  PROTECCIÓN LABORAL, para poder acceder deberás ingresar con tu
+                  mail y contraseña asignada.
+                </span>
+                <span style={{ fontWeight: "500" }}>
+                  {" "}
+                  Si aún no posees acceso, podés solicitarlo a:&nbsp;
+                  <a href="mailto:info@proteccionlaboral.com.ar">
+                    info@proteccionlaboral.com.ar
+                  </a>
+                  <br />
+                </span>
+              </div>
+
+              <div className="input-text">
                 <Input
                   className="input-email"
                   prefix={<MailOutlined style={{ fontSize: "16px" }} />}
@@ -210,15 +203,6 @@ export default function Login() {
                 >
                   ¿Olvidaste tu contraseña?
                 </a>
-                <a
-                  href="#!"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleInfo();
-                  }}
-                >
-                 Más información
-                </a>
               </div>
               <Button
                 type="primary"
@@ -267,39 +251,6 @@ export default function Login() {
           autoComplete="on"
           onChange={(e) => setResetPasswordEmail(e.target.value)}
         />
-      </Modal>
-      <Modal
-        style={{ fontFamily: "Poppins" }}
-        title="Información sobre PRO"
-        visible={showInfoModal}
-        onCancel={() => setShowInfoModal(false)}
-        footer={[
-          <Button
-            style={{ fontFamily: "Poppins" }}
-            key="cancel"
-            onClick={() => setShowInfoModal(false)}
-          >
-            Cerrar
-          </Button>,
-          <Button
-            style={{ fontFamily: "Poppins" }}
-            key="reset"
-            type="primary"
-            onClick={goToForm}
-          >
-            Consultar
-          </Button>,
-        ]}
-      >
-        <p>
-         Bienvenido a la plataforma virtual de gestión de archivos de Protección Laboral, para poder acceder deberás ingresar con tu mail y contraseña asignada.
-        </p>
-        <p>Si aún no posees acceso, podés solicitarlo a:
-          <br />
-           <a href="mailto:info@proteccionlaboral.com.ar">info@proteccionlaboral.com.ar</a>
-           <br />
-           <p>o hacer click en consultar.</p>
-           </p>
       </Modal>
     </div>
   );

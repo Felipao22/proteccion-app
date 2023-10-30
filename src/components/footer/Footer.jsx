@@ -108,6 +108,15 @@ export default function Footer() {
                   Contacto
                 </Link>
               </p>
+              <p>
+                <Link
+                  to="/login"
+                  className="text-reset"
+                  style={{ textDecoration: "none" }}
+                >
+                  Iniciar sesión
+                </Link>
+              </p>
             </MDBCol>
 
             <MDBCol md="4" lg="3" xl="3" className="mx-auto mb-md-0 mb-4">
